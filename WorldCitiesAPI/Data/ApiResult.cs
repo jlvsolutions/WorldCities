@@ -15,7 +15,9 @@ namespace WorldCitiesAPI.Data
             int pageIndex, 
             int pageSize,
             string? sortColumn,
-            string? sortOrder)
+            string? sortOrder,
+            string? filterColumn,
+            string? filterQuery)
         {
             Data = data;
             TotalCount = count;
@@ -24,6 +26,8 @@ namespace WorldCitiesAPI.Data
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
             SortColumn = sortColumn;
             SortOrder = sortOrder;
+            FilterColumn = filterColumn;
+            FilterQuery = filterQuery;
         }
 
         #region Methods
@@ -35,6 +39,8 @@ namespace WorldCitiesAPI.Data
         /// <param name="pageSize">The actual size of each page</param>
         /// <param name="SortColumn">The sorting column name</param>
         /// <param name="SortOrder">The sorting order ("ASC" or "DESC")</param>
+        /// <param name="filterColumn">The filtering column name</param>
+        /// <param name="fileterQuery">The filtering query (value to lookup)</param>
         /// <returns>An object containing the IQueryable paged/sorted result
         /// and all the relevant paging/sorting navigation info.</returns>
         public static async Task<ApiResult<T>> CreateAsync(
@@ -42,12 +48,24 @@ namespace WorldCitiesAPI.Data
             int pageIndex,
             int pageSize,
             string? sortColumn = null,
-            string? sortOrder = null)
+            string? sortOrder = null,
+            string? filterColumn = null,
+            string? filterQuery = null)
         {
+            if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterQuery) && IsValidProperty(filterColumn))
+            {
+                // Perform filtering...
+                source = source.Where(
+                    string.Format("{0}.StartsWith(@0)", filterColumn),
+                    filterQuery);
+            }
+
+            // Get the Count...
             var count = await source.CountAsync();
 
             if (!string.IsNullOrEmpty(sortColumn) && IsValidProperty(sortColumn))
             {
+                // Perform ordering...
                 sortOrder = !string.IsNullOrEmpty(sortOrder) && sortOrder.ToUpper() == "ASC" ? "ASC" : "DESC";
 
                 source = source.OrderBy( string.Format("{0} {1}", sortColumn, sortOrder) );
@@ -59,7 +77,7 @@ namespace WorldCitiesAPI.Data
 
             var data = await source.ToListAsync();
 
-            return new ApiResult<T>(data, count, pageIndex, pageSize, sortColumn, sortOrder);
+            return new ApiResult<T>(data, count, pageIndex, pageSize, sortColumn, sortOrder, filterColumn, filterQuery);
         }
 
         /// <summary>
@@ -134,6 +152,17 @@ namespace WorldCitiesAPI.Data
         /// Sorting Order ("ASC", "DESC", or null if none set)
         /// </summary>
         public string? SortOrder { get; private set; }
+
+        /// <summary>
+        /// Filter Column name (or null if none set)
+        /// </summary>
+        public string? FilterColumn { get; private set; }
+
+        /// <summary>
+        /// Filter Query string
+        /// (to b e used within the given FilterColumn)
+        /// </summary>
+        public string? FilterQuery { get; private set; }
         #endregion
     }
 }
