@@ -66,7 +66,10 @@ namespace WorldCitiesAPI.Data
             if (!string.IsNullOrEmpty(sortColumn) && IsValidProperty(sortColumn))
             {
                 // Perform ordering...
-                sortOrder = !string.IsNullOrEmpty(sortOrder) && sortOrder.ToUpper() == "ASC" ? "ASC" : "DESC";
+                if (string.IsNullOrEmpty(sortOrder))
+                    sortOrder = "ASC";
+
+                sortOrder = sortOrder.ToUpper() == "DESC" ? "DESC" : "ASC";
 
                 source = source.OrderBy( string.Format("{0} {1}", sortColumn, sortOrder) );
             }
@@ -84,7 +87,7 @@ namespace WorldCitiesAPI.Data
         /// Checks if the given property name exists
         /// to protect against SQL injection attacks.
         /// </summary>
-        private static bool IsValidProperty(
+        public static bool IsValidProperty(
             string propertyName,
             bool throwExceptionIfNotFound = true)
         {
