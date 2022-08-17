@@ -3,7 +3,7 @@ export interface City {
   name: string;
   lat: number;
   lon: number;
-  // TODO:  add population here once migration done
+  population: number;
   countryId: number;
   countryName: string;
 }

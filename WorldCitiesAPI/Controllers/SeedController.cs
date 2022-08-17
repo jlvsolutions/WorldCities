@@ -20,6 +20,11 @@ namespace WorldCitiesAPI.Controllers
             _env = env;
         }
 
+        /// <summary>
+        /// This is for Initial migration
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="SecurityException"></exception>
         [HttpGet]
         public async Task<ActionResult> Import()
         {
@@ -96,6 +101,7 @@ namespace WorldCitiesAPI.Controllers
                 var lat = row[nRow, 3].GetValue<decimal>();
                 var lon = row[nRow, 4].GetValue<decimal>();
                 var countryName = row[nRow, 5].GetValue<string>();
+                var population = row[nRow, 10].GetValue<double>();
 
                 var countryId = countriesByName[countryName].Id;
 
@@ -104,7 +110,7 @@ namespace WorldCitiesAPI.Controllers
                     continue;
 
                 // Create the city entity and fill it with xlsx data
-                var city = new City { Name = name, Lat = lat, Lon = lon, CountryId = countryId};
+                var city = new City { Name = name, Lat = lat, Lon = lon, Population = population, CountryId = countryId};
 
                 // Add the city to the DB context.   Why not async like the Countries was done?
                 _context.Cities.Add(city);
@@ -118,6 +124,58 @@ namespace WorldCitiesAPI.Controllers
                 await _context.SaveChangesAsync();
 
             return new JsonResult(new { Cities = numberOfCitiesAdded, Countries = numberOfCountriesAdded });
+        }
+
+
+        /// <summary>
+        /// This is for Migration1
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="SecurityException"></exception>
+        [HttpGet]
+        public async Task<ActionResult> ImportPopulations()
+        {
+            // Prevents non-development environments from running this method
+            if (!_env.IsDevelopment())
+                throw new SecurityException("Not Allowed");
+
+            var path = Path.Combine(_env.ContentRootPath, "Data/Source/WorldCities.xlsx");
+            using var stream = System.IO.File.OpenRead(path);
+            using var excelPackage = new ExcelPackage(stream);
+
+            // Get the first worksheet
+            var worksheet = excelPackage.Workbook.Worksheets[0];
+
+            // Define how many rows we want to process
+            var nEndRow = worksheet.Dimension.End.Row;
+
+            // Initialize the record counters
+            var numberOfCitiesUpdated = 0;
+
+            // Iterate through all rows, skipping the first one
+            for (int nRow = 2; nRow <= nEndRow; nRow++)
+            {
+                var row = worksheet.Cells[nRow, 1, nRow, worksheet.Dimension.End.Column];
+
+                var name = row[nRow, 1].GetValue<string>();
+                var lat = row[nRow, 3].GetValue<decimal>();
+                var lon = row[nRow, 4].GetValue<decimal>();
+                var population = row[nRow, 10].GetValue<double>();
+
+                var dbCity = _context.Cities.FirstOrDefault(c => c.Name == name && c.Lat == lat && c.Lon == lon);
+                if (dbCity != null)
+                {
+                    dbCity.Population = population;
+                    _context.Cities.Update(dbCity);
+                    numberOfCitiesUpdated++;
+                }
+            }
+            
+            // Save all the updated cities into the Database
+            if (numberOfCitiesUpdated > 0)
+                    await _context.SaveChangesAsync();
+            
+            return new JsonResult(new { Cities = numberOfCitiesUpdated });
         }
     }
 }

@@ -47,6 +47,19 @@
       </mat-error>
     </mat-form-field>
 
+    <!-- Population -->
+    <mat-form-field>
+      <mat-label>Population:</mat-label>
+      <input matInput formControlName="population" required placeholder="Insert population">
+      <mat-error *ngFor="let error of getErrors(form.get('population')!,
+                 'Population',
+                 { 'pattern' : 'requires a positive number less than 10 billion',
+                   'min' : 'value must be between 0 and 10000000000',
+                   'max' : 'value must be between 0 and 10000000000'})">
+        {{error}}
+      </mat-error>
+    </mat-form-field>
+
     <!-- Country -->
     <mat-form-field *ngIf="countries">
       <mat-label>Select a Country...</mat-label>

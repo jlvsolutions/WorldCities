@@ -54,6 +54,11 @@ export class CityEditComponent extends BaseFormComponent implements OnInit {
         Validators.min(-180),
         Validators.max(180)
       ]),
+      population: new FormControl('', [
+        Validators.required,
+        Validators.min(0),
+        Validators.max(10000000001)
+      ]),
       countryId: new FormControl('', Validators.required)
     }, null, this.isDupeCity());
 

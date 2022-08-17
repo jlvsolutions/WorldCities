@@ -42,7 +42,7 @@ namespace WorldCitiesAPI.Controllers
                             Name = c.Name,
                             Lat = c.Lat,
                             Lon = c.Lon,
-                            // TODO:  Population goes here after migration done
+                            Population = c.Population,
                             CountryId = c.Country!.Id,
                             CountryName = c.Country!.Name
                         }),
