@@ -36,6 +36,8 @@ namespace WorldCitiesAPI.Data.Models
         [Column(TypeName = "decimal(7,4)")]
         public decimal Lon { get; set; }
 
+        // TODO:  Add population here for migration to add population column.
+
         /// <summary>
         /// Country Id (forein key)
         /// </summary>

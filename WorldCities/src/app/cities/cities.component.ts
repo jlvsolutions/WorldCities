@@ -16,7 +16,7 @@ import { City } from './city';
   styleUrls: ['./cities.component.scss']
 })
 export class CitiesComponent implements OnInit {
-  public displayedColumns: string[] = ['id', 'name', 'lat', 'lon'];
+  public displayedColumns: string[] = ['id', 'name', 'lat', 'lon', 'countryName']; // TODO: add population once migration done
   public cities!: MatTableDataSource<City>;
 
   defaultPageIndex: number = 0;
