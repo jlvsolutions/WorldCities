@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Models;
+using Microsoft.Extensions.Logging;
 
 namespace WorldCitiesAPI.Controllers
 {
@@ -15,10 +16,12 @@ namespace WorldCitiesAPI.Controllers
     public class CitiesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<CitiesController> _logger;
 
-        public CitiesController(ApplicationDbContext context)
+        public CitiesController(ApplicationDbContext context, ILogger<CitiesController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/Cities
@@ -34,6 +37,7 @@ namespace WorldCitiesAPI.Controllers
             string? filterColumn = null,
             string? filterQuery = null)
         {
+            _logger.LogInformation("Entering GetCities");
             return await ApiResult<CityDTO>.CreateAsync(
                         _context.Cities.AsNoTracking()
                         .Select(c => new CityDTO()
