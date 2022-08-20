@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 //import { HttpClient, HttpParams } from '@angular/common/http';
-import { environment } from './../../environments/environment';
+//import { environment } from './../../environments/environment';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -10,7 +10,7 @@ import { debounceTime, distinct, distinctUntilChanged } from 'rxjs/operators';
 
 import { City } from './city';
 import { CityService } from './city.service';
-import { ApiResult } from '../base.service';
+//import { ApiResult } from '../base.service';
 
 @Component({
   selector: 'app-cities',
