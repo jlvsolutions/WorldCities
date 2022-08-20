@@ -16,9 +16,9 @@ namespace WorldCitiesAPI.Controllers
     public class CitiesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<CitiesController> _logger;
+        private readonly ILogger<CitiesController>? _logger;
 
-        public CitiesController(ApplicationDbContext context, ILogger<CitiesController> logger)
+        public CitiesController(ApplicationDbContext context, ILogger<CitiesController>? logger = null)
         {
             _context = context;
             _logger = logger;
@@ -37,7 +37,8 @@ namespace WorldCitiesAPI.Controllers
             string? filterColumn = null,
             string? filterQuery = null)
         {
-            _logger.LogInformation("Entering GetCities");
+            _logger?.LogInformation("Entering GetCities. PageIndex: {pageIndex}, SortOrder: {sortOrder}", pageIndex, sortOrder);
+
             return await ApiResult<CityDTO>.CreateAsync(
                         _context.Cities.AsNoTracking()
                         .Select(c => new CityDTO()
