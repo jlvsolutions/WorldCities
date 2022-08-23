@@ -79,7 +79,9 @@ describe('CitiesComponent', () => {
       .querySelector('table.mat-table');
     let tableRows = table
       .querySelectorAll('tr.mat-row');
+
     expect(tableRows.length).toBeGreaterThan(0);
+    // TODO:  learn how to access rows for testing  the <td has <a child with textConent 'TestCity1'
   });
 
 });

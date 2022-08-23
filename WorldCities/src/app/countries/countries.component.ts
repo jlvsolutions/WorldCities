@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { environment } from './../../environments/environment';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -9,14 +9,14 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { Country } from './country';
 import { CountryService } from './country.service';
-import { ApiResult } from '../base.service';
+import { AuthService } from './../auth/auth.service';
 
 @Component({
   selector: 'app-countries',
   templateUrl: './countries.component.html',
   styleUrls: ['./countries.component.scss']
 })
-export class CountriesComponent implements OnInit {
+export class CountriesComponent implements OnInit, OnDestroy {
   public displayedColumns: string[] = ['id', 'name', 'iso2', 'iso3', 'totCities'];
   public countries!: MatTableDataSource<Country>;
   defaultPageIndex: number = 0;
@@ -26,17 +26,24 @@ export class CountriesComponent implements OnInit {
 
   defaultFilterColumn: string = "name";
   filterQuery?: string;
+  isLoggedIn: boolean = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   filterTextChanged: Subject<string> = new Subject<string>();
 
-  constructor(private countryService: CountryService) {
+  constructor(private countryService: CountryService, private authService: AuthService) {
   }
 
   ngOnInit() {
+    this.isLoggedIn = this.authService.isAuthenticated();
     this.loadData();
+  }
+
+  ngOnDestroy() {
+    console.log('countries.component OnDestroy()');
+
   }
 
   // debounce filter text changes

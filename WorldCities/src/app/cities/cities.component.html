@@ -4,10 +4,10 @@
 
 <p *ngIf="!cities"><em>Loading...</em></p>
 
-<button mat-flat-button color="primary" class="btn-add" *ngIf="cities" [routerLink]="['/city']">
+<button mat-flat-button color="primary" class="btn-add" *ngIf="cities && isLoggedIn" [routerLink]="['/city']">
   Add a new City
 </button>
-
+ 
 <!-- the hidden is not working... hmm.. added the *ngIf="cities" -->
 <mat-form-field [hidden]="!cities" *ngIf="cities" >
   <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"

@@ -10,7 +10,8 @@ import { debounceTime, distinct, distinctUntilChanged } from 'rxjs/operators';
 
 import { City } from './city';
 import { CityService } from './city.service';
-//import { ApiResult } from '../base.service';
+import { AuthService } from './../auth/auth.service';
+import { AuthGaurd } from '../auth/auth.guard';
 
 @Component({
   selector: 'app-cities',
@@ -20,6 +21,7 @@ import { CityService } from './city.service';
 export class CitiesComponent implements OnInit {
   public displayedColumns: string[] = ['id', 'name', 'lat', 'lon', 'population', 'countryName'];
   public cities!: MatTableDataSource<City>;
+  isLoggedIn: boolean = false;
 
   defaultPageIndex: number = 0;
   defaultPageSize: number = 10;
@@ -34,10 +36,11 @@ export class CitiesComponent implements OnInit {
 
   filterTextChanged: Subject<string> = new Subject<string>();
 
-  constructor(private cityService: CityService) {
+  constructor(private cityService: CityService, private authService: AuthService) {
   }
 
   ngOnInit() {
+    this.isLoggedIn = this.authService.isAuthenticated();
     this.loadData();
   }
 
