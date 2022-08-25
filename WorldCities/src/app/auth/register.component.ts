@@ -69,7 +69,6 @@ export class RegisterComponent
     return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
       var user = <User>{};
       user.email = this.form.controls['email'].value;
-      user.userName = "";
       return this.authService.isDupeEmail(user)
         .pipe(map(result => {
           return (result ? { isDupeEmail: true } : null);

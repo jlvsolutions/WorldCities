@@ -12,10 +12,9 @@
       Countries
     </a>
     <span class="separator"></span>
-    <div class="username" *ngIf="userName" color="primary">
+    <div class="username" *ngIf="displayName" color="primary">
       <label class="welcome-label">Welcome,</label>
-      <label>{{ userName }}</label>
-      <!--Welcome,<br/><strong>{{userName}}</strong>-->
+      <label>{{ displayName }}</label>
     </div>
     <a *ngIf="!isLoggedIn" mat-flat-button color="primary" [routerLink]="['/register']">
       Join

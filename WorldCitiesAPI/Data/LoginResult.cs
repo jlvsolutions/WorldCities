@@ -8,8 +8,8 @@
         public string? Token { get; set; }
 
         /// <summary>
-        /// The User Name associated with the login
+        /// The Name associated with the user
         /// </summary>
-        public string? UserName { get; set; }
+        public string? Name { get; set; }
     }
 }

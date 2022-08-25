@@ -15,13 +15,13 @@ import { User } from './user';
 export class AuthService {
 
   private tokenKey: string = "token";  // localStorage token's key
-  private userNameKey: string = "username"; // localStorage user name's key
+  private nameKey: string = "name"; // localStorage user name's key
 
   private _authStatus = new Subject<boolean>();
   public authStatus = this._authStatus.asObservable();
 
-  private _userName = new Subject<string>();
-  public userName = this._userName.asObservable();
+  private _displayName = new Subject<string>();
+  public displayName = this._displayName.asObservable();
 
   constructor(
     protected http: HttpClient) {
@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   getUserName(): string {
-    var userName = localStorage.getItem(this.userNameKey);
+    var userName = localStorage.getItem(this.nameKey);
     return userName ? userName : "";
   }
 
@@ -45,7 +45,7 @@ export class AuthService {
   init(): void {
     if (this.isAuthenticated()) {
       this.setAuthStatus(true);
-      this.setUserName(this.getUserName());
+      this.setName(this.getUserName());
     }
   }
 
@@ -57,10 +57,10 @@ export class AuthService {
     var url = environment.baseUrl + 'api/Account/Login';
     return this.http.post<LoginResult>(url, item)
       .pipe(tap(loginResult => {
-        if (loginResult.success && loginResult.token && loginResult.userName) {
+        if (loginResult.success && loginResult.token && loginResult.name) {
 
-          localStorage.setItem(this.userNameKey, loginResult.userName);
-          this.setUserName(loginResult.userName);
+          localStorage.setItem(this.nameKey, loginResult.name);
+          this.setName(loginResult.name);
 
           localStorage.setItem(this.tokenKey, loginResult.token);
           this.setAuthStatus(true);
@@ -69,10 +69,10 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem(this.userNameKey);
+    localStorage.removeItem(this.nameKey);
     localStorage.removeItem(this.tokenKey);
     this.setAuthStatus(false);
-    this.setUserName("");
+    this.setName("");
   }
 
   /** Sets the Subject.next */
@@ -80,8 +80,8 @@ export class AuthService {
     this._authStatus.next(isAuthenticated);
   }
 
-  private setUserName(userName: string): void {
-    this._userName.next(userName);
+  private setName(name: string): void {
+    this._displayName.next(name);
   }
 
   /**

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace WorldCitiesAPI.Controllers
 {
@@ -41,7 +42,6 @@ namespace WorldCitiesAPI.Controllers
                     Message = "Invalid Email or Password."
                 });
             }
-
             var secToken = await _jwtHandler.GetTokenAsync(user);
             var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
 
@@ -52,7 +52,7 @@ namespace WorldCitiesAPI.Controllers
                 Success = true,
                 Message = "Login successful",
                 Token = jwt,
-                UserName = user.UserName
+                Name = user.DisplayName
             });
         }
 
@@ -88,7 +88,7 @@ namespace WorldCitiesAPI.Controllers
                 return BadRequest(msg);
             }
 
-            if (await _userManager.FindByEmailAsync(registerRequest.Email) != null)
+            if (await _userManager.FindByNameAsync(registerRequest.Email) != null)
             {
                 _logger?.LogInformation("AccountController: User with Email {Email} already exists.", registerRequest.Email);
                 return BadRequest($"User with Email {registerRequest.Email} already exists.");
@@ -101,8 +101,9 @@ namespace WorldCitiesAPI.Controllers
             var user_User = new ApplicationUser()
             {
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = registerRequest.Name,
-                Email = registerRequest.Email
+                UserName = registerRequest.Email,
+                Email = registerRequest.Email,
+                DisplayName = registerRequest.Name
             };
 
             try
@@ -147,7 +148,7 @@ namespace WorldCitiesAPI.Controllers
                 return false;
 
             var appUser = _context.Users
-                .Where(e => e.Email == user.Email)
+                .Where(e => e.UserName == user.Email)
                 .FirstOrDefault();
 
             return appUser != null;

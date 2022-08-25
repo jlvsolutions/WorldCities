@@ -12,7 +12,7 @@ export class NavMenuComponent implements OnInit, OnDestroy {
 
   private destroySubject = new Subject();
   isLoggedIn: boolean = false;
-  userName: string = "";
+  displayName: string = "";
 
   constructor(private authService: AuthService, private router: Router) {
 
@@ -22,10 +22,10 @@ export class NavMenuComponent implements OnInit, OnDestroy {
         this.isLoggedIn = result;
       });
 
-    this.authService.userName
+    this.authService.displayName
       .pipe(takeUntil(this.destroySubject))
       .subscribe(result => {
-        this.userName = result;
+        this.displayName = result;
       });
   }
 
