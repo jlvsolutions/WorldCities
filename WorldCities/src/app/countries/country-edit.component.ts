@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, AbstractControl, AsyncValidatorFn, AsyncValidator } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 
 import { Country } from './country';
 import { BaseFormComponent } from '../base-form.component';
@@ -25,9 +25,6 @@ export class CountryEditComponent extends BaseFormComponent implements OnInit {
   // It's NULL when we're adding a new country,
   // and not NULL when we're editing an existing one.
   id?: number;
-
-  // the countries array for the select ?? are we going to use this? Or is it mistake in book left over from city-edit
-  countries?: Country[];
 
   constructor(
     private fb: FormBuilder,

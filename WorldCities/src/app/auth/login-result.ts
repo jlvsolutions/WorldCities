@@ -1,5 +1,6 @@
-export interface LoginResult {
-  success: boolean;
-  message: string;
+import { RegisterResult } from "./register-result";
+
+export interface LoginResult extends RegisterResult {
+  userName?: string;
   token?: string;
 }

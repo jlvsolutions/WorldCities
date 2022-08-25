@@ -31,6 +31,9 @@ export abstract class BaseFormComponent {
         case 'max':
           errors.push(`${displayName} ${customMessages?.[key] ?? "value is out of range."}`);
           break;
+        case 'isDupeEmail':
+          errors.push(`${displayName} ${customMessages?.[key] ?? "already exists: please choose another."}`);
+          break;
         default:
           errors.push(`${displayName} is invalid.`);
           break;

@@ -48,6 +48,7 @@ builder.Services.AddDbContext<ApplicationDbContext>( options =>
 // Add ASP.NET Core Identity support
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>( options =>
 {
+    // TODO:  Reset these for production...
     options.SignIn.RequireConfirmedAccount = true;
     options.Password.RequireDigit = false;// true;
     options.Password.RequireLowercase = false;// true;

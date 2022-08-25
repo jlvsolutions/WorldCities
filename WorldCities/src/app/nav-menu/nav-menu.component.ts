@@ -12,13 +12,21 @@ export class NavMenuComponent implements OnInit, OnDestroy {
 
   private destroySubject = new Subject();
   isLoggedIn: boolean = false;
+  userName: string = "";
 
   constructor(private authService: AuthService, private router: Router) {
+
     this.authService.authStatus
       .pipe(takeUntil(this.destroySubject))
       .subscribe(result => {
         this.isLoggedIn = result;
-      })
+      });
+
+    this.authService.userName
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(result => {
+        this.userName = result;
+      });
   }
 
   onLogout(): void {

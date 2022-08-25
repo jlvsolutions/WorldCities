@@ -123,7 +123,7 @@ namespace WorldCitiesAPI.Controllers
             _context.Cities.Add(city);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCity", new { id = city.Id }, city);
+            return CreatedAtAction("PostCity", new { id = city.Id }, city);
         }
 
         // DELETE: api/Cities/5

@@ -51,8 +51,107 @@ namespace WorldCitiesAPI.Controllers
             {
                 Success = true,
                 Message = "Login successful",
-                Token = jwt
+                Token = jwt,
+                UserName = user.UserName
             });
+        }
+
+        [HttpPost("Register")]
+        public async Task<IActionResult> PostUser(RegisterRequest registerRequest)
+        {
+            _logger?.LogInformation("AccountController: PostAccout Name:{Name} Email:{Email}", registerRequest.Name, registerRequest.Email);
+
+            if (_context.Users == null)
+            {
+                _logger?.LogWarning("AccountController: 'ApplicationDbContext.Users' is null");
+                return Problem("Entity set 'ApplicationDbContext.Users' is null.");
+            }
+
+            if (string.IsNullOrEmpty(registerRequest.Email))
+            {
+                var msg = "Email is required.";
+                _logger?.LogInformation("AccountController:  {msg}", msg);
+                return BadRequest(msg);
+            }
+
+            if (string.IsNullOrEmpty(registerRequest.Password))
+            {
+                var msg = "Password is required.";
+                _logger?.LogInformation("AccountController:  {msg}", msg);
+                return BadRequest(msg);
+            }
+
+            if (string.IsNullOrEmpty(registerRequest.Name))
+            {
+                var msg = "User name is required.";
+                _logger?.LogInformation("AccountController:  {msg}", msg);
+                return BadRequest(msg);
+            }
+
+            if (await _userManager.FindByEmailAsync(registerRequest.Email) != null)
+            {
+                _logger?.LogInformation("AccountController: User with Email {Email} already exists.", registerRequest.Email);
+                return BadRequest($"User with Email {registerRequest.Email} already exists.");
+            }
+
+            // setup the default role names
+            string role_RegisteredUser = "RegisteredUser";
+
+            // create a new standard ApplicationUser account
+            var user_User = new ApplicationUser()
+            {
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = registerRequest.Name,
+                Email = registerRequest.Email
+            };
+
+            try
+            {
+                // insert the standard user into the DB
+                await _userManager.CreateAsync(user_User, registerRequest.Password);
+
+                // assign the "RegisteredUser" role
+                await _userManager.AddToRoleAsync(user_User, role_RegisteredUser);
+
+                // confirm the e-mail and remove Lockout
+                user_User.EmailConfirmed = true;             // TODO: Don't forget to implement 2 factor authentication!!!
+                user_User.LockoutEnabled = false;
+
+                await _context.SaveChangesAsync();
+
+                _logger?.LogInformation("AccountController: User with Email {Email} created.", registerRequest.Email);
+                return Ok(new RegisterResult()
+                {
+                    Success = true,
+                    Message = "Registration successful",
+                });
+            } catch (Exception ex)
+            {
+                string msg = ex.Message;
+                _logger?.LogInformation("AccountController: PostUser: Error: {msg}", msg);
+                return BadRequest("Invalid email or password.");
+            }
+
+        }
+
+        [HttpPost]
+        [Route("IsDupeEmail")]
+        public bool IsDupeEmail(UserDTO user)
+        {
+            _logger?.LogInformation("AccountController: IsDupeEmail Email:{email}", user.Email);
+
+            if (user == null)
+                return false;
+
+            if (string.IsNullOrEmpty(user.Email))
+                return false;
+
+            var appUser = _context.Users
+                .Where(e => e.Email == user.Email)
+                .FirstOrDefault();
+
+            return appUser != null;
+
         }
     }
 }

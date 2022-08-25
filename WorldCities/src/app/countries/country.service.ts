@@ -54,6 +54,12 @@ export class CountryService extends BaseService<Country> {
     return this.http.post<Country>(url, item);
   }
 
+  /**
+   * Performs a http post to determine if a Country property already exists in the database.
+   * @param countryId
+   * @param fieldName
+   * @param fieldValue
+   */
   isDupeField(countryId: number, fieldName: string, fieldValue: string): Observable<boolean> {
     var params = new HttpParams()
       .set("countryId", countryId)

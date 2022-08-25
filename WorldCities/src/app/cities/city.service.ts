@@ -79,7 +79,7 @@ export class CityService extends BaseService<City> {
   }
 
   isDupeCity(item: City): Observable<boolean> {
-    var url = this.getUrl("api/Cities/isDupeCity");
+    var url = this.getUrl("api/Cities/IsDupeCity");
     return this.http.post<boolean>(url, item);
   }
 }
