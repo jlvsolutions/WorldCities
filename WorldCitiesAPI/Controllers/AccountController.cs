@@ -52,7 +52,15 @@ namespace WorldCitiesAPI.Controllers
                 Success = true,
                 Message = "Login successful",
                 Token = jwt,
-                Name = user.DisplayName
+                User = new UserDTO()
+                {
+                    Id = user.Id,
+                    Name = user.DisplayName,
+                    Email = user.Email,
+                    EmailConfirmed = user.EmailConfirmed,
+                    LockoutEnabled = user.LockoutEnabled,
+                    Roles = (await _userManager.GetRolesAsync(user)).ToArray()
+                }
             });
         }
 

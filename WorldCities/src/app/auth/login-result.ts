@@ -1,6 +1,7 @@
 import { RegisterResult } from "./register-result";
+import { User } from './user';
 
 export interface LoginResult extends RegisterResult {
-  name?: string;
   token?: string;
+  user: User;
 }

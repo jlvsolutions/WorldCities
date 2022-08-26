@@ -16,6 +16,7 @@ export class AuthService {
 
   private tokenKey: string = "token";  // localStorage token's key
   private nameKey: string = "name"; // localStorage user name's key
+  private adminKey: string = "Administrator"; // localStorage
 
   private _authStatus = new Subject<boolean>();
   public authStatus = this._authStatus.asObservable();
@@ -23,29 +24,40 @@ export class AuthService {
   private _displayName = new Subject<string>();
   public displayName = this._displayName.asObservable();
 
-  constructor(
-    protected http: HttpClient) {
+  private _administrator = new Subject<boolean>();
+  public administrator = this._administrator.asObservable();
+
+  constructor(protected http: HttpClient) {
   }
 
+  /** Returns whether the user has the administrator role via checking local storage. */
+  isAdministrator(): boolean {
+    return localStorage.getItem(this.adminKey) ? true : false;
+  }
+
+  /** Determines authentication status via checking local storage for a token. */
   isAuthenticated(): boolean {
     return this.getToken() != null;
   }
 
+  /** Returns the token from local storage or returns null. */
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
 
+  /** Returns the users' name from local storage or returns an empty string. */
   getUserName(): string {
     var userName = localStorage.getItem(this.nameKey);
     return userName ? userName : "";
   }
 
-  /** Called in app.component ngOnInit()
-   */
+  /** Called in app.component ngOnInit() */
   init(): void {
     if (this.isAuthenticated()) {
       this.setAuthStatus(true);
       this.setName(this.getUserName());
+      if (this.isAdministrator())
+        this.setAdministrator(true);
     }
   }
 
@@ -57,13 +69,18 @@ export class AuthService {
     var url = environment.baseUrl + 'api/Account/Login';
     return this.http.post<LoginResult>(url, item)
       .pipe(tap(loginResult => {
-        if (loginResult.success && loginResult.token && loginResult.name) {
+        if (loginResult.success && loginResult.token && loginResult.user.name) {
 
-          localStorage.setItem(this.nameKey, loginResult.name);
-          this.setName(loginResult.name);
+          localStorage.setItem(this.nameKey, loginResult.user.name);
+          this.setName(loginResult.user.name);
 
           localStorage.setItem(this.tokenKey, loginResult.token);
           this.setAuthStatus(true);
+
+          if (loginResult.user.roles.find(x => x == this.adminKey)) {
+            localStorage.setItem(this.adminKey, this.adminKey);
+            this.setAdministrator(true);
+          }
         }
       }));
   }
@@ -71,17 +88,33 @@ export class AuthService {
   logout() {
     localStorage.removeItem(this.nameKey);
     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.adminKey)
     this.setAuthStatus(false);
     this.setName("");
+    this.setAdministrator(false);
   }
 
-  /** Sets the Subject.next */
+  /**
+   * Sets the authStatus Subject.next
+   * @param isAuthenticated
+   */
   private setAuthStatus(isAuthenticated: boolean): void {
     this._authStatus.next(isAuthenticated);
   }
-
+  /**
+   * Sets the displayName Subject.next
+   * @param name
+   */
   private setName(name: string): void {
     this._displayName.next(name);
+  }
+
+  /**
+   * Sets the administrator Subject.next
+   * @param isAdministrator
+   */
+  private setAdministrator(isAdministrator: boolean): void {
+    this._administrator.next(isAdministrator);
   }
 
   /**

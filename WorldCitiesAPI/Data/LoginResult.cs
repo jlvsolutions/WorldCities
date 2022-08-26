@@ -8,8 +8,8 @@
         public string? Token { get; set; }
 
         /// <summary>
-        /// The Name associated with the user
+        /// User information DTO
         /// </summary>
-        public string? Name { get; set; }
+        public UserDTO? User { get; set; }
     }
 }

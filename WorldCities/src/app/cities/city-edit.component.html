@@ -68,7 +68,7 @@
           {{country.name}}
         </mat-option>
       </mat-select>
-      <mat-error *ngFor="let error of getErrors(form.get('lon')!, 'Country')">
+      <mat-error *ngFor="let error of getErrors(form.get('countryId')!, 'Country')">
         {{error}}
       </mat-error>
     </mat-form-field>

@@ -5,20 +5,30 @@
         home
       </mat-icon>
     </button>
+
     <a mat-flat-button color="primary" [routerLink]="['/cities']">
       Cities
     </a>
+
     <a mat-flat-button color="primary" [routerLink]="['/countries']">
       Countries
     </a>
+
+    <a *ngIf="isAdministrator" mat-flat-button color="primary" [routerLink]="['/users']">
+      Users
+    </a>
+
     <span class="separator"></span>
+
     <div class="username" *ngIf="displayName" color="primary">
       <label class="welcome-label">Welcome,</label>
       <label>{{ displayName }}</label>
     </div>
+
     <a *ngIf="!isLoggedIn" mat-flat-button color="primary" [routerLink]="['/register']">
       Join
     </a>
+
     <a *ngIf="!isLoggedIn" mat-flat-button color="primary" [routerLink]="['/login']">
       Login
     </a>
