@@ -18,6 +18,7 @@ import { LoginComponent } from './auth/login.component';
 import { AuthInterceptor } from './auth/auth.interceptor';
 import { RegisterComponent } from './auth/register.component';
 import { UsersComponent } from './users/users.component';
+import { UserEditComponent } from './users/user-edit.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { UsersComponent } from './users/users.component';
     CountryEditComponent,
     LoginComponent,
     RegisterComponent,
-    UsersComponent
+    UsersComponent,
+    UserEditComponent
   ],
   imports: [
     BrowserModule,

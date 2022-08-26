@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WorldCitiesAPI.Controllers
 {
@@ -14,16 +16,19 @@ namespace WorldCitiesAPI.Controllers
     {
         private readonly ILogger<AccountController>? _logger;
         private readonly ApplicationDbContext _context;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtHandler _jwtHandler;
 
         public AccountController(
-            ApplicationDbContext context, 
-            UserManager<ApplicationUser> userManager, 
-            JwtHandler jwtHandler, 
+            ApplicationDbContext context,
+            RoleManager<IdentityRole> roleManager,
+            UserManager<ApplicationUser> userManager,
+            JwtHandler jwtHandler,
             ILogger<AccountController>? logger)
         {
             _context = context;
+            _roleManager = roleManager;
             _userManager = userManager;
             _jwtHandler = jwtHandler;
             _logger = logger;
@@ -37,7 +42,7 @@ namespace WorldCitiesAPI.Controllers
             {
                 _logger?.LogInformation("AccountController: Login Failed:  Invalid Email or Password. Login: {Email}", loginRequest.Email);
 
-                return Unauthorized(new LoginResult() { 
+                return Unauthorized(new LoginResult() {
                     Success = false,
                     Message = "Invalid Email or Password."
                 });
@@ -162,5 +167,58 @@ namespace WorldCitiesAPI.Controllers
             return appUser != null;
 
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Administrator")]
+        public async Task<ApiResult<UserDTO>> GetUsers(
+            int pageIndex = 0,
+            int pageSize = 10,
+            string? sortColumn = null,
+            string? sortOrder = null,
+            string? filterColumn = null,
+            string? filterQuery = null)
+        {
+            _logger?.LogInformation("Entering GetUsers. PageIndex: {pageIndex}, SortOrder: {sortOrder}", pageIndex, sortOrder);
+
+            // TODO:  Figure out how to get Roles populated.
+            var source = _context.Users.AsNoTracking()
+            .Select(c => new UserDTO()
+            {
+                Id = c.Id,
+                Name = c.DisplayName,
+                Email = c.Email,
+                EmailConfirmed = c.EmailConfirmed,
+                LockoutEnabled = c.LockoutEnabled
+            });
+
+            var apiResult = await ApiResult<UserDTO>.CreateAsync(
+                source,
+                pageIndex,
+                pageSize,
+                sortColumn,
+                sortOrder,
+                filterColumn,
+                filterQuery);
+
+            ApplicationUser appUser = new ApplicationUser();
+            foreach (UserDTO u in apiResult.Data)
+            {
+                appUser.Id = u.Id;
+                u.Roles = (await _userManager.GetRolesAsync(appUser)).ToArray();
+            }
+
+            return apiResult;
+        }
+
+
+        [HttpGet("GetRoles")]
+        public string[] getRoles()
+        {
+            List<string> roles = new List<string>();
+            foreach (var role in _context.Roles)
+                roles.Add(role.Name);
+            return roles.ToArray();
+        }
+
     }
 }

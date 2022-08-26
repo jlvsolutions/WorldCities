@@ -75,12 +75,13 @@ namespace WorldCitiesAPI.Data
                 source = source.OrderBy( string.Format("{0} {1}", sortColumn, sortOrder) );
             }
 
+            // Get the page
             source = source
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize);
 #if DEBUG
             // retrieve the SQL query (for debug purposes)
-            var sql = source.ToParametrizedSql();
+            //var sql = source.ToParametrizedSql();
 #endif
             var data = await source.ToListAsync(); // Note: this executes the SQL query
 

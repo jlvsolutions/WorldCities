@@ -156,7 +156,13 @@ namespace WorldCitiesAPI.Controllers
         [Route("IsDupeCity")]
         public bool IsDupeCity(City city)
         {
-            return _context.Cities.Any(
+            // Safety checks
+            if ((city.Id < int.MinValue) || (city.Id > int.MaxValue)) return false;
+            if ((city.Lat < decimal.MinValue) || (city.Lat > decimal.MaxValue)) return false;
+            if ((city.Lon < decimal.MinValue) || (city.Lon > decimal.MaxValue)) return false;
+            if ((city.CountryId < int.MinValue) || (city.CountryId > int.MaxValue)) return false;
+
+           return _context.Cities.Any(
                 e => e.Name == city.Name
                 && e.Lat == city.Lat // TODO:  Fix exception when value is too large (probably best to use validation)
                 && e.Lon == city.Lon // TODO:  Fix exception when value is too large

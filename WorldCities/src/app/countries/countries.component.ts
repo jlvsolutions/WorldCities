@@ -43,10 +43,9 @@ export class CountriesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     console.log('countries.component OnDestroy()');
-
   }
 
-  // debounce filter text changes
+  // Debounce filter text changes
   onFilterTextChanged(filterText: string) {
     if (this.filterTextChanged.observers.length === 0) {
       this.filterTextChanged

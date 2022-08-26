@@ -9,7 +9,7 @@ import { Country } from '../countries/country';
 @Injectable({
   providedIn: 'root'
 })
-export class CityService extends BaseService<City> {
+export class CityService extends BaseService<City, number> {
 
   constructor(http: HttpClient) {
     super(http);

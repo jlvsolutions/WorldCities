@@ -9,7 +9,7 @@ import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 @Injectable({
   providedIn: 'root'
 })
-export class CountryService extends BaseService<Country> {
+export class CountryService extends BaseService<Country, number> {
 
   constructor(http: HttpClient) {
     super(http)

@@ -1,6 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-//import { HttpClient, HttpParams } from '@angular/common/http';
-//import { environment } from './../../environments/environment';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -44,7 +42,7 @@ export class CitiesComponent implements OnInit {
     this.loadData();
   }
 
-  // debounce filter text changes
+  // Debounce filter text changes
   onFilterTextChanged(filterText: string) {
     if (this.filterTextChanged.observers.length === 0) {
       this.filterTextChanged
