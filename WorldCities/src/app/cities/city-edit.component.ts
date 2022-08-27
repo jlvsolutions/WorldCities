@@ -9,7 +9,6 @@ import { City } from './city';
 import { Country } from './../countries/country';
 import { BaseFormComponent } from './../base-form.component';
 import { CityService } from './city.service';
-import { ApiResult } from '../base.service';
 
 @Component({
   selector: 'app-city-edit',
@@ -113,14 +112,13 @@ export class CityEditComponent
       // EDIT MODE
 
       // fetch the city from the server
-      var url = environment.baseUrl + 'api/Cities/' + this.id;
       this.cityService.get(this.id).subscribe(result => {
         this.city = result;
         this.title = "Edit - " + this.city.name;
 
         // update the form with the city value
         this.form.patchValue(this.city);
-      }, error => console.error(error))
+      }, error => console.error(error));
     }
     else {
       // ADD NEW MODE

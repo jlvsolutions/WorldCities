@@ -53,7 +53,7 @@ namespace WorldCitiesAPI.Controllers
 
         // GET: api/Countries/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Country>> GetCountry(int id)
+        public async Task<ActionResult<Country>> GetCountry(int id) // TODO: Change to CountryDTO...
         {
           if (_context.Countries == null)
           {
@@ -73,7 +73,7 @@ namespace WorldCitiesAPI.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize(Roles = "RegisteredUser")]
-        public async Task<IActionResult> PutCountry(int id, Country country)
+        public async Task<IActionResult> PutCountry(int id, Country country) // TODO: Change to CountryDTO...
         {
             if (id != country.Id)
             {
@@ -105,11 +105,11 @@ namespace WorldCitiesAPI.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize(Roles = "RegisteredUser")]
-        public async Task<ActionResult<Country>> PostCountry(Country country)
+        public async Task<ActionResult<Country>> PostCountry(Country country)// TODO: Change to CountryDTO...
         {
           if (_context.Countries == null)
           {
-              return Problem("Entity set 'ApplicationDbContext.Countries'  is null.");
+              return Problem("Entity set 'ApplicationDbContext.Countries' is null.");
           }
             _context.Countries.Add(country);
             await _context.SaveChangesAsync();

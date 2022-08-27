@@ -62,7 +62,7 @@ namespace WorldCitiesAPI.Controllers
 
         // GET: api/Cities/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<City>> GetCity(int id)
+        public async Task<ActionResult<City>> GetCity(int id) // TODO:  Change to CityDTO
         {
           if (_context.Cities == null)
           {
@@ -114,11 +114,11 @@ namespace WorldCitiesAPI.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize(Roles = "RegisteredUser")]
-        public async Task<ActionResult<City>> PostCity(City city)
+        public async Task<ActionResult<City>> PostCity(City city)  // TODO:  Change to CityDTO, add saftey checks
         {
           if (_context.Cities == null)
           {
-              return Problem("Entity set 'ApplicationDbContext.Cities'  is null.");
+              return Problem("Entity set 'ApplicationDbContext.Cities' is null.");
           }
             _context.Cities.Add(city);
             await _context.SaveChangesAsync();
@@ -154,7 +154,7 @@ namespace WorldCitiesAPI.Controllers
 
         [HttpPost]
         [Route("IsDupeCity")]
-        public bool IsDupeCity(City city)
+        public bool IsDupeCity(City city)  // TODO:  Change to CityDTO...
         {
             // Safety checks
             if ((city.Id < int.MinValue) || (city.Id > int.MaxValue)) return false;
@@ -169,6 +169,6 @@ namespace WorldCitiesAPI.Controllers
                 && e.CountryId == city.CountryId
                 && e.Id != city.Id
             );
-        }
+        }  
     }
 }

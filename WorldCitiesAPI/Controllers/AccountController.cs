@@ -210,14 +210,134 @@ namespace WorldCitiesAPI.Controllers
             return apiResult;
         }
 
+        // GET: api/Users/5
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<ActionResult<UserDTO>> GetUser(string id)
+        {
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            
+            UserDTO resultCity = new UserDTO();
+
+            resultCity.Id = user.Id;
+            resultCity.Name = user.DisplayName;
+            resultCity.Email = user.Email;
+            resultCity.EmailConfirmed = user.EmailConfirmed;
+            resultCity.LockoutEnabled = user.LockoutEnabled;
+            resultCity.Roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            return resultCity;
+        }
+
 
         [HttpGet("GetRoles")]
-        public string[] getRoles()
+        public string[] GetRoles()
         {
             List<string> roles = new List<string>();
             foreach (var role in _context.Roles)
                 roles.Add(role.Name);
             return roles.ToArray();
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> PutUser(string id, UserDTO user)
+        {
+            ApplicationUser appUser;
+
+            _logger?.LogInformation("AccountController: PutUser:  Updating user: {Email}", user.Email);
+
+            if (string.IsNullOrEmpty(id) || user == null || !id.Equals(user.Id))
+            {
+                return BadRequest();
+            }
+
+            appUser = await _userManager.FindByIdAsync(id);
+            if (appUser == null)
+            {
+                return BadRequest();
+            }
+
+            // Check for Email/UserName conflict
+            ApplicationUser appUserByName = await _userManager.FindByNameAsync(user.Email);
+            if (appUserByName != null && appUserByName.Id != appUser.Id)
+            {
+                return BadRequest("Email/UserName already exists.");
+            }
+
+            if (user.Email != appUser.UserName)
+                appUser.SecurityStamp = Guid.NewGuid().ToString();
+            appUser.DisplayName = user.Name;
+            appUser.UserName = user.Email;
+            appUser.Email = user.Email;
+            appUser.EmailConfirmed = user.EmailConfirmed;
+            appUser.LockoutEnabled = user.LockoutEnabled;
+            
+            // User
+            try
+            {
+                // Perform the user update.
+                var updateResult = await _userManager.UpdateAsync(appUser);
+                if (!updateResult.Succeeded)
+                {
+                    _logger?.LogError("AccountController: PutUser:  id:{id}, name:{Name} email: {Email} message: {", id, user.Name, user.Email);
+                    foreach (var error in updateResult.Errors)
+                    {
+                        _logger?.LogError("AccountController: PutUser: ErrorCode: {Code} Description: {Description}",
+                            error.Code, error.Description);
+                        return Problem("Unable to update user");
+                    }
+                }
+
+                // Save the user update
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "AccountController: PutUser:  id:{id}, name:{Name} email: {Email}", id, user.Name, user.Email);
+                return Problem("Unable to update user");
+            }
+
+            // Roles
+            try
+            {
+                // Feature:  If a new role is found in the updated users' Roles,
+                // go ahead and add that role in the database.
+                // TODO: Add flag that enables/disables this logic.
+                if (user.Roles != null && user.Roles.Length > 0)
+                    foreach (string role in user.Roles)
+                    {
+                        if ((await _roleManager.FindByNameAsync(role)) == null)
+                            await _roleManager.CreateAsync(new IdentityRole(role));
+                        if (!(await _userManager.IsInRoleAsync(appUser, role)))
+                            await _userManager.AddToRoleAsync(new ApplicationUser() { Id = user.Id }, role);
+                    }
+
+                // Check for any roles that were removed
+                var currentRoles = await _userManager.GetRolesAsync(new ApplicationUser() { Id = user.Id });
+                if (user.Roles != null)
+                    foreach (string role in currentRoles)
+                        if (!user.Roles.Contains(role))
+                            await _userManager.RemoveFromRoleAsync(new ApplicationUser() { Id = user.Id }, role);
+
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "AccountController: PutUser:  id:{id}, name:{Name} email: {Email}", id, user.Name, user.Email);
+                return Problem("Unable to update roles for user");
+            }
+
+            _context.SaveChanges();
+            _logger?.LogInformation("AccountController: PutUser:  Update successful: {Email}", user.Email);
+            return Ok("User updated.");
         }
 
     }

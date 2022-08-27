@@ -54,12 +54,18 @@ export class UserService extends BaseService<User, string> {
     return this.http.post<User>(url, item);
   }
 
-  getRoles(): string[] {
-    return null!;
+  getRoles(): Observable<string[]> {
+    var url = this.getUrl("api/Account/GetRoles");
+    return this.http.get<string[]>(url);
   }
 
   isDupeEmail(item: User): Observable<boolean> {
     var url = this.getUrl("api/Account/IsDupeEmail");
     return this.http.post<boolean>(url, item);
+  }
+
+  isDupeEmailValue(email: string): Observable<boolean> {
+    var url = this.getUrl("api/Account/IsDupeEmailValue");
+    return this.http.post<boolean>(url, email);
   }
 }

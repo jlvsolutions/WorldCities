@@ -1,1 +1,67 @@
-<p>user-edit works!</p>
+<div class="user-edit">
+  <h1>{{title}}</h1>
+  <p *ngIf="this.id && !user"><em>Loading...</em></p>
+
+  <p>
+    <mat-error *ngIf="form.invalid && form.hasError('isDupeEmail')">
+      <strong>ERROR</strong>
+      A user with the same <i>email</i> already exists.
+    </mat-error>
+  </p>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+    <!-- Name -->
+    <mat-form-field>
+      <mat-label>Name:</mat-label>
+      <input matInput formControlName="name" required placeholder="Type a name">
+      <mat-error *ngFor="let error of getErrors(form.get('name')!, 'User name')">
+        {{error}}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field>
+      <mat-label>Email:</mat-label>
+      <input matInput formControlName="email" required placeholder="Type an email">
+      <mat-error *ngFor="let error of getErrors(form.get('email')!, 'Email address')">
+        {{error}}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Roles -->
+    <mat-form-field>
+      <mat-label>Roles:</mat-label>
+      <input matInput formControlName="roles" required placeholder="Type in role(s)">
+      <mat-error *ngFor="let error of getErrors(form.get('roles')!, 'Roles')">
+        {{error}}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Email Confirmed -->
+    <mat-form-field>
+      <mat-label>Email Confirmed:</mat-label>
+      <input matInput formControlName="emailConfirmed" required placeholder="Type in true or false">
+      <mat-error *ngFor="let error of getErrors(form.get('emailConfirmed')!, 'Email Confirmed')">
+        {{error}}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Lockout Enabled -->
+    <mat-form-field>
+      <mat-label>Lockout Enabled:</mat-label>
+      <input matInput formControlName="lockoutEnabled" required placeholder="Type in true or false">
+      <mat-error *ngFor="let error of getErrors(form.get('lockoutEnabled')!, 'Lockout Enabled')">
+        {{error}}
+      </mat-error>
+    </mat-form-field>
+
+    <div>
+      <!--<button mat-flat-button color="primary" (click)="onSubmit()">Save</button> Can be this way if using say, a div -->
+      <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">{{ this.id ? "Save" : "Create" }}</button>
+      <button mat-flat-button color="secondary" [routerLink]="['/users']">Cancel</button>
+    </div>
+
+
+  </form>
+</div>

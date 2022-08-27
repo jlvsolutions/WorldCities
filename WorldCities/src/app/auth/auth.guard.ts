@@ -15,7 +15,8 @@ export class AuthGaurd implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): 
     Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-    if (route.component?.name == 'UsersComponent') {
+    if (route.component?.name == 'UsersComponent' ||
+      route.component?.name == 'UserEditComponent') {
       if (this.authService.isAdministrator()) {
         return true;
       }
