@@ -4,8 +4,8 @@
 
 <p *ngIf="!users"><em>Loading...</em></p>
 
-<button mat-flat-button color="primary" class="btn-add" [routerLink]="['/user']">
-  Add a new City
+<button mat-flat-button color="primary" class="btn-add" *ngIf="users" [routerLink]="['/user']">
+  Add a new User
 </button>
 
 <!-- the hidden is not working... hmm.. added the *ngIf="cities" -->

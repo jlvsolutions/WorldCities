@@ -18,7 +18,6 @@ import { AuthService } from './../auth/auth.service';
 export class UsersComponent implements OnInit {
   public displayedColumns: string[] = ['id', 'name', 'email', 'roles', 'emailConfirmed', 'lockoutEnabled'];
   public users!: MatTableDataSource<User>;
-  isLoggedIn: boolean = false;
 
   defaultPageIndex: number = 0;
   defaultPageSize: number = 10;
@@ -37,6 +36,7 @@ export class UsersComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log("Listing users.");
     this.loadData();
   }
 

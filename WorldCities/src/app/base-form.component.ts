@@ -20,6 +20,7 @@ export abstract class BaseFormComponent {
     Object.keys(control.errors || {}).forEach((key) => {
       switch (key) {
         case 'required':
+        case 'isPasswordRequired':
           errors.push(`${displayName} ${customMessages?.[key] ?? "is required."}`);
           break;
         case 'pattern':

@@ -56,11 +56,24 @@
       </mat-error>
     </mat-form-field>
 
-    <div>
-      <!--<button mat-flat-button color="primary" (click)="onSubmit()">Save</button> Can be this way if using say, a div -->
-      <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">{{ this.id ? "Save" : "Create" }}</button>
-      <button mat-flat-button color="secondary" [routerLink]="['/users']">Cancel</button>
-    </div>
+    <!-- Set Password -->
+    <mat-checkbox matInput formControlName="setPassword" (change)="onCheckChanged($event)">Set new password</mat-checkbox>
+
+    <!-- Password -->
+    <mat-form-field *ngIf="setPasswordChecked">
+        <mat-label>Password:</mat-label>
+        <input matInput formControlName="password" required placeholder="Enter a new password">
+        <mat-error *ngFor="let error of getErrors(form.get('password')!, 'New Password',
+                   {'isPasswordRequired' : 'is required when Set new password is checked'})">
+          {{error}}
+        </mat-error>
+      </mat-form-field>
+
+      <div>
+        <!--<button mat-flat-button color="primary" (click)="onSubmit()">Save</button> Can be this way if using say, a div -->
+        <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">{{ this.id ? "Save" : "Create" }}</button>
+        <button mat-flat-button color="secondary" [routerLink]="['/users']">Cancel</button>
+      </div>
 
 
   </form>

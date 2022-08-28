@@ -7,5 +7,6 @@ export interface User {
   email: string;
   emailConfirmed: boolean;
   lockoutEnabled: boolean;
+  newPassword: string;
   roles: string[];
 }

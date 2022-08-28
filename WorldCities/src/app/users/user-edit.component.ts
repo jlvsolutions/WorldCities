@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
-import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, AsyncValidatorFn, AsyncValidator } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, AsyncValidatorFn, ValidatorFn, FormControlOptions } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
@@ -8,6 +8,9 @@ import { environment } from './../../environments/environment';
 import { User } from './../auth/user';
 import { BaseFormComponent } from '../base-form.component';
 import { UserService } from './user.service';
+import { AuthService } from './../auth/auth.service';
+import { validateHorizontalPosition } from '@angular/cdk/overlay';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-user-edit',
@@ -35,17 +38,18 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
    */
   roles?: Observable<string[]>;
 
+  setPasswordChecked?: boolean = false;
+
   /** One method of unsubscribing to prevent memory leaks.
    */
   private destroySubject = new Subject();
-
-  trueFalseValues: string[] = ["True", "False"];
 
   constructor(
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private userService: UserService) {
+    private userService: UserService,
+    private authService: AuthService) {
 
     super();
   }
@@ -53,14 +57,27 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
   ngOnInit(): void {
     this.form = new FormGroup({
       name: new FormControl('', Validators.required),
-      email: new FormControl('', Validators.required, ),
+      email: new FormControl('', [Validators.required, Validators.email], this.isDupeEmail()),
       emailConfirmed: new FormControl('', Validators.required),
       lockoutEnabled: new FormControl('', Validators.required),
+      setPassword: new FormControl(),
+      password: new FormControl({ value: "", disabled: true }),
       roles: new FormControl('', Validators.required)
 
     });
 
+    var checkboxcontrol = this.form.get('setPassword');
+
     this.loadData();
+  }
+
+  onCheckChanged(event: MatCheckboxChange) {
+    console.log("onCheckChanged():  Checkbox checked:" + event.checked);
+    this.setPasswordChecked = event.checked;
+    if (this.setPasswordChecked)
+      this.form.get('password')?.enable()
+    else
+      this.form.get('password')?.disable();
   }
 
   loadData() {
@@ -80,6 +97,7 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
         .subscribe(result => {
           this.user = result;
           this.title = "Edit - " + this.user.name;
+          console.log("Loaded data for user: " + this.user.email);
 
           // Update the form with the user values.
           this.form.patchValue(this.user);
@@ -89,6 +107,8 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
       // ADD Mode
       this.title = "Create a new user";
       console.log("Preparing to add a new user.");
+
+      // TODO:  Add logic to prep the form controls, i.e. setPasswordChecked and password.
     }
   }
 
@@ -98,18 +118,24 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
 
   onSubmit() {
     var user = (this.id) ? this.user : <User>{};
+
     console.log("user-edit onSubmit: " + this.user?.name);
+
     if (user) {
       user.name = this.form.controls['name'].value;
       user.email = this.form.controls['email'].value;
-      user.roles = this.form.controls['roles'].value.toString().split(",");
       user.emailConfirmed = this.form.controls['emailConfirmed'].value;
       user.lockoutEnabled = this.form.controls['lockoutEnabled'].value;
+      user.roles = this.form.controls['roles'].value.toString().split(",");
+      user.newPassword = this.form.controls['password'].value;
 
       if (this.id) {
         // EDIT mode
-        this.userService
-          .put(user)
+
+        if (!this.setPasswordChecked)
+          user.newPassword = '';
+
+        this.userService.put(user)
           .subscribe(result => {
 
             console.log("User " + user!.name + " has been updated.");
@@ -120,8 +146,7 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
       }
       else {
         // ADD NEW mode
-        this.userService
-          .post(user)
+        this.userService.post(user)
           .subscribe(result => {
 
             console.log("User " + result.name + " has been created.");
@@ -133,14 +158,34 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
     }
   }
 
-  isDupeEmail(emailValue: string): AsyncValidatorFn {
+  isDupeEmail(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
 
-      return this.userService.isDupeEmailValue(emailValue)
+      var user = <User>{};
+      user.id = this.id ?? '';
+      user.email = this.form.controls['email'].value;
+
+      return this.authService.isDupeEmail(user)
         .pipe(map(result => {
+
+          console.log("authServie.isDupeEmail() result:  " + result);
           return (result ? { isDupeField: true } : null);
         }));
     }
   }
 
+  /*
+  isPasswordRequired(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: boolean } | null => {
+
+      if (!(this.setPasswordChecked))
+        return null;
+
+      if (control.value == undefined || control.value == null || control.value == '')
+        return { isPasswordRequired: true };
+
+      return null;
+    }
+  }
+  */
 }

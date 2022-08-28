@@ -27,12 +27,13 @@ export class LoginComponent
 
   ngOnInit(): void {
     this.form = new FormGroup({
-      email: new FormControl('', Validators.required),
+      email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', Validators.required)
     });
   }
 
   onSubmit() {
+    console.log("Logging in...");
     var loginRequest = <LoginRequest>{};
     loginRequest.email = this.form.controls['email'].value;
     loginRequest.password = this.form.controls['password'].value;

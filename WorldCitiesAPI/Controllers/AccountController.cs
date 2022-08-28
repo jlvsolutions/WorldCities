@@ -161,7 +161,8 @@ namespace WorldCitiesAPI.Controllers
                 return false;
 
             var appUser = _context.Users
-                .Where(e => e.UserName == user.Email)
+                .Where(e => (e.UserName == user.Email) 
+                         && (e.Id != user.Id))
                 .FirstOrDefault();
 
             return appUser != null;
@@ -297,8 +298,6 @@ namespace WorldCitiesAPI.Controllers
                     }
                 }
 
-                // Save the user update
-                _context.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -335,9 +334,40 @@ namespace WorldCitiesAPI.Controllers
                 return Problem("Unable to update roles for user");
             }
 
-            _context.SaveChanges();
-            _logger?.LogInformation("AccountController: PutUser:  Update successful: {Email}", user.Email);
-            return Ok("User updated.");
+            try
+            {
+
+                // Password
+                if (!string.IsNullOrEmpty(user.NewPassword))
+                {
+                    _logger?.LogInformation("AccountController: PutUser: Changing password for {email}", appUser.Email);
+                    await _userManager.RemovePasswordAsync(appUser);
+                    await _userManager.AddPasswordAsync(appUser, user.NewPassword);
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger?.LogError(ex, "AccountController: PutUser:  id:{id}, name:{Name} email: {Email}", id, user.Name, user.Email);
+                return Problem("Unable to update password for user");
+            }
+
+            //Save Changes
+            try
+            {
+
+                _context.SaveChanges();
+                _logger?.LogInformation("AccountController: PutUser:  Update successful: {Email}", user.Email);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "AccountController: PutUser:  id:{id}, name:{Name} email: {Email}", id, user.Name, user.Email);
+                return Problem("Unable to save changes for user");
+            }
+            return Ok(new UserResult()
+            {
+                Success = true,
+                Message = "Update successful",
+            });
         }
 
     }

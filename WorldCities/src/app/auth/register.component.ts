@@ -33,7 +33,7 @@ export class RegisterComponent
   ngOnInit(): void {
     this.form = new FormGroup({
       name: new FormControl('', Validators.required ),
-      email: new FormControl('', Validators.required, this.isDupeEmail()),
+      email: new FormControl('', [Validators.required, Validators.email], this.isDupeEmail()),
       password: new FormControl('', Validators.required)
     });
   }
@@ -66,13 +66,22 @@ export class RegisterComponent
   }
 
   isDupeEmail(): AsyncValidatorFn {
+
+    console.log("RegisterComponent: isDupeEmail()");
+
     return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
+
       var user = <User>{};
       user.email = this.form.controls['email'].value;
+
       return this.authService.isDupeEmail(user)
         .pipe(map(result => {
+
+          console.log("authServie.isDupeEmail() result:  " + result);
           return (result ? { isDupeEmail: true } : null);
+
         }));
+
     }
   }
 

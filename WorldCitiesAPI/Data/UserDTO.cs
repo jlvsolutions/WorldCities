@@ -31,6 +31,11 @@
         public bool LockoutEnabled { get; set; }
 
         /// <summary>
+        /// For Administrator to set a new password.
+        /// </summary>
+        public string NewPassword { get; set; } = null!;
+
+        /// <summary>
         /// List of roles this user has.
         /// </summary>
         public string[] Roles { get; set; } = null!;

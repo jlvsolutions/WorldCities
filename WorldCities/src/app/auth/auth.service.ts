@@ -128,6 +128,15 @@ export class AuthService {
 
   isDupeEmail(user: User): Observable<boolean> {
     var url = this.getUrl("api/Account/IsDupeEmail");
+
+    // In my debugging, I discovered the API controller
+    // REQIRES the id, email, name and roles fields to be included in the call.
+    user.id = user.id ?? "";
+    user.email = user.email ?? "";
+    user.name = user.name ?? "";
+    user.newPassword = user.newPassword ?? "";
+    user.roles = user.roles ?? [""];
+
     return this.http.post<boolean>(url, user);
   }
 

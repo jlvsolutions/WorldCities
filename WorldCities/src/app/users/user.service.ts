@@ -4,6 +4,7 @@ import { BaseService, ApiResult } from '../base.service';
 import { Observable } from 'rxjs';
 
 import { User } from './../auth/user';
+import { UserResult } from './user-result';
 
 @Injectable({
   providedIn: 'root'
@@ -43,9 +44,17 @@ export class UserService extends BaseService<User, string> {
     return this.http.get<User>(url);
   }
 
-  put(item: User): Observable<User> {
-    var url = this.getUrl("api/Account/" + item.id);
-    return this.http.put<User>(url, item);
+  put(user: User): Observable<User> {
+    // In my debugging, I discovered the API controller
+    // REQIRES the id, email, name and roles fields to be included in the call.
+    user.id = user.id ?? "";
+    user.email = user.email ?? "";
+    user.name = user.name ?? "";
+    user.newPassword = user.newPassword ?? "";
+    user.roles = user.roles ?? [""];
+
+    var url = this.getUrl("api/Account/" + user.id);
+    return this.http.put<User>(url, user);
 
   }
 
@@ -57,15 +66,5 @@ export class UserService extends BaseService<User, string> {
   getRoles(): Observable<string[]> {
     var url = this.getUrl("api/Account/GetRoles");
     return this.http.get<string[]>(url);
-  }
-
-  isDupeEmail(item: User): Observable<boolean> {
-    var url = this.getUrl("api/Account/IsDupeEmail");
-    return this.http.post<boolean>(url, item);
-  }
-
-  isDupeEmailValue(email: string): Observable<boolean> {
-    var url = this.getUrl("api/Account/IsDupeEmailValue");
-    return this.http.post<boolean>(url, email);
   }
 }
