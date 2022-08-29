@@ -155,7 +155,7 @@ export class CityEditComponent
           .put(city)
           .subscribe(result => {
 
-            console.log("City" + city!.id + "has been updated.");
+            console.log("City" + city!.id + ", " + city?.name + " has been updated.");
 
             // go back to cities view
             this.router.navigate(['/cities']);
@@ -167,7 +167,7 @@ export class CityEditComponent
           .post(city)
           .subscribe(result => {
 
-            console.log("City " + result.id + " has been created.");
+            console.log("City " + result.id + ", " + city?.name + " has been created.");
 
             // go back to cities view
             this.router.navigate(['/cities']);

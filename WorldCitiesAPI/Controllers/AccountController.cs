@@ -70,9 +70,9 @@ namespace WorldCitiesAPI.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> PostUser(RegisterRequest registerRequest)
+        public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
-            _logger?.LogInformation("AccountController: PostAccout Name:{Name} Email:{Email}", registerRequest.Name, registerRequest.Email);
+            _logger?.LogInformation("AccountController: Register Name:{Name} Email:{Email}", registerRequest.Name, registerRequest.Email);
 
             if (_context.Users == null)
             {
@@ -111,7 +111,7 @@ namespace WorldCitiesAPI.Controllers
             string role_RegisteredUser = "RegisteredUser";
 
             // create a new standard ApplicationUser account
-            var user_User = new ApplicationUser()
+            var appUser = new ApplicationUser()
             {
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerRequest.Email,
@@ -121,29 +121,128 @@ namespace WorldCitiesAPI.Controllers
 
             try
             {
-                // insert the standard user into the DB
-                await _userManager.CreateAsync(user_User, registerRequest.Password);
+                // insert the regular RegisteredUser into the DB
+                await _userManager.CreateAsync(appUser, registerRequest.Password);
 
                 // assign the "RegisteredUser" role
-                await _userManager.AddToRoleAsync(user_User, role_RegisteredUser);
+                await _userManager.AddToRoleAsync(appUser, role_RegisteredUser);
 
                 // confirm the e-mail and remove Lockout
-                user_User.EmailConfirmed = true;             // TODO: Don't forget to implement 2 factor authentication!!!
-                user_User.LockoutEnabled = false;
+                appUser.EmailConfirmed = true;             // TODO: Don't forget to implement 2 factor authentication!!!
+                appUser.LockoutEnabled = false;
 
                 await _context.SaveChangesAsync();
 
-                _logger?.LogInformation("AccountController: User with Email {Email} created.", registerRequest.Email);
+                string msg = $"User {appUser.DisplayName}, {appUser.Email} created successfully";
+                _logger?.LogInformation("AccountController: Register: {msg}", msg);
+
                 return Ok(new RegisterResult()
                 {
                     Success = true,
-                    Message = "Registration successful",
+                    Message = msg
                 });
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 string msg = ex.Message;
                 _logger?.LogInformation("AccountController: PostUser: Error: {msg}", msg);
                 return BadRequest("Invalid email or password.");
+            }
+
+        }
+
+        [HttpPost()]
+        //[Authorize(Roles = "Administrator")]
+        //[ValidateAntiForgeryToken] check this out later.
+        public async Task<IActionResult> PostUser(UserDTO user)
+        {
+
+            // setup the default role name
+            string role_RegisteredUser = "RegisteredUser";
+
+            _logger?.LogInformation("AccountController: PostUser Name:{Name} Email:{Email}", user.Name, user.Email);
+
+            if (_context.Users == null)
+            {
+                _logger?.LogWarning("AccountController: 'ApplicationDbContext.Users' is null");
+                return Problem("Entity set 'ApplicationDbContext.Users' is null.");
+            }
+
+            if (string.IsNullOrEmpty(user.Email))
+            {
+                var msg = "Email is required.";
+                _logger?.LogInformation("AccountController:  {msg}", msg);
+                return BadRequest(msg);
+            }
+
+            if (string.IsNullOrEmpty(user.NewPassword))
+            {
+                var msg = "Password is required.";
+                _logger?.LogInformation("AccountController:  {msg}", msg);
+                return BadRequest(msg);
+            }
+
+            if (string.IsNullOrEmpty(user.Name))
+            {
+                var msg = "User name is required.";
+                _logger?.LogInformation("AccountController:  {msg}", msg);
+                return BadRequest(msg);
+            }
+
+            if (user.Roles == null || user.Roles.Length == 0)
+            {
+                user.Roles = new string[] { role_RegisteredUser };
+            }
+
+            if (await _userManager.FindByNameAsync(user.Email) != null)
+            {
+                _logger?.LogInformation("AccountController: User with Email {Email} already exists.", user.Email);
+                return BadRequest($"User with Email {user.Email} already exists.");
+            }
+
+            // create a new standard ApplicationUser account
+            var appUser = new ApplicationUser()
+            {
+                UserName = user.Email,
+                Email = user.Email,
+                DisplayName = user.Name,
+                EmailConfirmed = user.EmailConfirmed,             // TODO: Don't forget to implement 2 factor authentication!!!
+                LockoutEnabled = user.LockoutEnabled
+             };
+
+            try
+            {
+                // insert the application user into the DB
+                await _userManager.CreateAsync(appUser, user.NewPassword);
+                await _context.SaveChangesAsync();
+
+                // Feature:  If a new role is found in the updated users' Roles,
+                // go ahead and add that role in the database.
+                // TODO: Add flag that enables/disables this logic.
+                foreach (string role in user.Roles)
+                {
+                    if ((await _roleManager.FindByNameAsync(role)) == null)
+                        await _roleManager.CreateAsync(new IdentityRole(role));
+                    if (!(await _userManager.IsInRoleAsync(appUser, role)))
+                        await _userManager.AddToRoleAsync(appUser, role);
+                }
+
+                await _context.SaveChangesAsync();
+
+                string msg = $"User {appUser.DisplayName}, {appUser.Email} created successfully";
+                _logger?.LogInformation("AccountController: PostUser: {msg}", msg);
+
+                return Ok(new RegisterResult()
+                {
+                    Success = true,
+                    Message = msg
+                });
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+                _logger?.LogInformation("AccountController: PostUser: Error: {msg}", msg);
+                return BadRequest("Error adding to/creating user roles."); // this text is wrong...
             }
 
         }

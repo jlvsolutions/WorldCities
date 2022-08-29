@@ -64,7 +64,8 @@ namespace WorldCitiesAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<City>> GetCity(int id) // TODO:  Change to CityDTO
         {
-          if (_context.Cities == null)
+            _logger?.LogInformation("Entering GetCity. Id: {id}", id);
+            if (_context.Cities == null)
           {
               return NotFound();
           }

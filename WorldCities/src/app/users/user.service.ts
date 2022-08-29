@@ -58,9 +58,11 @@ export class UserService extends BaseService<User, string> {
 
   }
 
-  post(item: User): Observable<User> {
+  post(user: User): Observable<User> {
+    // Make sure the Id is not null or undefined;
+    user.id = user.id ?? "";
     var url = this.getUrl("api/Account/");
-    return this.http.post<User>(url, item);
+    return this.http.post<User>(url, user);
   }
 
   getRoles(): Observable<string[]> {

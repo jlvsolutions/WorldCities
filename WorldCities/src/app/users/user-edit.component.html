@@ -1,5 +1,6 @@
 <div class="user-edit">
   <h1>{{title}}</h1>
+  User ID: {{user?.id}}
   <p *ngIf="this.id && !user"><em>Loading...</em></p>
 
   <p>
@@ -57,9 +58,11 @@
     </mat-form-field>
 
     <!-- Set Password -->
-    <mat-checkbox matInput formControlName="setPassword" (change)="onCheckChanged($event)">Set new password</mat-checkbox>
+    <div >
+      <mat-checkbox *ngIf="this.id" matInput formControlName="setPassword" (change)="onCheckChanged($event)">Set new password</mat-checkbox>
+    </div>
 
-    <!-- Password -->
+  <!-- Password -->
     <mat-form-field *ngIf="setPasswordChecked">
         <mat-label>Password:</mat-label>
         <input matInput formControlName="password" required placeholder="Enter a new password">

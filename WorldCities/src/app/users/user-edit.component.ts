@@ -39,6 +39,7 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
   roles?: Observable<string[]>;
 
   setPasswordChecked?: boolean = false;
+  setPasswordCheckboxHidden?: string; // shows if undefined.  hides if empty string or 'hidden'
 
   /** One method of unsubscribing to prevent memory leaks.
    */
@@ -66,8 +67,6 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
 
     });
 
-    var checkboxcontrol = this.form.get('setPassword');
-
     this.loadData();
   }
 
@@ -89,6 +88,7 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
     this.id = this.activatedRoute.snapshot.paramMap.get('id');
     if (this.id) {
       // EDIT Mode
+      this.setPasswordCheckboxHidden = "false";
       console.log("Loading user data for edit");
 
       // Get the user
@@ -106,9 +106,15 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
     else {
       // ADD Mode
       this.title = "Create a new user";
+      this.setPasswordCheckboxHidden = "hidden";
       console.log("Preparing to add a new user.");
 
       // TODO:  Add logic to prep the form controls, i.e. setPasswordChecked and password.
+      this.setPasswordChecked = true;
+      this.form.controls['setPassword'].setValue(true);
+      this.form.controls['setPassword'].disable();
+      this.form.controls['password'].enable();
+
     }
   }
 
@@ -124,8 +130,8 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
     if (user) {
       user.name = this.form.controls['name'].value;
       user.email = this.form.controls['email'].value;
-      user.emailConfirmed = this.form.controls['emailConfirmed'].value;
-      user.lockoutEnabled = this.form.controls['lockoutEnabled'].value;
+      user.emailConfirmed = this.form.controls['emailConfirmed'].value.toString().toLowerCase() === 'true';
+      user.lockoutEnabled = this.form.controls['lockoutEnabled'].value.toString().toLowerCase() === 'true';
       user.roles = this.form.controls['roles'].value.toString().split(",");
       user.newPassword = this.form.controls['password'].value;
 
@@ -149,7 +155,7 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
         this.userService.post(user)
           .subscribe(result => {
 
-            console.log("User " + result.name + " has been created.");
+            console.log("User " + user?.name + " has been created.");
 
             // go back to cities view
             this.router.navigate(['/users']);
