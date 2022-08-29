@@ -18,6 +18,7 @@ export abstract class BaseService<TDto, TId> {
   abstract get(id: TId): Observable<TDto>;
   abstract put(item: TDto): Observable<TDto>;
   abstract post(item: TDto): Observable<TDto>;
+  abstract delete(item: TDto): Observable<DeleteResult>;
 
   protected getUrl(url: string) {
     return environment.baseUrl + url;
@@ -34,6 +35,11 @@ export interface ApiResult<T> {
   sortOrder: string;
   filterColumn: string;
   filterQuery: string;
+}
+
+export interface DeleteResult {
+  success: boolean;
+  message: string;
 }
 
 

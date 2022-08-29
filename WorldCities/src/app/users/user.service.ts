@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BaseService, ApiResult } from '../base.service';
+import { BaseService, ApiResult, DeleteResult } from '../base.service';
 import { Observable } from 'rxjs';
 
 import { User } from './../auth/user';
@@ -68,5 +68,16 @@ export class UserService extends BaseService<User, string> {
   getRoles(): Observable<string[]> {
     var url = this.getUrl("api/Account/GetRoles");
     return this.http.get<string[]>(url);
+  }
+
+  delete(user: User): Observable<DeleteResult> {
+    var url = this.getUrl("api/Account/Delete");
+    user.id = user.id ?? "";
+    user.email = user.email ?? "";
+    user.name = user.name ?? "";
+    user.newPassword = user.newPassword ?? "";
+    user.roles = user.roles ?? [""];
+    return this.http.post<DeleteResult>(url, user);
+
   }
 }

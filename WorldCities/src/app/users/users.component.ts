@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -16,7 +17,7 @@ import { AuthService } from './../auth/auth.service';
   styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit {
-  public displayedColumns: string[] = ['id', 'name', 'email', 'roles', 'emailConfirmed', 'lockoutEnabled'];
+  public displayedColumns: string[] = ['delete', 'edit', 'name', 'email', 'roles', 'emailConfirmed', 'lockoutEnabled'];
   public users!: MatTableDataSource<User>;
 
   defaultPageIndex: number = 0;
@@ -32,12 +33,39 @@ export class UsersComponent implements OnInit {
 
   filterTextChanged: Subject<string> = new Subject<string>();
 
-  constructor(private userService: UserService, private authService: AuthService) {
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+    private router: Router) {
   }
 
   ngOnInit() {
-    console.log("Listing users.");
+    console.log("Listing users...");
     this.loadData();
+  }
+
+  /**
+   * Invoked when the user clicks on a delete button
+   * in the list of users.  Shows a confirmation dialog.
+   * @param user
+   */
+  onDeleteClicked(user: User): void {
+    console.log(`User clicked Delete on ${user.name}, ${user.email}...`);
+
+    if (!confirm(`Are you sure you want to delete ${user.name}?`)) {
+      console.log(`User Declined to delete ${user.name}.`);
+      return;
+    }
+    console.log(`User Confirmed to delete ${user.name}, ${user.email}.`);
+
+    this.userService.delete(user)
+      .subscribe(result => {
+
+        console.log(result.message);
+
+        // Reload the users data.
+        this.ngOnInit();
+      }, error => console.error(error));
   }
 
   // Debounce filter text changes

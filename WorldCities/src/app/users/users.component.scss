@@ -10,3 +10,24 @@ table.mat-table {
 .btn-add {
   float: right;
 }
+
+td.mat-cell {
+    button.mat-flat-button {
+        line-height: 25px;
+        min-width: 20px;
+        padding: 0px 10px;
+    }
+}
+/*
+.btn-delete {
+    line-height: 25px;
+    min-width: 40px;
+    padding: 0px 10px;
+}
+
+.btn-edit {
+  line-height: 25px;
+  min-width: 20px;
+  padding: 0px 10px;
+}
+*/

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BaseService, ApiResult } from '../base.service';
+import { BaseService, ApiResult, DeleteResult } from '../base.service';
 import { Observable } from 'rxjs';
 
 import { Country } from './country';
@@ -52,6 +52,11 @@ export class CountryService extends BaseService<Country, number> {
   post(item: Country): Observable<Country> {
     var url = this.getUrl("api/Countries/");
     return this.http.post<Country>(url, item);
+  }
+
+  delete(item: Country): Observable<DeleteResult> {
+    var url = this.getUrl("api/Countries/Delete");
+    return this.http.post<DeleteResult>(url, item);
   }
 
   /**

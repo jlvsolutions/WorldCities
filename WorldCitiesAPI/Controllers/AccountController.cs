@@ -152,7 +152,7 @@ namespace WorldCitiesAPI.Controllers
         }
 
         [HttpPost()]
-        //[Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         //[ValidateAntiForgeryToken] check this out later.
         public async Task<IActionResult> PostUser(UserDTO user)
         {
@@ -433,10 +433,10 @@ namespace WorldCitiesAPI.Controllers
                 return Problem("Unable to update roles for user");
             }
 
+            //Password
             try
             {
 
-                // Password
                 if (!string.IsNullOrEmpty(user.NewPassword))
                 {
                     _logger?.LogInformation("AccountController: PutUser: Changing password for {email}", appUser.Email);
@@ -469,5 +469,50 @@ namespace WorldCitiesAPI.Controllers
             });
         }
 
+        [HttpPost("Delete")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> Delete(UserDTO user)
+        {
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+
+            if (user == null)
+            { 
+                return BadRequest("Invalid User");
+            }
+
+            if (string.IsNullOrEmpty(user.Id))
+            {
+                return BadRequest("Invalid user id");
+            }
+
+            ApplicationUser appUser = await _userManager.FindByIdAsync(user.Id);
+
+            if (appUser == null)
+            {
+                return NotFound($"User {user.Name} with id {user.Id} not found.");
+            }
+
+            // Delete
+            try
+            {
+                await _userManager.DeleteAsync(appUser);
+                _context.SaveChanges();
+
+                return Ok(new DeleteResult()
+                {
+                    Success = true,
+                    Message = $"Successfully delete {appUser.Email}."
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error deleting user id {id}.", user.Id);
+                return Problem($"Error deleting user id {appUser.Email}");
+            }
+
+        }
     }
 }
