@@ -30,6 +30,13 @@
       </mat-error>
     </mat-form-field>
 
+    <!-- Roles Checkboxes -->
+    <div class="rolesCheckBoxes">
+      <ng-container *ngFor="let role of roles">
+        <mat-checkbox matInput formControlName="{{role}}checkBox" (change)="onRoleCbChanged($event, role)">{{role}}</mat-checkbox>
+      </ng-container>
+    </div>
+
     <!-- Roles -->
     <mat-form-field>
       <mat-label>Roles:</mat-label>

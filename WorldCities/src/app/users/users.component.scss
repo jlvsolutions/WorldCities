@@ -13,9 +13,11 @@ table.mat-table {
 
 td.mat-cell {
     button.mat-flat-button {
-        line-height: 25px;
+        line-height: 20px;
         min-width: 20px;
         padding: 0px 10px;
+        font-weight: 400;
+        font-size: 12px;
     }
 }
 /*

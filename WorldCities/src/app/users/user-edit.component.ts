@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
-import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, AsyncValidatorFn, ValidatorFn, FormControlOptions } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, AsyncValidatorFn, ValidatorFn, FormControlOptions, FormArray } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
@@ -10,7 +10,7 @@ import { BaseFormComponent } from '../base-form.component';
 import { UserService } from './user.service';
 import { AuthService } from './../auth/auth.service';
 import { validateHorizontalPosition } from '@angular/cdk/overlay';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-user-edit',
@@ -33,10 +33,9 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
    */
   id: string | null = null;
 
-  /** The roles observable for the select (using async pipe).
-   * (Another technique to prevent memory leaks)
+  /** The roles array
    */
-  roles?: Observable<string[]>;
+  roles: string[] = [];
 
   setPasswordChecked?: boolean = false;
   setPasswordCheckboxHidden?: string; // shows if undefined.  hides if empty string or 'hidden'
@@ -56,6 +55,7 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log("ngOnInit(): Creating new FormGroup()");
     this.form = new FormGroup({
       name: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.required, Validators.email], this.isDupeEmail()),
@@ -66,8 +66,10 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
       roles: new FormControl('', Validators.required)
 
     });
-
+    console.log("Ctor():  Calling loadData()...")
     this.loadData();
+    console.log("Ctor():  Calling loadData() returned.")
+
   }
 
   onCheckChanged(event: MatCheckboxChange) {
@@ -79,11 +81,29 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
       this.form.get('password')?.disable();
   }
 
+  onRoleCbChanged(event: MatCheckboxChange, role: string) {
+    console.log("onRoleCbClicked():  Checkbox checked: " + role + " Value: " + event.checked);
+
+    // Remove from users' roles
+    if (this.user?.roles.includes(role) && !event.checked) {
+      const index = this.user?.roles.indexOf(role);
+      if (index !== -1) {
+        this.user?.roles.splice(index, 1);
+        this.form.controls['roles'].setValue(this.user?.roles);
+        return;
+      }
+    }
+
+    // Add to users' roles
+    if (event.checked && !this.user?.roles.includes(role)) {
+      this.user?.roles.push(role);
+        this.form.controls['roles'].setValue(this.user?.roles);
+    }
+  }
+
   loadData() {
 
-    // Load the roles that can be associated with a user.
-    this.loadRoles();
-
+    console.log("loadData()")
     // Retrieve the ID from the 'id' parameter.
     this.id = this.activatedRoute.snapshot.paramMap.get('id');
     if (this.id) {
@@ -91,7 +111,7 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
       this.setPasswordCheckboxHidden = "false";
       console.log("Loading user data for edit");
 
-      // Get the user
+      // Get the user data
       this.userService.get(this.id)
 
         .subscribe(result => {
@@ -99,8 +119,11 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
           this.title = "Edit - " + this.user.name;
           console.log("Loaded data for user: " + this.user.email);
 
+          //
           // Update the form with the user values.
           this.form.patchValue(this.user);
+
+
         }, error => console.error(error));
     }
     else {
@@ -114,12 +137,37 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
       this.form.controls['setPassword'].setValue(true);
       this.form.controls['setPassword'].disable();
       this.form.controls['password'].enable();
+      // Set the default User Role
+      this.user = { id: '', name: '', email: '', emailConfirmed: true, lockoutEnabled: false, newPassword: '', roles: ['RegisteredUser'] };
+      this.form.patchValue(this.user);
 
     }
+
+    // Load the roles that can be associated with a user.
+    this.loadAllRoles();
   }
 
-  loadRoles() {
-    this.roles = this.userService.getRoles();
+  /**
+   * Loads all current user roles from the database
+   * via http request
+   */
+  loadAllRoles() {
+    console.log("loadAllRoles(): Retrieving user roles...");
+    this.userService.getRoles()
+      .subscribe(result => {
+        console.log(`loadAllRoles(): Retrieved ${result.length} roles.`);
+        console.log(`loadAllRoles(): Adding FormControls from result.  Length=${result.length}`);
+
+        result.forEach(element => {
+          var cbName = element + "checkBox";
+          console.log(`loadAllRoles(): result.forEach: ${cbName}`);
+          this.form.addControl(`${cbName}`, new FormControl(cbName));
+          this.form.controls[cbName].setValue(this.user?.roles.includes(element));
+        });
+
+        console.log('loadAllRoles(): Setting this.roles to result.');
+        this.roles = result;
+      }, error => console.error(error));
   }
 
   onSubmit() {
