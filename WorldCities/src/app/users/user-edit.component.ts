@@ -72,7 +72,7 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
 
   }
 
-  onCheckChanged(event: MatCheckboxChange) {
+  onSetPasswordCbChanged(event: MatCheckboxChange) {
     console.log("onCheckChanged():  Checkbox checked:" + event.checked);
     this.setPasswordChecked = event.checked;
     if (this.setPasswordChecked)
@@ -100,6 +100,49 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
         this.form.controls['roles'].setValue(this.user?.roles);
     }
   }
+
+  onSubmit() {
+    var user = (this.id) ? this.user : <User>{};
+
+    console.log("user-edit onSubmit: " + this.user?.name);
+
+    if (user) {
+      user.name = this.form.controls['name'].value;
+      user.email = this.form.controls['email'].value;
+      user.emailConfirmed = this.form.controls['emailConfirmed'].value;
+      user.lockoutEnabled = this.form.controls['lockoutEnabled'].value;
+      user.roles = this.form.controls['roles'].value.toString().split(",");
+      user.newPassword = this.form.controls['password'].value;
+
+      if (this.id) {
+        // EDIT mode
+
+        if (!this.setPasswordChecked)
+          user.newPassword = '';
+
+        this.userService.put(user)
+          .subscribe(result => {
+
+            console.log("User " + user!.name + " has been updated.");
+
+            // go back to users view
+            this.router.navigate(['/users']);
+          }, error => console.error(error));
+      }
+      else {
+        // ADD NEW mode
+        this.userService.post(user)
+          .subscribe(result => {
+
+            console.log("User " + user?.name + " has been created.");
+
+            // go back to cities view
+            this.router.navigate(['/users']);
+          }, error => console.error(error));
+      }
+    }
+  }
+
 
   loadData() {
 
@@ -168,48 +211,6 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
         console.log('loadAllRoles(): Setting this.roles to result.');
         this.roles = result;
       }, error => console.error(error));
-  }
-
-  onSubmit() {
-    var user = (this.id) ? this.user : <User>{};
-
-    console.log("user-edit onSubmit: " + this.user?.name);
-
-    if (user) {
-      user.name = this.form.controls['name'].value;
-      user.email = this.form.controls['email'].value;
-      user.emailConfirmed = this.form.controls['emailConfirmed'].value.toString().toLowerCase() === 'true';
-      user.lockoutEnabled = this.form.controls['lockoutEnabled'].value.toString().toLowerCase() === 'true';
-      user.roles = this.form.controls['roles'].value.toString().split(",");
-      user.newPassword = this.form.controls['password'].value;
-
-      if (this.id) {
-        // EDIT mode
-
-        if (!this.setPasswordChecked)
-          user.newPassword = '';
-
-        this.userService.put(user)
-          .subscribe(result => {
-
-            console.log("User " + user!.name + " has been updated.");
-
-            // go back to users view
-            this.router.navigate(['/users']);
-          }, error => console.error(error));
-      }
-      else {
-        // ADD NEW mode
-        this.userService.post(user)
-          .subscribe(result => {
-
-            console.log("User " + user?.name + " has been created.");
-
-            // go back to cities view
-            this.router.navigate(['/users']);
-          }, error => console.error(error));
-      }
-    }
   }
 
   isDupeEmail(): AsyncValidatorFn {

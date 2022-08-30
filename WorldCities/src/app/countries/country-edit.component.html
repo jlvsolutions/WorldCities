@@ -2,67 +2,69 @@
   <h1>{{title}}</h1>
   <p *ngIf="this.id && !country"><em>Loading...</em></p>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="shadow">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-    <!-- Name -->
-    <mat-form-field>
-      <mat-label>Name:</mat-label>
-      <input matInput formControlName="name" required placeholder="Type a name">
-      <mat-error *ngFor="let error of getErrors(form.get('name')!, 'Country name')">
-        {{error}}
-      </mat-error>
-    </mat-form-field>
+      <!-- Name -->
+      <mat-form-field>
+        <mat-label>Name:</mat-label>
+        <input matInput formControlName="name" required placeholder="Type a name">
+        <mat-error *ngFor="let error of getErrors(form.get('name')!, 'Country name')">
+          {{error}}
+        </mat-error>
+      </mat-form-field>
 
-    <!-- ISO2 -->  <!-- Should forced upper case be implemented? -->
-    <mat-form-field>
-      <mat-label>ISO 3166-1 ALPHA-2 Country code (2 leters):</mat-label>
-      <input matInput formControlName="iso2" required placeholder="Insert the ISO2 Country code">
-      <mat-error *ngFor="let error of getErrors(form.get('iso2')!,
+      <!-- ISO2 -->  <!-- Should forced upper case be implemented? -->
+      <mat-form-field>
+        <mat-label>ISO 3166-1 ALPHA-2 Country code (2 leters):</mat-label>
+        <input matInput formControlName="iso2" required placeholder="Insert the ISO2 Country code">
+        <mat-error *ngFor="let error of getErrors(form.get('iso2')!,
                  'ISO2 3166 APLPHA 2 Country code',
                  { 'pattern' : 'requires 2 letters' })">
-        {{error}}
-      </mat-error>
+          {{error}}
+        </mat-error>
 
-      <!-- before code optimization.  kept for reference.
-    <mat-error *ngIf="this.form.controls['iso2'].errors?.['required']">
-      ISO 3166-1 ALPHA-2 Country code is required.
-    </mat-error>
-    <mat-error *ngIf="this.form.controls['iso2'].errors?.['pattern']">
-      ISO2 3166-1 ALPHA-2 Country code requires 2 letters.
-    </mat-error>
-    <mat-error *ngIf="this.form.controls['iso2'].errors?.['isDupeField']">
-      This code already exists: please choose another.
-    </mat-error>
-    -->
-    </mat-form-field>
+        <!-- before code optimization.  kept for reference.
+        <mat-error *ngIf="this.form.controls['iso2'].errors?.['required']">
+          ISO 3166-1 ALPHA-2 Country code is required.
+        </mat-error>
+        <mat-error *ngIf="this.form.controls['iso2'].errors?.['pattern']">
+          ISO2 3166-1 ALPHA-2 Country code requires 2 letters.
+        </mat-error>
+        <mat-error *ngIf="this.form.controls['iso2'].errors?.['isDupeField']">
+          This code already exists: please choose another.
+        </mat-error>
+        -->
+      </mat-form-field>
 
-    <!-- ISO3 -->  <!-- TODO:  Should forced upper case be implemented? -->
-    <mat-form-field>
-      <mat-label>ISO 3166-1 ALPHA-3 Country code (3 leters):</mat-label>
-      <input matInput formControlName="iso3" required placeholder="Insert the ISO3 Country code">
-      <mat-error *ngFor="let error of getErrors(form.get('iso3')!,
+      <!-- ISO3 -->  <!-- TODO:  Should forced upper case be implemented? -->
+      <mat-form-field>
+        <mat-label>ISO 3166-1 ALPHA-3 Country code (3 leters):</mat-label>
+        <input matInput formControlName="iso3" required placeholder="Insert the ISO3 Country code">
+        <mat-error *ngFor="let error of getErrors(form.get('iso3')!,
                  'ISO3 3166 APLPHA 3 Country code',
                  { 'pattern' : 'requires 3 letters' })">
-        {{error}}
-      </mat-error>
-    </mat-form-field>
+          {{error}}
+        </mat-error>
+      </mat-form-field>
 
-    <div>
-      <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">{{ this.id ? "Save" : "Create" }}</button>
-      <button mat-flat-button color="secondary" [routerLink]="['/countries']">Cancel</button>
+      <div>
+        <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">{{ this.id ? "Save" : "Create" }}</button>
+        <button mat-flat-button color="secondary" [routerLink]="['/countries']">Cancel</button>
+      </div>
+    </form>
     </div>
-  </form>
-</div>
-
-<!-- Form debug info panel -->
-<div class="info">
-  <div class="info-header">Form Debug Info</div>
-  <div class="info-body">
-    <div class="info-label">Form Value:</div>
-    <div class="info-value">{{ form.value | json }}</div>
-    <hr />
-    <div class="info-label">Form Status:</div>
-    <div class="info-value">{{ form.status | json }}</div>
   </div>
-</div>
+
+  <!-- Form debug info panel -->
+  <div class="info">
+    <div class="info-header">Form Debug Info</div>
+    <div class="info-body">
+      <div class="info-label">Form Value:</div>
+      <div class="info-value">{{ form.value | json }}</div>
+      <hr />
+      <div class="info-label">Form Status:</div>
+      <div class="info-value">{{ form.status | json }}</div>
+    </div>
+  </div>
 

@@ -9,76 +9,78 @@
     </mat-error>
   </p>
 
-  <!--<div [formGroup]="form" (ngSubmit)="onSubmit()"> this is also a choice -->
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="shadow">
+    <!--<div [formGroup]="form" (ngSubmit)="onSubmit()"> this is also a choice -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-    <!-- Name -->
-    <mat-form-field>
-      <mat-label>Name:</mat-label>
-      <input matInput formControlName="name" required placeholder="Type a name">
-      <mat-error *ngFor="let error of getErrors(form.get('name')!, 'City name')">
-        {{error}}
-      </mat-error>
-    </mat-form-field>
+      <!-- Name -->
+      <mat-form-field>
+        <mat-label>Name:</mat-label>
+        <input matInput formControlName="name" required placeholder="Type a name">
+        <mat-error *ngFor="let error of getErrors(form.get('name')!, 'City name')">
+          {{error}}
+        </mat-error>
+      </mat-form-field>
 
-    <!-- Lat -->
-    <mat-form-field>
-      <mat-label>Latitude:</mat-label>
-      <input matInput formControlName="lat" required placeholder="Insert latitude">
-      <mat-error *ngFor="let error of getErrors(form.get('lat')!,
+      <!-- Lat -->
+      <mat-form-field>
+        <mat-label>Latitude:</mat-label>
+        <input matInput formControlName="lat" required placeholder="Insert latitude">
+        <mat-error *ngFor="let error of getErrors(form.get('lat')!,
                  'Latitude',
                  { 'pattern' : 'requires a positive or negative number with 0-4 decimal values',
                    'min' : 'value must be between -90 and 90',
                    'max' : 'value must be between -90 and 90'})">
-        {{error}}
-      </mat-error>
-    </mat-form-field>
+          {{error}}
+        </mat-error>
+      </mat-form-field>
 
-    <!-- Lon -->
-    <mat-form-field>
-      <mat-label>Longitude:</mat-label>
-      <input matInput formControlName="lon" required placeholder="Insert longitude">
-      <mat-error *ngFor="let error of getErrors(form.get('lon')!,
+      <!-- Lon -->
+      <mat-form-field>
+        <mat-label>Longitude:</mat-label>
+        <input matInput formControlName="lon" required placeholder="Insert longitude">
+        <mat-error *ngFor="let error of getErrors(form.get('lon')!,
                  'Longitude',
                  { 'pattern' : 'requires a positive or negative number with 0-4 decimal values',
                    'min' : 'value must be between -180 and 180',
                    'max' : 'value must be between -180 and 180'})">
-        {{error}}
-      </mat-error>
-    </mat-form-field>
+          {{error}}
+        </mat-error>
+      </mat-form-field>
 
-    <!-- Population -->
-    <mat-form-field>
-      <mat-label>Population:</mat-label>
-      <input matInput formControlName="population" required placeholder="Insert population">
-      <mat-error *ngFor="let error of getErrors(form.get('population')!,
+      <!-- Population -->
+      <mat-form-field>
+        <mat-label>Population:</mat-label>
+        <input matInput formControlName="population" required placeholder="Insert population">
+        <mat-error *ngFor="let error of getErrors(form.get('population')!,
                  'Population',
                  { 'pattern' : 'requires a positive number less than 10 billion',
                    'min' : 'value must be between 0 and 10000000000',
                    'max' : 'value must be between 0 and 10000000000'})">
-        {{error}}
-      </mat-error>
-    </mat-form-field>
+          {{error}}
+        </mat-error>
+      </mat-form-field>
 
-    <!-- Country -->
-    <mat-form-field *ngIf="countries | async as result">
-      <mat-label>Select a Country...</mat-label>
-      <mat-select formControlName="countryId" id="countryId">
-        <mat-option *ngFor="let country of result" [value]="country.id">
-          {{country.name}}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngFor="let error of getErrors(form.get('countryId')!, 'Country')">
-        {{error}}
-      </mat-error>
-    </mat-form-field>
+      <!-- Country -->
+      <mat-form-field *ngIf="countries | async as result">
+        <mat-label>Select a Country...</mat-label>
+        <mat-select formControlName="countryId" id="countryId">
+          <mat-option *ngFor="let country of result" [value]="country.id">
+            {{country.name}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngFor="let error of getErrors(form.get('countryId')!, 'Country')">
+          {{error}}
+        </mat-error>
+      </mat-form-field>
 
-    <div>
-      <!--<button mat-flat-button color="primary" (click)="onSubmit()">Save</button> Can be this way if using say, a div -->
-      <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">{{ this.id ? "Save" : "Create" }}</button>
-      <button mat-flat-button color="secondary" [routerLink]="['/cities']">Cancel</button>
-    </div>
-  </form>
+      <div>
+        <!--<button mat-flat-button color="primary" (click)="onSubmit()">Save</button> Can be this way if using say, a div -->
+        <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">{{ this.id ? "Save" : "Create" }}</button>
+        <button mat-flat-button color="secondary" [routerLink]="['/cities']">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <!-- Form debug info panel -->
