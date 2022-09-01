@@ -20,6 +20,9 @@ import { AuthInterceptor } from './auth/auth.interceptor';
 import { RegisterComponent } from './auth/register.component';
 import { UsersComponent } from './users/users.component';
 import { UserEditComponent } from './users/user-edit.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+import { ConnectionServiceModule, ConnectionServiceOptions, ConnectionServiceOptionsToken } from 'angular-connection-service';
 
 @NgModule({
   declarations: [
@@ -42,12 +45,30 @@ import { UserEditComponent } from './users/user-edit.component';
     BrowserAnimationsModule,
     AngularMaterialModule,
     ReactiveFormsModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS,
+    {
+      provide: ConnectionServiceOptionsToken,
+      useValue: <ConnectionServiceOptions>{
+        enableHeartbeat: true,
+        heartbeatUrl: environment.baseUrl + 'api/heartbeat',
+        heartbeatInterval: 3000,
+        heartbeatRetryInterval: 1000,
+        requestMethod: "head"
+      }
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true }
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

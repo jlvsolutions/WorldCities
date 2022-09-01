@@ -21,6 +21,8 @@
     "@angular/platform-browser": "^14.1.0",
     "@angular/platform-browser-dynamic": "^14.1.0",
     "@angular/router": "^14.1.0",
+    "@angular/service-worker": "^14.1.0",
+    "angular-connection-service": "13.0.1",
     "jest-editor-support": "*",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
