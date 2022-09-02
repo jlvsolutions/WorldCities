@@ -6,16 +6,16 @@ import { AuthService } from './auth.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGaurd implements CanActivate {
+export class AdminAuthGaurd implements CanActivate {
 
   constructor(private authService: AuthService, private router: Router) {
   }
 
   // extend the canActivate interface
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): 
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
     Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-    if (this.authService.isAuthenticated()) {
+    if (this.authService.isAdministrator()) {
       return true;
     }
 
