@@ -8,6 +8,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using Microsoft.AspNetCore.Cors;
+using WorldCitiesAPI.Data.GraphQL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,6 +98,14 @@ builder.Services.AddAuthentication(opt =>
 // Add JwtHandler to the services for dependency injection
 builder.Services.AddScoped<JwtHandler>();
 
+// Add GraphQL services.
+builder.Services.AddGraphQLServer()
+    .AddAuthorization()
+    .AddQueryType<Query>()
+    .AddMutationType<Mutation>()
+    .AddFiltering()
+    .AddSorting();
+
 var app = builder.Build();
 
 // Add HTTP request logging middleware
@@ -119,6 +128,9 @@ app.UseAuthorization();
 app.UseCors("AngularPolicy");
 
 app.MapControllers();
+
+// Add GraphQL middleware.
+app.MapGraphQL("/api/graphql");
 
 app.MapMethods("/api/heartbeat", new[] { "HEAD" }, () => Results.Ok());
 

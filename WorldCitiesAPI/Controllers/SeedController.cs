@@ -7,6 +7,7 @@ using WorldCitiesAPI.Data.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using System.IO;
 
 namespace WorldCitiesAPI.Controllers
 {
@@ -54,7 +55,7 @@ namespace WorldCitiesAPI.Controllers
             if (!_env.IsDevelopment())
                 throw new SecurityException("Not Allowed");
 
-            var path = Path.Combine(_env.ContentRootPath, "Data/Source/WorldCities.xlsx");
+            var path = System.IO.Path.Combine(_env.ContentRootPath, "Data/Source/WorldCities.xlsx");
             using var stream = System.IO.File.OpenRead(path);
             using var excelPackage = new ExcelPackage(stream);
 
@@ -163,7 +164,7 @@ namespace WorldCitiesAPI.Controllers
             if (!_env.IsDevelopment())
                 throw new SecurityException("Not Allowed");
 
-            var path = Path.Combine(_env.ContentRootPath, "Data/Source/WorldCities.xlsx");
+            var path = System.IO.Path.Combine(_env.ContentRootPath, "Data/Source/WorldCities.xlsx");
             using var stream = System.IO.File.OpenRead(path);
             using var excelPackage = new ExcelPackage(stream);
 
