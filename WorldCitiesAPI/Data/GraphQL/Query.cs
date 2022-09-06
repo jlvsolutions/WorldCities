@@ -27,6 +27,40 @@ namespace WorldCitiesAPI.Data.GraphQL
         [UseSorting]
         public IQueryable<Country> GetCountries([Service] ApplicationDbContext context) => context.Countries;
 
+        /// <summary>
+        /// Gets all Cites (with ApiResult and DTO support).
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="sortColumn"></param>
+        /// <param name="sortOrder"></param>
+        /// <param name="filterColumn"></param>
+        /// <param name="filterQuery"></param>
+        /// <returns></returns>
+        [Serial]
+        public async Task<ApiResult<CityDTO>> GetCitiesApiResult([Service] ApplicationDbContext context,
+            int pageIndex = 0,
+            int pageSize = 0,
+            string? sortColumn = null,
+            string? sortOrder = null,
+            string? filterColumn = null,
+            string? filterQuery = null)
+        {
+            return await ApiResult<CityDTO>.CreateAsync(
+                context.Cities.AsNoTracking()
+                    .Select(c => new CityDTO()
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        Lat = c.Lat,
+                        Lon = c.Lon,
+                        Population = c.Population,
+                        CountryId = c.CountryId,
+                        CountryName = c.Country!.Name
 
+                    }),
+                pageIndex, pageSize, sortColumn, sortOrder, filterColumn, filterQuery);
+        }
     }
 }

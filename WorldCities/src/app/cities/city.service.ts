@@ -1,20 +1,33 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BaseService, ApiResult, DeleteResult } from '../base.service';
-import { Observable } from 'rxjs';
+import { Observable, map, combineLatest } from 'rxjs';
 
 import { City } from './city';
 import { Country } from '../countries/country';
+// GraphQL
+import { Apollo, gql } from 'apollo-angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CityService extends BaseService<City, number> {
 
-  constructor(http: HttpClient) {
+  constructor(
+    http: HttpClient,
+    private apollo: Apollo) {
     super(http);
   }
 
+  /**
+   * RESTful Implementation.
+   * @param pageIndex
+   * @param pageSize
+   * @param sortColumn
+   * @param sortOrder
+   * @param filterColumn
+   * @param filterQuery
+   *
   getData(
     pageIndex: number,
     pageSize: number,
@@ -38,11 +51,102 @@ export class CityService extends BaseService<City, number> {
 
     return this.http.get<ApiResult<City>>(url, { params });
   }
+  */
 
+  getData(
+    pageIndex: number,
+    pageSize: number,
+    sortColumn: string,
+    sortOrder: string,
+    filterColumn: string | null,
+    filterQuery: string | null): Observable<ApiResult<City>> {
+
+    return this.apollo
+      .query({
+        query: gql`
+          query GetCitiesApiResult(
+            $pageIndex: Int!,
+            $pageSize: Int!,
+            $sortColumn: String,
+            $sortOrder: String,
+            $filterColumn: String,
+            $filterQuery: String) {
+          citiesApiResult(
+            pageIndex: $pageIndex
+            pageSize: $pageSize
+            sortColumn: $sortColumn
+            sortOrder: $sortOrder
+            filterColumn: $filterColumn
+            filterQuery: $filterQuery
+          ) {
+            data {
+              id
+              name
+              lat
+              lon
+              population
+              countryId
+              countryName
+            },
+              pageIndex
+              pageSize
+              totalCount
+              totalPages
+              sortColumn
+              sortOrder
+              filterColumn
+              filterQuery
+            }
+        }
+        `,
+        variables: {
+          pageIndex,
+          pageSize,
+          sortColumn,
+          sortOrder,
+          filterColumn,
+          filterQuery
+        }
+      })
+      .pipe(map((result: any) =>
+        result.data.citiesApiResult));
+  }
+
+  /**
+   *  RESTful implementation
+   * @param id
+   *
   get(id: number): Observable<City> {
     var url = this.getUrl("api/Cities/" + id);
     return this.http.get<City>(url);
   }
+  */
+
+  get(id: number): Observable<City> {
+    return this.apollo
+      .query({
+        query: gql`
+          query GetCityById($id: Int!) {
+          cities(where: { id: { eq: $id } }) {
+            nodes {
+              id
+              name
+              lat
+              lon
+              population
+              countryId
+            }
+          }
+        }
+        `,
+        variables: {
+        id
+      }
+    })
+    .pipe(map((result: any) =>
+        result.data.cities.nodes[0]));
+  }
+
 
   put(item: City): Observable<City> {
     var url = this.getUrl("api/Cities/" + item.id);
