@@ -117,15 +117,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.MapGet("/Error", () => Results.Problem());
+}
 app.UseHttpsRedirection();
-
-app.UseAuthentication(); // add authentication middleware
-app.UseAuthorization();
 
 // Important  to place this BEFORE middlewares that handle various endpoints.
 // so that our CORS plicy will be applied to all of them.
 app.UseCors("AngularPolicy");
+app.UseAuthentication(); // add authentication middleware
+app.UseAuthorization();
+
 
 app.MapControllers();
 
