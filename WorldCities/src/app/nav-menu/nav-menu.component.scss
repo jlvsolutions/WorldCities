@@ -5,12 +5,20 @@
 
 
 .username {
-    font-size: 14px;
+  margin: 0px 5px;
 
-    .welcome-label {
-        font-size: 12px;
-    }
-    label {
-        margin: 0px 5px;
-    }
+  label {
+    display: block;
+    text-align: center;
+  }
+
+  .welcome-label {
+    font-size: 12px;
+    height: 18px;
+  }
+
+  .welcome-name {
+    font-size: 19px;
+    //height: 17px;
+  }
 }

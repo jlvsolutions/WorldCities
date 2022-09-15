@@ -8,6 +8,9 @@ import { AuthService } from '../auth/auth.service';
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.scss']
 })
+  /**
+   * @title Navigation Menu Component
+   */
 export class NavMenuComponent implements OnInit, OnDestroy {
 
   private destroySubject = new Subject();

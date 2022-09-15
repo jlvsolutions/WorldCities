@@ -22,8 +22,12 @@
 
     <div class="username" *ngIf="displayName" color="primary">
       <label class="welcome-label">Welcome,</label>
-      <label>{{ displayName }}</label>
+      <button mat-button class="welcome-name" [matMenuTriggerFor]="menu">{{ displayName }}<mat-icon>arrow_drop_down</mat-icon></button>
     </div>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item>Edit Profile</button>
+      <button mat-menu-item>Item 2</button>
+    </mat-menu>
 
     <a *ngIf="!isLoggedIn" mat-flat-button color="primary" [routerLink]="['/register']">
       Join
