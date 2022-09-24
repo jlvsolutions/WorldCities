@@ -12,9 +12,9 @@ using Moq;
 using System.Threading.Tasks;
 using WorldCitiesAPI.Controllers;
 using WorldCitiesAPI.Data;
-using WorldCitiesAPI.Data.Models;
 using Xunit;
 using Microsoft.Extensions.Logging;
+using WorldCitiesAPI.Data.Entities;
 
 namespace WorldCitiesAPI.Tests
 {

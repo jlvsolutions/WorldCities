@@ -1,4 +1,7 @@
-﻿namespace WorldCitiesAPI.Data
+﻿using System.Text.Json.Serialization;
+using WorldCitiesAPI.Data.Entities;
+
+namespace WorldCitiesAPI.Data.Models.Users
 {
     /// <summary>
     /// Data Transfer Object for Users 
@@ -11,7 +14,7 @@
         public string Id { get; set; } = null!;
 
         /// <summary>
-        /// Friendly display name for the user.
+        /// Friendly Display Name for the user.
         /// </summary>
         public string Name { get; set; } = null!;
 
@@ -39,5 +42,22 @@
         /// List of roles this user has.
         /// </summary>
         public string[] Roles { get; set; } = null!;
+
+        [JsonIgnore]
+        public List<RefreshToken> RefreshTokens { get; set; } = null!;
+
+
+        public UserDTO() { }
+
+        public UserDTO(ApplicationUser user, string[] roles)
+        {
+            Id = user.Id;
+            Name = user.DisplayName;
+            Email = user.Email;
+            EmailConfirmed = user.EmailConfirmed;
+            LockoutEnabled = user.LockoutEnabled;
+            Roles = roles;
+            RefreshTokens = user.RefreshTokens;
+        }
     }
 }

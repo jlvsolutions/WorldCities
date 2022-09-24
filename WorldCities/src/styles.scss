@@ -18,6 +18,13 @@ body {
   }
 }
 
+form {
+  .statusLabel {
+    font-size: large;
+    color: cornflowerblue;
+  }
+}
+
 table {
   border: 0px;
   border-spacing: 0px;
@@ -35,4 +42,13 @@ table {
       padding: 5px 10px;
     }
   }
+}
+
+.welcomeMessage {
+  font-size: large;
+  color: cornflowerblue;
+}
+.welcomeSubMessage {
+  font-size: larger;
+  color: cornflowerblue;
 }

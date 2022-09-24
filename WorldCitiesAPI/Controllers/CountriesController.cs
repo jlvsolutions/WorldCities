@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldCitiesAPI.Data;
-using WorldCitiesAPI.Data.Models;
 using Microsoft.AspNetCore.Authorization;
+using WorldCitiesAPI.Data.Entities;
 
 namespace WorldCitiesAPI.Controllers
 {

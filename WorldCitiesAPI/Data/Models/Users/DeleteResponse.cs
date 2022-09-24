@@ -1,14 +1,14 @@
-﻿namespace WorldCitiesAPI.Data
+﻿namespace WorldCitiesAPI.Data.Models.Users
 {
-    public class UserResult
+    public class DeleteResponse
     {
         /// <summary>
-        /// TRUE if the update/create attempt is successful, FALSE otherwise.
+        /// TRUE if the delete was successful, FALSE otherwise.
         /// </summary>
         public bool Success { get; set; }
 
         /// <summary>
-        /// Update/create attempt result message
+        /// Delete user result message
         /// </summary>
         public string Message { get; set; } = null!;
     }

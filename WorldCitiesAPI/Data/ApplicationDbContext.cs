@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using WorldCitiesAPI.Data.Models;
+using WorldCitiesAPI.Data.Entities;
 
 namespace WorldCitiesAPI.Data
 {
@@ -18,5 +18,6 @@ namespace WorldCitiesAPI.Data
 
         public DbSet<City> Cities => Set<City>();
         public DbSet<Country> Countries => Set<Country>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     }
 }

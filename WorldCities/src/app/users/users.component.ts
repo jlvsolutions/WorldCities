@@ -59,7 +59,7 @@ export class UsersComponent implements OnInit {
     }
     console.log(`User Confirmed to delete ${user.name}, ${user.email}.`);
 
-    this.userService.delete(user)
+    this.userService.delete(user.id)
       .subscribe(result => {
 
         console.log(result.message);

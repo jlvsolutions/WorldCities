@@ -159,9 +159,9 @@ export class CityService extends BaseService<City, number> {
     return this.http.post<City>(url, item);
   }
 
-  delete(item: City): Observable<DeleteResult> {
-    var url = this.getUrl("api/Cities/Delete");
-    return this.http.post<DeleteResult>(url, item);
+  delete(id: number): Observable<DeleteResult> {
+    var url = this.getUrl("api/Cities/" + id + "/Delete");
+    return this.http.post<DeleteResult>(url, id);
   }
 
   getCountries(

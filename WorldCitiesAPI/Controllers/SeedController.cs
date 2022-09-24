@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
+using WorldCitiesAPI.Data.Entities;
 
 namespace WorldCitiesAPI.Controllers
 {

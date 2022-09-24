@@ -5,8 +5,16 @@
 
       <p>
         <mat-error *ngIf="registerResult && !registerResult.success">
-          <strong>Error</strong>: {{registerResult}}
+          <strong>Error</strong>: {{registerResult.message}}
         </mat-error>
+        <mat-error *ngIf="loginResult && !loginResult.success">
+          <strong>Error</strong>: {{loginResult.message}}
+        </mat-error>
+        <mat-label class="statusLabel" *ngIf="progressMessage 
+                   && !((registerResult && !registerResult.success)
+                   ||   (loginResult && !loginResult.success))">
+        {{progressMessage}}
+        </mat-label>
       </p>
 
       <!-- Name -->
@@ -39,6 +47,7 @@
       <div>
         <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">Join</button>
         <button mat-flat-button color="secondary" [routerLink]="['/']">Cancel</button>
+        <mat-checkbox matInput formControlName="login" (change)="onLoginCbChanged($event)">Login After Registering</mat-checkbox>
       </div>
     </form>
   </div>

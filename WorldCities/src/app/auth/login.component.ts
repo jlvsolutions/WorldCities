@@ -48,9 +48,7 @@ export class LoginComponent
         }
       }, error => {
         console.log(error);
-        if (error.status == 401) {
-          this.loginResult = error.error;
-        }
+        this.loginResult = error.error;
       });
   }
 }

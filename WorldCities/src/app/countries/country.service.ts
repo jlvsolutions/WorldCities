@@ -54,9 +54,9 @@ export class CountryService extends BaseService<Country, number> {
     return this.http.post<Country>(url, item);
   }
 
-  delete(item: Country): Observable<DeleteResult> {
-    var url = this.getUrl("api/Countries/Delete");
-    return this.http.post<DeleteResult>(url, item);
+  delete(id: number): Observable<DeleteResult> {
+    var url = this.getUrl("api/Countries/" + id + "/Delete");
+    return this.http.post<DeleteResult>(url, id);
   }
 
   /**

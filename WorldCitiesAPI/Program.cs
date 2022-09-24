@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using WorldCitiesAPI.Data;
-using WorldCitiesAPI.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -9,14 +8,20 @@ using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using Microsoft.AspNetCore.Cors;
 using WorldCitiesAPI.Data.GraphQL;
+using WorldCitiesAPI.Services;
+using WorldCitiesAPI.Data.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Logging.ClearProviders();
+//builder.Logging.AddConsole();
 
 // Adds Serilog support
 builder.Host.UseSerilog((ctx, lc) => lc
     .ReadFrom.Configuration(ctx.Configuration)
     .WriteTo.MSSqlServer(connectionString: ctx.Configuration.GetConnectionString("DefaultConnection"),
-                         restrictedToMinimumLevel: LogEventLevel.Information,
+                         //restrictedToMinimumLevel: LogEventLevel.Information,
                          sinkOptions: new MSSqlServerSinkOptions
                          {
                              TableName = "LogEvents",
@@ -60,13 +65,14 @@ builder.Services.AddDbContext<ApplicationDbContext>( options =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>( options =>
 {
     // TODO:  Reset these for production...
+    //options.Stores.
     options.SignIn.RequireConfirmedAccount = true;
     options.Password.RequireDigit = false;// true;
     options.Password.RequireLowercase = false;// true;
     options.Password.RequireUppercase = false;// true;
     options.Password.RequireNonAlphanumeric = false;// true;
     options.Password.RequiredLength = 2; // 8;
-    //options.User.RequireUniqueEmail = false;  // for reference
+    options.User.RequireUniqueEmail = true;
 })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -97,6 +103,7 @@ builder.Services.AddAuthentication(opt =>
 
 // Add JwtHandler to the services for dependency injection
 builder.Services.AddScoped<JwtHandler>();
+builder.Services.AddScoped<UserService>();
 
 // Add GraphQL services.
 builder.Services.AddGraphQLServer()
@@ -116,14 +123,26 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseHsts();
 }
 else
 {
     app.UseExceptionHandler("/Error");
     app.MapGet("/Error", () => Results.Problem());
+    app.UseHsts();
 }
+
 app.UseHttpsRedirection();
+
+// Invoke the UseForwardedHeaders middleware and configure it 
+// to forward the X-Forwarded-For and X-Forwarded-Proto headers.
+// NOTE: This must be put BEFORE calling UseAuthentication 
+// and other authentication scheme middlewares.
+/*app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor
+    | ForwardedHeaders.XForwardedProto
+});
+*/
 
 // Important  to place this BEFORE middlewares that handle various endpoints.
 // so that our CORS plicy will be applied to all of them.

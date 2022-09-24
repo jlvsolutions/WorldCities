@@ -8,6 +8,7 @@ import { LoginResult } from './login-result';
 import { RegisterRequest } from './register-request';
 import { RegisterResult } from './register-result';
 import { User } from './user';
+import { DupeEmailRequest } from './dupe-email-request';
 
 @Injectable({
   providedIn: 'root'
@@ -66,7 +67,7 @@ export class AuthService {
    * @param item
    */
   login(item: LoginRequest): Observable<LoginResult> {
-    var url = environment.baseUrl + 'api/Account/Login';
+    var url = environment.baseUrl + 'api/Users/Login';
     return this.http.post<LoginResult>(url, item)
       .pipe(tap(loginResult => {
         if (loginResult.success && loginResult.token && loginResult.user.name) {
@@ -122,22 +123,18 @@ export class AuthService {
    * @param item
    */
   register(item: RegisterRequest): Observable<RegisterResult> {
-    var url = this.getUrl("api/Account/Register");
+    var url = this.getUrl("api/Users/Register");
     return this.http.post<RegisterResult>(url, item);
   }
 
-  isDupeEmail(user: User): Observable<boolean> {
-    var url = this.getUrl("api/Account/IsDupeEmail");
-
-    // In my debugging, I discovered the API controller
-    // REQIRES the id, email, name and roles fields to be included in the call.
-    user.id = user.id ?? "";
-    user.email = user.email ?? "";
-    user.name = user.name ?? "";
-    user.newPassword = user.newPassword ?? "";
-    user.roles = user.roles ?? [""];
-
-    return this.http.post<boolean>(url, user);
+  /**
+   * Send http post to the IsDupeEmail API.
+   * @param email
+   */
+  isDupeEmail(email: string): Observable<boolean> {
+    var url = this.getUrl("api/Users/IsDupeEmail");
+    var de = <DupeEmailRequest> { email: email };
+    return this.http.post<boolean>(url, de);
   }
 
   private getUrl(url: string) {

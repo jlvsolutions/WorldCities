@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace WorldCitiesAPI.Data.Models
+namespace WorldCitiesAPI.Data.Entities
 {
     [Table("Cities")]
     [Index(nameof(Name))]
@@ -46,7 +46,7 @@ namespace WorldCitiesAPI.Data.Models
         /// Country Id (forein key)
         /// </summary>
         [ForeignKey(nameof(Country))]
-        public int CountryId  { get; set; }
+        public int CountryId { get; set; }
         #endregion
 
         #region Navigation Properties

@@ -86,8 +86,8 @@ import { InMemoryCache } from '@apollo/client/core';
       useValue: <ConnectionServiceOptions>{
         enableHeartbeat: true,
         heartbeatUrl: environment.baseUrl + 'api/heartbeat',
-        heartbeatInterval: 3000,
-        heartbeatRetryInterval: 1000,
+        heartbeatInterval: 30000,
+        heartbeatRetryInterval: 10000,
         requestMethod: "head"
       }
     },

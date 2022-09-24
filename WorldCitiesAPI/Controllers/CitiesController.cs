@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldCitiesAPI.Data;
-using WorldCitiesAPI.Data.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using WorldCitiesAPI.Data.Entities;
 
 namespace WorldCitiesAPI.Controllers
 {
@@ -17,9 +17,9 @@ namespace WorldCitiesAPI.Controllers
     public class CitiesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<CitiesController>? _logger;
+        private readonly ILogger<CitiesController> _logger;
 
-        public CitiesController(ApplicationDbContext context, ILogger<CitiesController>? logger = null)
+        public CitiesController(ApplicationDbContext context, ILogger<CitiesController> logger)
         {
             _context = context;
             _logger = logger;
@@ -38,7 +38,7 @@ namespace WorldCitiesAPI.Controllers
             string? filterColumn = null,
             string? filterQuery = null)
         {
-            _logger?.LogInformation("Entering GetCities. PageIndex: {pageIndex}, SortOrder: {sortOrder}", pageIndex, sortOrder);
+            _logger.LogInformation("Entering GetCities. PageIndex: {pageIndex}, SortOrder: {sortOrder}", pageIndex, sortOrder);
 
             return await ApiResult<CityDTO>.CreateAsync(
                         _context.Cities.AsNoTracking()
@@ -64,11 +64,11 @@ namespace WorldCitiesAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<City>> GetCity(int id) // TODO:  Change to CityDTO
         {
-            _logger?.LogInformation("Entering GetCity. Id: {id}", id);
+            _logger.LogInformation("Entering GetCity. Id: {id}", id);
             if (_context.Cities == null)
-          {
-              return NotFound();
-          }
+            {
+                return NotFound();
+            }
             var city = await _context.Cities.FindAsync(id);
 
             if (city == null)

@@ -2,8 +2,9 @@
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
-using WorldCitiesAPI.Data.Models;
+using WorldCitiesAPI.Data.Entities;
 
 namespace WorldCitiesAPI.Data
 {
@@ -11,16 +12,23 @@ namespace WorldCitiesAPI.Data
     {
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ILogger<JwtHandler>? _logger;
+        private readonly ILogger<JwtHandler> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public JwtHandler(IConfiguration configuration, UserManager<ApplicationUser> userManager, ILogger<JwtHandler> logger)
+        public JwtHandler(IConfiguration configuration, UserManager<ApplicationUser> userManager, ILogger<JwtHandler> logger, ApplicationDbContext context)
         {
             _configuration = configuration;
             _userManager = userManager;
             _logger = logger;
+            _context = context;
         }
 
-        public async Task<JwtSecurityToken> GetTokenAsync(ApplicationUser user)
+        /// <summary>
+        /// Generates a new JWT token for the given user.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>The newly created JWT token.</returns>
+        public async Task<JwtSecurityToken> GenerateJwtToken(ApplicationUser user)
         {
             var jwtOptions = new JwtSecurityToken(
                 issuer: _configuration["JwtSettings:Issuer"],
@@ -30,7 +38,7 @@ namespace WorldCitiesAPI.Data
                     _configuration["JwtSettings:ExpirationTimeoutInMinutes"])),
                 signingCredentials: GetSigningCredentials());
 
-            _logger?.LogInformation("GetTokenAsync: UserName:{UserName} Email:{Email}", user.UserName, user.Email);
+            _logger.LogInformation("GenerateJwtToken: UserName: {UserName} Email: {Email}", user.UserName, user.Email);
 
             return jwtOptions;
         }
@@ -47,7 +55,8 @@ namespace WorldCitiesAPI.Data
         {
             var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, user.Email)
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(ClaimTypes.Email, user.Email)
             };
 
             foreach(var role in await _userManager.GetRolesAsync(user))
@@ -55,6 +64,36 @@ namespace WorldCitiesAPI.Data
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
             return claims;
+        }
+
+        /// <summary>
+        /// Generates a new refresh token using the given IP Address.
+        /// </summary>
+        /// <param name="ipAddress"></param>
+        /// <returns>The newly created refresh token.</returns>
+        public RefreshToken GenerateRefreshToken(string ipAddress)
+        {
+            return new RefreshToken() 
+            { 
+                Token = setUniqueToken(),
+                Expires = DateTime.UtcNow.AddDays(7),  // Token is valid for 7 days.
+                Created = DateTime.UtcNow,
+                CreatedByIp = ipAddress
+            };
+        }
+        
+        private string setUniqueToken()
+        {
+            // Token is a cryptographically strong random sequence of values
+            var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+
+            // Ensure token is unique by checking against the database
+            var tokenIsUnique = !_context.UserTokens.Any(t => t.Value == token);
+
+            if (!tokenIsUnique)
+                return setUniqueToken();
+
+            return token;
         }
     }
 }

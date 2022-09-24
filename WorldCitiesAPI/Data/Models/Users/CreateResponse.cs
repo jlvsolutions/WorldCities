@@ -1,14 +1,14 @@
-﻿namespace WorldCitiesAPI.Data
+﻿namespace WorldCitiesAPI.Data.Models.Users
 {
-    public class RegisterResult
+    public class CreateResponse
     {
         /// <summary>
-        /// TRUE if the Login attempt is successful, FALSE otherwise.
+        /// TRUE if the create was successful, FALSE otherwise.
         /// </summary>
         public bool Success { get; set; }
 
         /// <summary>
-        /// Login attempt result message
+        /// Create user result message
         /// </summary>
         public string Message { get; set; } = null!;
     }

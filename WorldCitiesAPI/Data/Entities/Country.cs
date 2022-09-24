@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
-namespace WorldCitiesAPI.Data.Models
+namespace WorldCitiesAPI.Data.Entities
 {
     [Table("Countries")]
     [Index(nameof(Name))]

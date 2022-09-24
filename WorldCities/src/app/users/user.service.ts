@@ -23,7 +23,7 @@ export class UserService extends BaseService<User, string> {
     filterColumn: string | null,
     filterQuery: string | null): Observable<ApiResult<User>> {
 
-    var url = this.getUrl("api/Account");
+    var url = this.getUrl("api/Users");
     var params = new HttpParams()
       .set("pageIndex", pageIndex.toString())
       .set("pageSize", pageSize.toString())
@@ -40,7 +40,7 @@ export class UserService extends BaseService<User, string> {
   }
 
   get(id: string): Observable<User> {
-    var url = this.getUrl("api/Account/" + id);
+    var url = this.getUrl("api/Users/" + id);
     return this.http.get<User>(url);
   }
 
@@ -53,7 +53,7 @@ export class UserService extends BaseService<User, string> {
     user.newPassword = user.newPassword ?? "";
     user.roles = user.roles ?? [""];
 
-    var url = this.getUrl("api/Account/" + user.id);
+    var url = this.getUrl("api/Users/" + user.id);
     return this.http.put<User>(url, user);
 
   }
@@ -61,23 +61,18 @@ export class UserService extends BaseService<User, string> {
   post(user: User): Observable<User> {
     // Make sure the Id is not null or undefined;
     user.id = user.id ?? "";
-    var url = this.getUrl("api/Account/");
+    var url = this.getUrl("api/Users");
     return this.http.post<User>(url, user);
   }
 
   getRoles(): Observable<string[]> {
-    var url = this.getUrl("api/Account/GetRoles");
+    var url = this.getUrl("api/Users/Roles");
     return this.http.get<string[]>(url);
   }
 
-  delete(user: User): Observable<DeleteResult> {
-    var url = this.getUrl("api/Account/Delete");
-    user.id = user.id ?? "";
-    user.email = user.email ?? "";
-    user.name = user.name ?? "";
-    user.newPassword = user.newPassword ?? "";
-    user.roles = user.roles ?? [""];
-    return this.http.post<DeleteResult>(url, user);
+  delete(id: string): Observable<DeleteResult> {
+    var url = this.getUrl("api/Users/" + id + "/Delete");
+    return this.http.post<DeleteResult>(url, id); // TODO:  Change to use http.delete().
 
   }
 }

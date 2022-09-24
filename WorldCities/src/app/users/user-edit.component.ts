@@ -19,29 +19,30 @@ import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 })
 export class UserEditComponent extends BaseFormComponent implements OnInit {
 
-  /** The view title
-   */
+  /** The view title */
   title?: string;
 
-  /** The user object to edit or create
-   */
+  /** The user object to edit or create */
   user?: User;
 
   /** The user object id, as fetched from the active route:
    * It's NULL when we're adding a new user,
-   * and not NULL when er're editing an existing one.
+   * and not NULL when editing an existing one.
    */
   id: string | null = null;
 
-  /** The roles array
+  /** If editing, contians the original email of the user
+   * being edited, null otherwise.
    */
+  origEmail: string | null = null;
+
+  /** The roles array */
   roles: string[] = [];
 
   setPasswordChecked?: boolean = false;
   setPasswordCheckboxHidden?: string; // shows if undefined.  hides if empty string or 'hidden'
 
-  /** One method of unsubscribing to prevent memory leaks.
-   */
+  /** One method of unsubscribing to prevent memory leaks. */
   private destroySubject = new Subject();
 
   constructor(
@@ -159,6 +160,7 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
 
         .subscribe(result => {
           this.user = result;
+          this.origEmail = this.user.email;
           this.title = "Edit - " + this.user.name;
           console.log("Loaded data for user: " + this.user.email);
 
@@ -203,7 +205,7 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
 
         result.forEach(element => {
           var cbName = element + "checkBox";
-          console.log(`loadAllRoles(): result.forEach: ${cbName}`);
+          //console.log(`loadAllRoles(): result.forEach: ${cbName}`);
           this.form.addControl(`${cbName}`, new FormControl(cbName));
           this.form.controls[cbName].setValue(this.user?.roles.includes(element));
         });
@@ -213,14 +215,16 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
       }, error => console.error(error));
   }
 
+  /** Validate that the email field is not already in use. */
   isDupeEmail(): AsyncValidatorFn {
+    console.log("UserEditComponent: isDupeEmail()");
     return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
 
-      var user = <User>{};
-      user.id = this.id ?? '';
-      user.email = this.form.controls['email'].value;
+      var testEmail = control.value.toString();
+      if (this.origEmail === testEmail)
+        return new Observable<null>();
 
-      return this.authService.isDupeEmail(user)
+      return this.authService.isDupeEmail(testEmail)
         .pipe(map(result => {
 
           console.log("authServie.isDupeEmail() result:  " + result);

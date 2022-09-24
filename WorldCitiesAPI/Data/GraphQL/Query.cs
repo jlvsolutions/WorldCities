@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WorldCitiesAPI.Data.Models;
+using WorldCitiesAPI.Data.Entities;
 
 namespace WorldCitiesAPI.Data.GraphQL
 {
