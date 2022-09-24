@@ -283,12 +283,12 @@ namespace WorldCitiesAPI.Services
             if (appUser == null)
             {
                 _logger.LogWarning("Delete: Could not find user with id: {id}", id);
-                return new DeleteResponse() { Success = false, Message = "User not found." };
+                return new DeleteResponse() { Success = false, Message = $"User not found. Id: {id}" };
             }
             await _userManager.DeleteAsync(appUser);
             _context.SaveChanges();
 
-            return new DeleteResponse() { Success = true, Message = "User deleted." };
+            return new DeleteResponse() { Success = true, Message = $"User deleted. Id: {id}" };
         }
 
         public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)

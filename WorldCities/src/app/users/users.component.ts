@@ -34,6 +34,9 @@ export class UsersComponent implements OnInit {
 
   filterTextChanged: Subject<string> = new Subject<string>();
 
+  message?: string;
+  errMessage?: string;
+
   constructor(
     private userService: UserService,
     private authService: AuthService,
@@ -47,11 +50,12 @@ export class UsersComponent implements OnInit {
 
   /**
    * Invoked when the user clicks on a delete button
-   * in the list of users.  Shows a confirmation dialog.
+   * in the list of users.  Shows a delete confirmation dialog.
    * @param user
    */
   onDeleteClicked(user: User): void {
     console.log(`User clicked Delete on ${user.name}, ${user.email}...`);
+    this.clearMessages();
 
     if (!confirm(`Are you sure you want to delete ${user.name}?`)) {
       console.log(`User Declined to delete ${user.name}.`);
@@ -59,14 +63,19 @@ export class UsersComponent implements OnInit {
     }
     console.log(`User Confirmed to delete ${user.name}, ${user.email}.`);
 
-    this.userService.delete(user.id)
+    //this.userService.delete(user.id)
+    this.userService.delete("123456")
       .subscribe(result => {
 
         console.log(result.message);
+        this.setMessages(result.success, result.message);
 
         // Reload the users data.
         this.ngOnInit();
-      }, error => console.error(error));
+      }, error => {
+        console.error(error)
+        this.setMessages(false, "We had a problem on our end. Please try again.");
+      });
   }
 
   // Debounce filter text changes
@@ -109,5 +118,18 @@ export class UsersComponent implements OnInit {
         this.paginator.pageSize = result.pageSize;
         this.users = new MatTableDataSource<User>(result.data);
       }, error => console.error(error));
+  }
+
+  private clearMessages() {
+    this.message = undefined;
+    this.errMessage = undefined;
+  }
+
+  private setMessages(success: boolean, message: string) {
+    this.clearMessages();
+    if (success)
+      this.message = message;
+    else
+      this.errMessage = message;
   }
 }

@@ -266,11 +266,10 @@ namespace WorldCitiesAPI.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             _logger.LogDebug("Received Delete user request. Id: {Id}", id);
-
             if (string.IsNullOrEmpty(id))
             {
                 _logger.LogWarning("Delete: Received null or empty user id.");
-                return BadRequest("Invalid user id");
+                return BadRequest("Invalid user id.");
             }
             var response = await _userService.Delete(id);
             if (response.Success)

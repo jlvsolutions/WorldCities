@@ -49,8 +49,7 @@ export class RegisterComponent
 
   onSubmit() {
     console.log(`Sending registration request. Login checkbox is ${this.form.controls["login"].value}.`);
-    this.errMessage = undefined;
-    this.message = "Submitting registration...";
+    this.setMessages(true, "Submitting registration...")
     var registerRequest = <RegisterRequest>{
       name: this.form.controls['name'].value,
       email: this.form.controls['email'].value,
@@ -63,17 +62,16 @@ export class RegisterComponent
 
         console.log(`Register result: Success: ${result.success}, Message: ${result.message}`);
         if (!result.success) {
-          this.errMessage = result.message;
+          this.setMessages(result.success, result.message);
           return;
         }
-        this.message = "Welecome " + registerRequest.name + "!";
 
         if (!this.doLogin())
           this.router.navigate(["/"]);
 
         // Perform Login Request as well.
         console.log("Login checkbox is checked.  Sending login request.");
-        this.message += " Logging in...";
+        this.setMessages(result.success, "Welecome " + registerRequest.name + "!  Logging in...")
         var loginRequest = <LoginRequest>{
           email: this.form.controls['email'].value,
           password: this.form.controls['password'].value
@@ -97,6 +95,19 @@ export class RegisterComponent
         this.errMessage = 'We had a problem on our end.  Please try again.';
       });
 
+  }
+  
+  private clearMessages() {
+    this.message = undefined;
+    this.errMessage = undefined;
+  }
+
+  private setMessages(success: boolean, message: string) {
+    this.clearMessages();
+    if (success)
+      this.message = message;
+    else
+      this.errMessage = message;
   }
 
   private doLogin(): boolean {
