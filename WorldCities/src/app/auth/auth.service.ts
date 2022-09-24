@@ -86,6 +86,7 @@ export class AuthService {
       }));
   }
 
+  /** Removes items from local storage and resets Subject values */
   logout() {
     localStorage.removeItem(this.nameKey);
     localStorage.removeItem(this.tokenKey);

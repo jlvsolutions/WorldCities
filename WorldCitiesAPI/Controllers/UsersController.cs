@@ -261,28 +261,9 @@ namespace WorldCitiesAPI.Controllers
             return Ok(response);
         }
 
-        [HttpPost("{id}/Delete")]
-        [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> Delete(string id)
-        {
-            _logger.LogDebug("Received Delete user request via POST. Id: {Id}", id);
-
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Delete: Received null or empty user id.");
-                return BadRequest("Invalid user id");
-            }
-            var response = await _userService.Delete(id);
-            if (response.Success)
-                _logger.LogInformation("Deleted user. Id: {id}", id);
-            else
-                _logger.LogWarning("Failed to Delete user. Id: {Id}, Message: {Message}", id, response.Message);
-            return Ok(response);
-        }
-
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> Delete2(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             _logger.LogDebug("Received Delete user request. Id: {Id}", id);
 
@@ -299,9 +280,7 @@ namespace WorldCitiesAPI.Controllers
             return Ok(response);
         }
 
-        //
-        // Helper Methods
-
+        #region Helper Methods
         /// <summary>
         /// Appends a HTTP Only cookie with refresh token to the http response.
         /// </summary>
@@ -328,5 +307,6 @@ namespace WorldCitiesAPI.Controllers
             else
                 return HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "";
         }
+        #endregion
     }
 }

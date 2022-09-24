@@ -78,8 +78,6 @@ export class RegisterComponent
           email: this.form.controls['email'].value,
           password: this.form.controls['password'].value
         };
-
-        // Send login request.
         this.authService.login(loginRequest)
           .subscribe(loginResult => {
 

@@ -71,8 +71,7 @@ export class UserService extends BaseService<User, string> {
   }
 
   delete(id: string): Observable<DeleteResult> {
-    var url = this.getUrl("api/Users/" + id + "/Delete");
-    return this.http.post<DeleteResult>(url, id); // TODO:  Change to use http.delete().
-
+    var url = this.getUrl("api/Users/" + id);
+    return this.http.delete<DeleteResult>(url);
   }
 }
