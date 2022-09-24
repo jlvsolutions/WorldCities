@@ -23,9 +23,8 @@ export class RegisterComponent
   extends BaseFormComponent implements OnInit {
 
   title?: string;
-  registerResult?: RegisterResult;
-  loginResult?: LoginResult;
-  progressMessage?: string;
+  message?: string;
+  errMessage?: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -49,66 +48,55 @@ export class RegisterComponent
   }
 
   onSubmit() {
-    console.log(`Sending registration request.  Login checkbox is ${this.form.controls["login"].value}.`);
-    this.registerResult = undefined;
-    this.loginResult = undefined;
-    this.progressMessage = "Submitting registration...";
-    var registerRequest = <RegisterRequest>{};
-    registerRequest.name = this.form.controls['name'].value;
-    registerRequest.email = this.form.controls['email'].value;
-    registerRequest.password = this.form.controls['password'].value;
+    console.log(`Sending registration request. Login checkbox is ${this.form.controls["login"].value}.`);
+    this.errMessage = undefined;
+    this.message = "Submitting registration...";
+    var registerRequest = <RegisterRequest>{
+      name: this.form.controls['name'].value,
+      email: this.form.controls['email'].value,
+      password: this.form.controls['password'].value
+    };
 
     // Send register request.
     this.authService.register(registerRequest)
       .subscribe(result => {
 
         console.log(`Register result: Success: ${result.success}, Message: ${result.message}`);
-        this.registerResult = result;
+        if (!result.success) {
+          this.errMessage = result.message;
+          return;
+        }
+        this.message = "Welecome " + registerRequest.name + "!";
 
-        if (result.success) {
-          this.progressMessage = "Welecome " + registerRequest.name + "!";
+        if (!this.doLogin())
+          this.router.navigate(["/"]);
 
-          if (this.doLogin()) {
+        // Perform Login Request as well.
+        console.log("Login checkbox is checked.  Sending login request.");
+        this.message += " Logging in...";
+        var loginRequest = <LoginRequest>{
+          email: this.form.controls['email'].value,
+          password: this.form.controls['password'].value
+        };
 
-            // Perform Login Request as well.
-            console.log("Login checkbox is checked.  Sending login request.");
-            this.progressMessage += " Logging in...";
-            var loginRequest = <LoginRequest>{};
-            loginRequest.email = this.form.controls['email'].value;
-            loginRequest.password = this.form.controls['password'].value;
+        // Send login request.
+        this.authService.login(loginRequest)
+          .subscribe(loginResult => {
 
-            // Send login request.
-            this.authService.login(loginRequest)
-              .subscribe(loginResult => {
+            console.log(`Login result: Success: ${loginResult.success}, Message: ${loginResult.message}`);
+            if (loginResult.success)
+              this.router.navigate(["/"]);
+            else
+              this.router.navigate(["login"]); // User story: Give another chance.
 
-                console.log(`Login result: Success: ${loginResult.success}, Message: ${loginResult.message}`);
-                this.loginResult = loginResult;
-
-                if (loginResult.success)
-                  this.router.navigate(["/"]);
-
-              }, error => {
-                console.log(error);
-                this.loginResult = <LoginResult>{ success: false, message: 'We had a problem on our end.  Please try again.' };
-              });
-          }
-          else
-            this.router.navigate(["/"]);
-       }
+          }, error => {
+            console.error(error);
+            this.router.navigate(["login"]); // User story: Give another change.
+          });
 
       }, error => {
         console.error(error);
-        this.registerResult = <RegisterResult>{ success: false, message: 'We had a problem on our end.  Please try again.' };
-        /* temp keep following for reference
-        switch (error.status) {
-          case 400:
-          case 401:
-          case 500:
-            if (this.registerResult != undefined)
-              this.registerResult.message = 'We had a problem on our end.  Please try again.';
-            break; 
-        }
-        */
+        this.errMessage = 'We had a problem on our end.  Please try again.';
       });
 
   }

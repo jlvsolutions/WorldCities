@@ -33,7 +33,7 @@ namespace WorldCitiesAPI.Controllers
         public async Task<ActionResult> Login(AuthenticateRequest model)
         {
             _logger.LogDebug("Received Login Request. Email: {Email}", model.Email);
-
+            
             // Authenticate the user
             var response = await _userService.Login(model, ipAddress());
             if (!response.Success)

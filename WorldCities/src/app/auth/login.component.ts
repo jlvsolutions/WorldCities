@@ -16,7 +16,7 @@ export class LoginComponent
   extends BaseFormComponent implements OnInit {
 
   title?: string;
-  loginResult?: LoginResult;
+  errMessage?: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -34,6 +34,7 @@ export class LoginComponent
 
   onSubmit() {
     console.log("Logging in...");
+    this.errMessage = undefined;
     var loginRequest = <LoginRequest>{};
     loginRequest.email = this.form.controls['email'].value;
     loginRequest.password = this.form.controls['password'].value;
@@ -42,13 +43,14 @@ export class LoginComponent
       .subscribe(result => {
 
         console.log(`Login result: ${result.message}`);
-        this.loginResult = result;
-        if (result.success) {
+        if (result.success)
           this.router.navigate(["/"]);
-        }
+        else
+          this.errMessage = result.message;
+
       }, error => {
-        console.log(error);
-        this.loginResult = error.error;
+        console.error(error);
+        this.errMessage = 'We had a problem on our end.  Please try again.';
       });
   }
 }
