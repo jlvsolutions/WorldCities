@@ -3,14 +3,7 @@
   <div class="shadow">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-      <p>
-        <mat-error *ngIf="errMessage">
-          <strong>Error</strong>: {{errMessage}}
-        </mat-error>
-        <mat-label class="messageLabel" *ngIf="message">
-        {{message}}
-        </mat-label>
-      </p>
+      <app-show-message></app-show-message>
 
       <!-- Name -->
       <mat-form-field>

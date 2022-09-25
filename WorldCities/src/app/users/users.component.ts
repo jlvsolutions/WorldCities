@@ -11,6 +11,7 @@ import { debounceTime, distinct, distinctUntilChanged } from 'rxjs/operators';
 import { User } from './../auth/user';
 import { UserService } from './user.service';
 import { AuthService } from './../auth/auth.service';
+import { ShowMessageComponent } from '../show-message/show-message.component';
 
 @Component({
   selector: 'app-users',
@@ -31,6 +32,7 @@ export class UsersComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
 
   filterTextChanged: Subject<string> = new Subject<string>();
 
@@ -55,7 +57,7 @@ export class UsersComponent implements OnInit {
    */
   onDeleteClicked(user: User): void {
     console.log(`User clicked Delete on ${user.name}, ${user.email}...`);
-    this.clearMessages();
+    this.show.clearMessages();
 
     if (!confirm(`Are you sure you want to delete ${user.name}?`)) {
       console.log(`User Declined to delete ${user.name}.`);
@@ -63,18 +65,25 @@ export class UsersComponent implements OnInit {
     }
     console.log(`User Confirmed to delete ${user.name}, ${user.email}.`);
 
-    //this.userService.delete(user.id)
-    this.userService.delete("123456")
+    this.userService.delete(user.id)
       .subscribe(result => {
 
-        console.log(result.message);
-        this.setMessages(result.success, result.message);
+        console.log(result.message + `, ${user.name}, ${user.email}`);
+        this.show.setMessages(result.success, `User Deleted: ${user.name}, ${user.email}` );
 
         // Reload the users data.
         this.ngOnInit();
       }, error => {
-        console.error(error)
-        this.setMessages(false, "We had a problem on our end. Please try again.");
+        console.error(error);
+        switch (error.status) {
+          case 400:
+            this.show.setMessages(false, error.message);
+            break;
+          case 405:
+          default:
+            this.show.setMessages(false, `We had a problem on our end. Please try again. Message: ${error.statusText}`);
+            break;
+        };
       });
   }
 
@@ -118,18 +127,5 @@ export class UsersComponent implements OnInit {
         this.paginator.pageSize = result.pageSize;
         this.users = new MatTableDataSource<User>(result.data);
       }, error => console.error(error));
-  }
-
-  private clearMessages() {
-    this.message = undefined;
-    this.errMessage = undefined;
-  }
-
-  private setMessages(success: boolean, message: string) {
-    this.clearMessages();
-    if (success)
-      this.message = message;
-    else
-      this.errMessage = message;
   }
 }

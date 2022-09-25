@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
 
 import { BaseFormComponent } from '../base-form.component';
+import { ShowMessageComponent } from '../show-message/show-message.component';
 import { AuthService } from './auth.service';
 import { LoginRequest } from './login-request';
 import { LoginResult } from './login-result';
@@ -16,7 +17,7 @@ export class LoginComponent
   extends BaseFormComponent implements OnInit {
 
   title?: string;
-  errMessage?: string;
+  @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -34,7 +35,7 @@ export class LoginComponent
 
   onSubmit() {
     console.log("Logging in...");
-    this.errMessage = undefined;
+    this.show.clearMessages();
     var loginRequest = <LoginRequest>{};
     loginRequest.email = this.form.controls['email'].value;
     loginRequest.password = this.form.controls['password'].value;
@@ -46,11 +47,11 @@ export class LoginComponent
         if (result.success)
           this.router.navigate(["/"]);
         else
-          this.errMessage = result.message;
+          this.show.setMessages(false, result.message);
 
       }, error => {
         console.error(error);
-        this.errMessage = 'We had a problem on our end.  Please try again.';
+        this.show.setMessages(false, 'We had a problem on our end.  Please try again.');
       });
   }
 }

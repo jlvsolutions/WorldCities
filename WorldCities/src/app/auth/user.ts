@@ -13,4 +13,6 @@ export interface User {
   newPassword: string;
   /**The roles the user belongs to. */
   roles: string[];
+  /**Not used, needed for serialization. */
+  RefreshTokens?: string[];
 }

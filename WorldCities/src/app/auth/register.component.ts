@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
@@ -7,6 +7,7 @@ import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 
 
 import { BaseFormComponent } from '../base-form.component';
+import { ShowMessageComponent } from '../show-message/show-message.component';
 import { AuthService } from './auth.service';
 import { RegisterRequest } from './register-request';
 import { RegisterResult } from './register-result';
@@ -23,8 +24,8 @@ export class RegisterComponent
   extends BaseFormComponent implements OnInit {
 
   title?: string;
-  message?: string;
-  errMessage?: string;
+  @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
+   
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -49,7 +50,7 @@ export class RegisterComponent
 
   onSubmit() {
     console.log(`Sending registration request. Login checkbox is ${this.form.controls["login"].value}.`);
-    this.setMessages(true, "Submitting registration...")
+    this.show.setMessages(true, "Submitting registration...")
     var registerRequest = <RegisterRequest>{
       name: this.form.controls['name'].value,
       email: this.form.controls['email'].value,
@@ -62,7 +63,7 @@ export class RegisterComponent
 
         console.log(`Register result: Success: ${result.success}, Message: ${result.message}`);
         if (!result.success) {
-          this.setMessages(result.success, result.message);
+          this.show.setMessages(result.success, result.message);
           return;
         }
 
@@ -71,7 +72,7 @@ export class RegisterComponent
 
         // Perform Login Request as well.
         console.log("Login checkbox is checked.  Sending login request.");
-        this.setMessages(result.success, "Welecome " + registerRequest.name + "!  Logging in...")
+        this.show.setMessages(result.success, "Welecome " + registerRequest.name + "!  Logging in...")
         var loginRequest = <LoginRequest>{
           email: this.form.controls['email'].value,
           password: this.form.controls['password'].value
@@ -92,24 +93,10 @@ export class RegisterComponent
 
       }, error => {
         console.error(error);
-        this.errMessage = 'We had a problem on our end.  Please try again.';
+        this.show.setMessages(false, 'We had a problem on our end.  Please try again.')
       });
 
   }
-  
-  private clearMessages() {
-    this.message = undefined;
-    this.errMessage = undefined;
-  }
-
-  private setMessages(success: boolean, message: string) {
-    this.clearMessages();
-    if (success)
-      this.message = message;
-    else
-      this.errMessage = message;
-  }
-
   private doLogin(): boolean {
     return this.form.controls["login"].value;
   }
@@ -125,10 +112,7 @@ export class RegisterComponent
 
           console.log("authServie.isDupeEmail() result:  " + result);
           return (result ? { isDupeEmail: true } : null);
-
         }));
-
     }
   }
-
 }

@@ -42,11 +42,6 @@ namespace WorldCitiesAPI.Data.Models.Users
         /// List of roles this user has.
         /// </summary>
         public string[] Roles { get; set; } = null!;
-
-        [JsonIgnore]
-        public List<RefreshToken> RefreshTokens { get; set; } = null!;
-
-
         public UserDTO() { }
 
         public UserDTO(ApplicationUser user, string[] roles)
@@ -57,7 +52,6 @@ namespace WorldCitiesAPI.Data.Models.Users
             EmailConfirmed = user.EmailConfirmed;
             LockoutEnabled = user.LockoutEnabled;
             Roles = roles;
-            RefreshTokens = user.RefreshTokens;
         }
     }
 }

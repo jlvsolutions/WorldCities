@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, AsyncValidatorFn, ValidatorFn, FormArray } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
@@ -7,6 +7,7 @@ import { map, takeUntil } from 'rxjs/operators';
 import { environment } from './../../environments/environment';
 import { User } from './../auth/user';
 import { BaseFormComponent } from '../base-form.component';
+import { ShowMessageComponent } from '../show-message/show-message.component';
 import { UserService } from './user.service';
 import { AuthService } from './../auth/auth.service';
 import { validateHorizontalPosition } from '@angular/cdk/overlay';
@@ -17,10 +18,13 @@ import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
   templateUrl: './user-edit.component.html',
   styleUrls: ['./user-edit.component.scss']
 })
-export class UserEditComponent extends BaseFormComponent implements OnInit {
+export class UserEditComponent
+  extends BaseFormComponent implements OnInit {
 
   /** The view title */
   title?: string;
+
+  @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
 
   /** The user object to edit or create */
   user?: User;
@@ -45,13 +49,13 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
   /** One method of unsubscribing to prevent memory leaks. */
   private destroySubject = new Subject();
 
+
   constructor(
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private userService: UserService,
     private authService: AuthService) {
-
     super();
   }
 
@@ -105,7 +109,8 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
   onSubmit() {
     var user = (this.id) ? this.user : <User>{};
 
-    console.log("user-edit onSubmit: " + this.user?.name);
+    console.log(`user-edit onSubmit: User Name: ${this.user?.name}, Email: ${this.user?.email}`);
+    this.show.setMessages(true, "Updating...");
 
     if (user) {
       user.name = this.form.controls['name'].value;
@@ -116,8 +121,8 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
       user.newPassword = this.form.controls['password'].value;
 
       if (this.id) {
-        // EDIT mode
 
+        // EDIT mode
         if (!this.setPasswordChecked)
           user.newPassword = '';
 
@@ -125,12 +130,17 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
           .subscribe(result => {
 
             console.log("User " + user!.name + " has been updated.");
+            this.show.setMessages(true, `User Name: ${result.name}, Email: ${user?.email} has been updated.`);
 
             // go back to users view
             this.router.navigate(['/users']);
-          }, error => console.error(error));
+          }, error => {
+            console.error(error);
+            this.show.setMessages(false, `Status code: ${error.status}, Message: ${error.statusText}`);
+          });
       }
       else {
+
         // ADD NEW mode
         this.userService.post(user)
           .subscribe(result => {
@@ -164,10 +174,9 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
           this.title = "Edit - " + this.user.name;
           console.log("Loaded data for user: " + this.user.email);
 
-          //
           // Update the form with the user values.
           this.form.patchValue(this.user);
-
+          this.origEmail = this.user.email;
 
         }, error => console.error(error));
     }
@@ -221,14 +230,12 @@ export class UserEditComponent extends BaseFormComponent implements OnInit {
     return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
 
       var testEmail = control.value.toString();
-      if (this.origEmail === testEmail)
-        return new Observable<null>();
 
       return this.authService.isDupeEmail(testEmail)
         .pipe(map(result => {
 
           console.log("authServie.isDupeEmail() result:  " + result);
-          return (result ? { isDupeField: true } : null);
+          return ((this.origEmail !== testEmail) && result ? { isDupeField: true } : null);
         }));
     }
   }

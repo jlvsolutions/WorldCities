@@ -10,6 +10,8 @@ export abstract class BaseFormComponent {
    */
   form!: FormGroup;
 
+  constructor() { }
+
   getErrors(
     control: AbstractControl,
     displayName: string,
@@ -44,6 +46,5 @@ export abstract class BaseFormComponent {
     return errors;
   }
 
-  constructor() { }
 
 }

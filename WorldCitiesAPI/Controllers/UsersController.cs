@@ -110,11 +110,11 @@ namespace WorldCitiesAPI.Controllers
         [Route("IsDupeEmail")]
         public async Task<bool> IsDupeEmail(DupeEmailRequest model)
         {
-            _logger.LogDebug("Received IsDupeEmail Request. Email: {email}", model.Email);
+            _logger.LogDebug("IsDupeEmail Request. Email: {email}", model.Email);
 
-            if (string.IsNullOrEmpty(model.Email))
-                return false;
-            return await _userService.IsDupeEmail(model.Email);
+            var isDupe = await _userService.IsDupeEmail(model.Email);
+            _logger.LogInformation("IsDupeEmail {email} is {dupe}", model.Email, isDupe);
+            return isDupe;
         }
 
         [HttpPost("revoke-token")]
@@ -266,14 +266,10 @@ namespace WorldCitiesAPI.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             _logger.LogDebug("Received Delete user request. Id: {Id}", id);
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogWarning("Delete: Received null or empty user id.");
-                return BadRequest("Invalid user id.");
-            }
+
             var response = await _userService.Delete(id);
             if (response.Success)
-                _logger.LogInformation("Deleted user. Id: {id}", id);
+                _logger.LogInformation("Deleted user. {id}", id);
             else
                 _logger.LogWarning("Failed to Delete user. Id: {Id}, Message: {Message}", id, response.Message);
             return Ok(response);

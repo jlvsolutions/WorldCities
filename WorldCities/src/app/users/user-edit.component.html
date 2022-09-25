@@ -3,12 +3,8 @@
   User ID: {{user?.id}}
   <p *ngIf="this.id && !user"><em>Loading...</em></p>
   <div class="shadow">
-    <p>
-      <mat-error *ngIf="form.invalid && form.hasError('isDupeEmail')">
-        <strong>ERROR</strong>
-        A user with the same <i>email</i> already exists.
-      </mat-error>
-    </p>
+
+    <app-show-message></app-show-message>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
@@ -85,7 +81,6 @@
         <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">{{ this.id ? "Save" : "Create" }}</button>
         <button mat-flat-button color="secondary" [routerLink]="['/users']">Cancel</button>
       </div>
-
 
     </form>
   </div>

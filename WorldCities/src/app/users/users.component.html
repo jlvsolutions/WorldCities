@@ -14,14 +14,7 @@
          placeholder="Filter by name (or part of it)...">
 </mat-form-field>
 
-<p>
-  <mat-error *ngIf="errMessage">
-    <strong>Error</strong>: {{errMessage}}
-  </mat-error>
-  <mat-label class="messageLabel" *ngIf="message">
-    {{message}}
-  </mat-label>
-</p>
+<app-show-message></app-show-message>
 
 <table mat-table [dataSource]="users"
        class="mat-elevation-z8"

@@ -52,6 +52,7 @@ export class UserService extends BaseService<User, string> {
     user.name = user.name ?? "";
     user.newPassword = user.newPassword ?? "";
     user.roles = user.roles ?? [""];
+;
 
     var url = this.getUrl("api/Users/" + user.id);
     return this.http.put<User>(url, user);
