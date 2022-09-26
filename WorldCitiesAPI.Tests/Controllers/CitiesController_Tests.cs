@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WorldCitiesAPI.Data.Entities;
 
-namespace WorldCitiesAPI.Tests
+namespace WorldCitiesAPI.Tests.Controllers
 {
     public class CitiesController_Tests
     {
@@ -36,8 +36,8 @@ namespace WorldCitiesAPI.Tests
 
 
             // Act
-            city_existing = (await controller.GetCity(1)).Value;
-            city_notExisting = (await controller.GetCity(2)).Value;
+            city_existing = (await controller.GetById(1)).Value;
+            city_notExisting = (await controller.GetById(2)).Value;
 
             // Assert
             Assert.NotNull(city_existing);

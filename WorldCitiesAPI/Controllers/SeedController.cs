@@ -209,6 +209,10 @@ namespace WorldCitiesAPI.Controllers
         {
             _logger.LogInformation("SeedController: CreateDefaultUsers()");
 
+            // Prevents non-development environments from running this method
+            if (!_env.IsDevelopment())
+                throw new SecurityException("Not Allowed");
+
             // setup the default role names
             string role_RegisteredUser = "RegisteredUser";
             string role_Administrator = "Administrator";

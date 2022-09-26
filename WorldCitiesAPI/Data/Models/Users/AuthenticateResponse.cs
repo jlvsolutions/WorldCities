@@ -21,7 +21,7 @@ namespace WorldCitiesAPI.Data.Models.Users
         public string? Token { get; set; }
 
         /// <summary>
-        /// Refresh token is returned int he http only cookie.
+        /// Refresh token is returned in the http only cookie.
         /// </summary>
         [JsonIgnore]
         public string? RefreshToken { get; set; }

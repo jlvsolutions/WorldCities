@@ -16,7 +16,7 @@ using Xunit;
 using Microsoft.Extensions.Logging;
 using WorldCitiesAPI.Data.Entities;
 
-namespace WorldCitiesAPI.Tests
+namespace WorldCitiesAPI.Tests.Controllers
 {
     public class SeedController_Tests
     {
@@ -41,12 +41,10 @@ namespace WorldCitiesAPI.Tests
             mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "DefaultPasswords:RegisteredUser")]).Returns("M0ckP$$word");
             mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "DefaultPasswords:Administrator")]).Returns("M0ckP$$word");
 
-
-
             // create an ApplicationDbContext instance using the in-memory DB
             using var context = new ApplicationDbContext(options);
 
-            // create a RoleManaget instance
+            // create a RoleManager instance
             var roleManager = IdentityHelper.GetRoleManager(new RoleStore<IdentityRole>(context));
 
             // create a UserManager instance
@@ -72,7 +70,7 @@ namespace WorldCitiesAPI.Tests
             // method to create the default users (and roles)
             await controller.CreateDefaultUsers();
 
-            // retrieve teh users
+            // retrieve the users
             user_Admin = await userManager.FindByEmailAsync("admin@email.com");
             user_User = await userManager.FindByEmailAsync("user@email.com");
             user_NotExisting = await userManager.FindByEmailAsync("notexisting@email.com");

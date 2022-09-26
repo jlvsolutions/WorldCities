@@ -62,7 +62,7 @@ namespace WorldCitiesAPI.Controllers
 
         // GET: api/Cities/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<City>> GetCity(int id) // TODO:  Change to CityDTO
+        public async Task<ActionResult<City>> GetById(int id) // TODO:  Change to CityDTO
         {
             _logger.LogInformation("Entering GetCity. Id: {id}", id);
             if (_context.Cities == null)
@@ -124,7 +124,7 @@ namespace WorldCitiesAPI.Controllers
             _context.Cities.Add(city);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("PostCity", new { id = city.Id }, city);
+            return CreatedAtAction(nameof(GetById), new { id = city.Id }, city);
         }
 
         // DELETE: api/Cities/5

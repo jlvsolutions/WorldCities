@@ -65,6 +65,7 @@ namespace WorldCitiesAPI.Services
             var secToken = await _jwtHandler.GenerateJwtToken(user);
             var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
             var refreshToken = _jwtHandler.GenerateRefreshToken(ipAddress);
+
             if (user.RefreshTokens == null)
                 user.RefreshTokens = new List<RefreshToken>();
             user.RefreshTokens.Add(refreshToken);
@@ -299,8 +300,8 @@ namespace WorldCitiesAPI.Services
                 _logger.LogWarning("RefreshToken:  Invalid token: {token}", token);
                 return new AuthenticateResponse(false, "Invalid token.");
             }
-            var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
 
+            var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
             if (refreshToken.IsRevoked)
             {
                 // Revoke all descendant tokens in case this token has been compromised.

@@ -30,7 +30,7 @@ namespace WorldCitiesAPI.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult> Login(AuthenticateRequest model)
+        public async Task<ActionResult<AuthenticateResponse>> Login(AuthenticateRequest model)
         {
             _logger.LogDebug("Received Login Request. Email: {Email}", model.Email);
             
@@ -53,32 +53,12 @@ namespace WorldCitiesAPI.Controllers
         public async Task<ActionResult> Register(RegisterRequest model)
         {
             _logger.LogDebug("Received Register Request. Name: {Name}, Email: {Email}", model.Name, model.Email);
-            if (string.IsNullOrEmpty(model.Name))
-            {
-                var msg = "Display Name is required.";
-                _logger.LogWarning("Register: {msg}", msg);
-                return BadRequest(msg);
-            }
-
-            if (string.IsNullOrEmpty(model.Email))
-            {
-                var msg = "Email is required.";
-                _logger.LogWarning("Register: {msg}", msg);
-                return BadRequest(msg);
-            }
-
-            if (string.IsNullOrEmpty(model.Password))
-            {
-                var msg = "Password is required.";
-                _logger.LogWarning("Register: {msg}", msg);
-                return BadRequest(msg);
-            }
 
             var response = await _userService.Register(model);
             if (response.Success)
                 _logger.LogInformation("Register: Registration for new user succeeded. Email: {Email}", model.Email);
             else
-                _logger.LogWarning("Regiistration for new user failed.  Message: {Message}, Email: {Email}", response.Message, model.Email);
+                _logger.LogWarning("Registration for new user failed.  Message: {Message}, Email: {Email}", response.Message, model.Email);
             return Ok(response);
         }
 

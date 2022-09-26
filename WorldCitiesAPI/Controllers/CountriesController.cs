@@ -53,7 +53,7 @@ namespace WorldCitiesAPI.Controllers
 
         // GET: api/Countries/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Country>> GetCountry(int id) // TODO: Change to CountryDTO...
+        public async Task<ActionResult<Country>> GetById(int id) // TODO: Change to CountryDTO...
         {
           if (_context.Countries == null)
           {
@@ -107,14 +107,10 @@ namespace WorldCitiesAPI.Controllers
         [Authorize(Roles = "RegisteredUser")]
         public async Task<ActionResult<Country>> PostCountry(Country country)// TODO: Change to CountryDTO...
         {
-          if (_context.Countries == null)
-          {
-              return Problem("Entity set 'ApplicationDbContext.Countries' is null.");
-          }
             _context.Countries.Add(country);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCountry", new { id = country.Id }, country);
+            return CreatedAtAction(nameof(GetById), new { id = country.Id }, country);
         }
 
         // DELETE: api/Countries/5
