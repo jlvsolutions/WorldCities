@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Threading.Tasks;
 using WorldCitiesAPI.Controllers;
 using WorldCitiesAPI.Data;
 using Xunit;
-using Microsoft.Extensions.Logging;
 using WorldCitiesAPI.Data.Entities;
 
 namespace WorldCitiesAPI.Tests.Controllers
@@ -35,6 +35,7 @@ namespace WorldCitiesAPI.Tests.Controllers
 
             // create a IWebHost environment mock instance
             var mockEnv = Mock.Of<IWebHostEnvironment>();
+            mockEnv.EnvironmentName = Microsoft.Extensions.Hosting.Environments.Development;
 
             // create a IConfiguration mock instance
             var mockConfiguration = new Mock<IConfiguration>();

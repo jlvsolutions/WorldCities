@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Moq;
-
 namespace WorldCitiesAPI.Tests
 {
     /// <summary>

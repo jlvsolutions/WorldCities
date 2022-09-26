@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using WorldCitiesAPI.Data.Entities;
 
 namespace WorldCitiesAPI.Tests.Controllers
@@ -30,7 +31,7 @@ namespace WorldCitiesAPI.Tests.Controllers
             });
             context.SaveChanges();
 
-            var controller = new CitiesController(context); // TODO: Also need to test with a mocked ILogger
+            var controller = new CitiesController(context, new NullLogger<CitiesController>()); // TODO: need to test with a mocked ILogger
             City? city_existing = null;
             City? city_notExisting = null;
 

@@ -150,7 +150,6 @@ namespace WorldCitiesAPI.Controllers
             return new JsonResult(new { Cities = numberOfCitiesAdded, Countries = numberOfCountriesAdded });
         }
 
-
         /// <summary>
         /// This is for Migration1
         /// </summary>
@@ -204,6 +203,11 @@ namespace WorldCitiesAPI.Controllers
             return new JsonResult(new { Cities = numberOfCitiesUpdated });
         }
 
+        /// <summary>
+        /// Creates default RegisteredUser and Administrator users.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="SecurityException"></exception>
         [HttpGet]
         public async Task<ActionResult> CreateDefaultUsers()
         {
@@ -242,7 +246,9 @@ namespace WorldCitiesAPI.Controllers
                 {
                     SecurityStamp = Guid.NewGuid().ToString(),
                     UserName = email_Admin,
-                    Email = email_Admin
+                    Email = email_Admin,
+                    DisplayName = "Admin"
+                    
                 };
 
                 // insert the admin user into the DB
@@ -268,7 +274,8 @@ namespace WorldCitiesAPI.Controllers
                 {
                     SecurityStamp = Guid.NewGuid().ToString(),
                     UserName = email_User,
-                    Email = email_User
+                    Email = email_User,
+                    DisplayName = "User"
                 };
 
                 // insert the standard user into the DB
