@@ -56,7 +56,7 @@ namespace WorldCitiesAPI.Services
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                _logger.LogInformation("Authenticate: Authentication failed:  Invalid Email or Password. Login: {Email}", model.Email);
+                _logger.LogInformation("Authentication failed:  Invalid Email or Password. Login: {Email}", model.Email);
                 return new AuthenticateResponse(false, "Invalid Email or Password");
             }
             var roles = (await _userManager.GetRolesAsync(user)).ToArray();
@@ -125,7 +125,7 @@ namespace WorldCitiesAPI.Services
                 user.Roles = new string[] { role_RegisteredUser };
             }
 
-            if (await _userManager.FindByNameAsync(user.Email) != null)
+            if (await _userManager.FindByEmailAsync(user.Email) != null)
             {
                 _logger.LogWarning("Create: User with Email {Email} already exists.", user.Email);
                 return new CreateResponse() { Success = false, Message = $"User with Email {user.Email} already exists." };

@@ -71,9 +71,11 @@ namespace WorldCitiesAPI.Tests
             TruncateIdentityTables(context);
 
             if (roles != null)
+            {
                 foreach (string role in roles)
                     await roleManager.CreateAsync(new IdentityRole(role));
-
+                context.SaveChanges();
+            }
             var user = new ApplicationUser()
             {
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -84,6 +86,9 @@ namespace WorldCitiesAPI.Tests
                 LockoutEnabled = false
             };
             await userManager.CreateAsync(user, password);
+            if (roles != null)
+                await userManager.AddToRoleAsync(user, roles[0]);
+
             context.SaveChanges();
         }
 

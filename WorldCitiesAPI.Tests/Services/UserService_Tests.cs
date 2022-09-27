@@ -182,7 +182,6 @@ namespace WorldCitiesAPI.Tests.Services
             //
             // Assert the database
             Assert.Equal(0, _context.RefreshTokens.Count());
-
         }
 
         [Fact]
@@ -233,6 +232,129 @@ namespace WorldCitiesAPI.Tests.Services
             // Assert the database
             Assert.Equal(1, _context.RefreshTokens.Count());
             Assert.DoesNotContain("TestToken", _context.RefreshTokens.First().Token);
+        }
+
+        [Fact]
+        public async Task Create_ShouldFaildIfUserEmailAlreadyExists()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com");
+
+            //
+            // Act
+            UserDTO testUser = new UserDTO()
+            {
+                Name = "ExistingUserName",
+                Email = "exists@email.com",
+            };
+            var response = await _userService.Create(testUser);
+
+            //
+            // Assert the response
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+            Assert.NotEmpty(response.Message);
+            Assert.Equal(1, _context.Users.Count());
+            Assert.Contains("DisplayName:exists@email", _context.Users.First().DisplayName);
+        }
+
+        [Fact]
+        public async Task Create_NewUserWithMissingFieldShouldFail()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+
+            //
+            // Act
+            UserDTO newUserDTO = new UserDTO()
+            { 
+                Name = "NewUserName",
+                Email = "newuser@email.com",
+                Roles = new string[2] { "TestRole1", "TestRole2" }
+                // Required new password missing.
+            };
+            var response = await _userService.Create(newUserDTO);
+
+            //
+            // Assert the response
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+            Assert.NotEmpty(response.Message);
+
+            //
+            // Assert the database
+            Assert.Equal(1, _context.Users.Count());
+            Assert.Contains("exists@email.com", _context.Users.First().Email);
+
+        }
+
+        [Fact]
+        public async Task Create__NewUserShouldCreate()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" } );
+
+            //
+            // Act
+            UserDTO testUser = new UserDTO()
+            {
+                Name = "NewUserName",
+                Email = "newuser@email.com",
+                Roles = new string[2] { "TestRole1", "TestRole2" },
+                NewPassword = "password"
+            };
+            var response = await _userService.Create(testUser);
+            var newUser = await _userManager.FindByEmailAsync(testUser.Email);
+
+            //
+            // Assert the response
+            Assert.NotNull(response);
+            Assert.True(response.Success);
+            Assert.NotEmpty(response.Message);
+
+            //
+            // Assert the database
+            Assert.NotNull(newUser);
+            Assert.Equal(2, _context.Users.Count());
+            Assert.True(await _userManager.IsInRoleAsync(newUser, "TestRole1"));
+            Assert.True(await _userManager.IsInRoleAsync(newUser, "TestRole2"));
+            Assert.True(await _userManager.CheckPasswordAsync(newUser, "password"));
+        }
+
+        [Fact]
+        public async Task Create_NewUserWithoutRolesShouldBeAddedToRegisteredUserRole()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+
+            //
+            // Act
+            UserDTO testUser = new UserDTO()
+            {
+                Name = "NewUserName",
+                Email = "newuser@email.com",
+                NewPassword = "password"
+            };
+            var response = await _userService.Create(testUser);
+            var newUser = await _userManager.FindByEmailAsync(testUser.Email);
+
+            //
+            // Assert the response
+            Assert.NotNull(response);
+            Assert.True(response.Success);
+            Assert.NotEmpty(response.Message);
+
+            //
+            // Assert the database
+            Assert.NotNull(newUser);
+            Assert.Equal(2, _context.Users.Count());
+            Assert.True(await _userManager.IsInRoleAsync(newUser, "RegisteredUser"));
+            Assert.True(await _userManager.CheckPasswordAsync(newUser, "password"));
+
         }
     }
 }
