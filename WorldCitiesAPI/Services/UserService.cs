@@ -83,7 +83,7 @@ namespace WorldCitiesAPI.Services
         public async Task<RegisterResponse> Register(RegisterRequest model)
         {
             // Ensure user does not already exists.
-            if (await _userManager.FindByNameAsync(model.Email) != null)
+            if (await _userManager.FindByEmailAsync(model.Email) != null)
             {
                 _logger.LogInformation("Register:  Registration failed:  User Email already exists.  Email: {Email}", model.Email);
                 return new RegisterResponse() { Success = false, Message = "Registration failed.  User Email already exists." };

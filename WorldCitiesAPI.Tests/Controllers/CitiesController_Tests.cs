@@ -31,7 +31,7 @@ namespace WorldCitiesAPI.Tests.Controllers
             });
             context.SaveChanges();
 
-            var controller = new CitiesController(context, new NullLogger<CitiesController>()); // TODO: need to test with a mocked ILogger
+            var controller = new CitiesController(context, new NullLogger<CitiesController>());
             City? city_existing = null;
             City? city_notExisting = null;
 
