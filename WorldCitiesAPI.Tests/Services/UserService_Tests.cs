@@ -356,5 +356,147 @@ namespace WorldCitiesAPI.Tests.Services
             Assert.True(await _userManager.CheckPasswordAsync(newUser, "password"));
 
         }
+
+        [Fact]
+        public async Task Update_NonExistingUserShouldFaild()
+        {
+            //
+            // Arrange
+            IdentityHelper.TruncateIdentityTables(_context);
+
+            //
+            // Act
+            var response = await _userService.Update("BadId", new UserDTO());
+
+            //
+            // Assert
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+            Assert.NotEmpty(response.Message);
+
+            //
+            // Assert database
+            Assert.Equal(0, _context.Users.Count());
+            Assert.Equal(0, _context.Roles.Count());
+            Assert.Equal(0, _context.RefreshTokens.Count());
+        }
+
+        [Fact]
+        public async Task Update_EmailConflictShouldFail()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var userToUpdate = new ApplicationUser()
+            {
+                DisplayName = "DisplayName",
+                Email = "ToUpdateEmail@email.com",
+                UserName = "ToUpdateEmail@email.com",
+                EmailConfirmed = true,
+                LockoutEnabled = false
+            };
+            await _userManager.CreateAsync(userToUpdate);
+            userToUpdate.Email = "exists@email.com";
+
+            //
+            // Act
+            var response = await _userService.Update(userToUpdate.Id, new UserDTO() { Email = "exists@email.com" });
+
+            //
+            // Assert
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+            Assert.NotEmpty(response.Message);
+
+            //
+            // Assert database
+            Assert.Equal(2, _context.Users.Count());
+            Assert.Equal(1, _context.Roles.Count());
+            Assert.Equal(0, _context.RefreshTokens.Count());
+        }
+
+        [Fact]
+        public async Task Update_EmailChangeShouldUpdateSecurityStamp()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            var updatedUserDTO = new UserDTO(user, Array.Empty<string>());
+            updatedUserDTO.Email = "newemail@email.com";
+            var existingSecurityStamp = user.SecurityStamp;
+
+            //
+            // Act
+            var response = await _userService.Update(user.Id, updatedUserDTO);
+
+            //
+            // Assert response
+            Assert.NotNull(response);
+            Assert.True(response.Success);
+            Assert.NotEmpty(response.Message);
+
+            //
+            // Assert Database
+            Assert.NotEqual(user.SecurityStamp, existingSecurityStamp);
+
+        }
+        [Fact]
+        public async Task Update_UpdateShouldUpdateAllFieldsAndRoles()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", 
+                new string[4] 
+                { 
+                    "RegisteredUser",
+                    "Role1",
+                    "Role2",
+                    "Role3"
+                });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            await _userManager.AddToRoleAsync(user, "Role1");
+            await _userManager.AddToRoleAsync(user, "Role3");
+            _context.SaveChanges();
+
+            var updatedUserDTO = new UserDTO(user,
+                new string[2]
+                {
+                    "Role1",
+                    "Role4"
+                });
+            updatedUserDTO.Name = "NewName";
+            updatedUserDTO.Email = "NewEmail@email.com";
+            updatedUserDTO.EmailConfirmed = false;
+            updatedUserDTO.LockoutEnabled = true;
+
+            //
+            // Act
+            var response = await _userService.Update(user.Id, updatedUserDTO);
+            var updatedUser = await _userManager.FindByIdAsync(user.Id);
+            var updatedRoles = await _userManager.GetRolesAsync(user);
+
+            //
+            // Assert response
+            Assert.NotNull(response);
+            Assert.True(response.Success);
+            Assert.NotEmpty(response.Message);
+
+            //
+            // Assert Database
+            Assert.NotNull(updatedUser);
+            Assert.Equal("NewName", updatedUser.DisplayName);
+            Assert.Equal("NewEmail@email.com", updatedUser.Email);
+            Assert.Equal(updatedUser.Email, updatedUser.UserName);
+            Assert.False(updatedUser.EmailConfirmed);
+            Assert.True(updatedUser.LockoutEnabled);
+            Assert.Equal(5, _context.Roles.Count());
+            Assert.Equal(2, updatedRoles.Count());
+            Assert.DoesNotContain("RegisteredUser", updatedRoles);
+            Assert.Contains("Role1", updatedRoles);
+            Assert.DoesNotContain("Role2", updatedRoles);
+            Assert.DoesNotContain("Role3", updatedRoles);
+            Assert.Contains("Role4", updatedRoles);
+        }
     }
 }

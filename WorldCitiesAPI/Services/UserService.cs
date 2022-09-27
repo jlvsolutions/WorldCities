@@ -184,13 +184,14 @@ namespace WorldCitiesAPI.Services
             }
 
             // Check for Email/UserName conflict
-            ApplicationUser appUserByName = await _userManager.FindByNameAsync(user.Email);
-            if (appUserByName != null && appUserByName.Id != appUser.Id)
+            ApplicationUser appUserByEmail = await _userManager.FindByEmailAsync(user.Email);
+            if (appUserByEmail != null && appUserByEmail.Id != appUser.Id)
             {
                 _logger.LogWarning("Update: Email/UserName already exists: {Email}", user.Email);
                 return new UpdateResponse() { Success = false, Message = "Email/UserName already exists." };
             }
 
+            // Set new security stamp if credentials change.
             if (user.Email != appUser.UserName)
                 appUser.SecurityStamp = Guid.NewGuid().ToString();
             appUser.DisplayName = user.Name;
@@ -230,15 +231,15 @@ namespace WorldCitiesAPI.Services
                         if ((await _roleManager.FindByNameAsync(role)) == null)
                             await _roleManager.CreateAsync(new IdentityRole(role));
                         if (!(await _userManager.IsInRoleAsync(appUser, role)))
-                            await _userManager.AddToRoleAsync(new ApplicationUser() { Id = user.Id }, role);
+                            await _userManager.AddToRoleAsync(appUser, role);
                     }
 
                 // Check for any roles that were removed
-                var currentRoles = await _userManager.GetRolesAsync(new ApplicationUser() { Id = user.Id });
+                var currentRoles = await _userManager.GetRolesAsync(appUser);
                 if (user.Roles != null)
                     foreach (string role in currentRoles)
                         if (!user.Roles.Contains(role))
-                            await _userManager.RemoveFromRoleAsync(new ApplicationUser() { Id = user.Id }, role);
+                            await _userManager.RemoveFromRoleAsync(appUser, role);
 
             }
             catch (Exception ex)
