@@ -47,6 +47,10 @@ namespace WorldCitiesAPI.Tests
                 new Mock<ILogger<UserManager<TIdentityUser>>>().Object);
         }
 
+        /// <summary>
+        /// Truncates the User, Roles, UserRoles and RefreshTokens tables.
+        /// </summary>
+        /// <param name="context"></param>
         public static void TruncateIdentityTables(ApplicationDbContext context)
         {
             foreach (ApplicationUser user in context.Users)
@@ -60,6 +64,18 @@ namespace WorldCitiesAPI.Tests
             context.SaveChanges();
         }
 
+        /// <summary>
+        /// Seeds the database with a new user with email address email@email.com unless specified.
+        /// Password is password unless specified.  If roles are provided, They are created and
+        /// the user is added to the first role in the list.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="roleManager"></param>
+        /// <param name="userManager"></param>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <param name="roles"></param>
+        /// <returns></returns>
         public static async Task Seed(
             ApplicationDbContext context,
             RoleManager<IdentityRole> roleManager, 

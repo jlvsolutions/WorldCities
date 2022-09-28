@@ -499,6 +499,46 @@ namespace WorldCitiesAPI.Tests.Services
         }
 
         [Fact]
+        public async Task GetById_NotFoundShouldReturnNull()
+        {
+            //
+            // Arrange
+            IdentityHelper.TruncateIdentityTables(_context);
+
+            //
+            // Act
+            var response = await _userService.GetById("BadId");
+
+            //
+            // Assert the response
+            Assert.Null(response);
+        }
+
+        [Fact]
+        public async Task GetById_ShouldReturnUserIncludingRoles()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password",
+                new string[2] { "RegisteredUser", "Role2" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            await _userManager.AddToRoleAsync(user, "Role2");
+            _context.SaveChanges();
+
+            //
+            // Act
+            var response = await _userService.GetById(user.Id);
+
+            //
+            // Assert the response
+            Assert.NotNull(response);
+            Assert.Equal("exists@email.com", response.Email);
+            Assert.Equal(2, response.Roles.Length);
+            Assert.Contains("RegisteredUser", response.Roles);
+            Assert.Contains("Role2", response.Roles);
+        }
+
+        [Fact]
         public async Task Delete_NotFoundFails()
         {
             //

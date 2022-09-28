@@ -279,6 +279,20 @@ namespace WorldCitiesAPI.Services
             return new UpdateResponse() { Success = true, Message = "Update successful." };
         }
 
+        public async Task<UserDTO> GetById(string id)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                _logger.LogWarning("GetById:  Could not find user with id: {id}", id);
+                return null!;
+            }
+
+            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            return new UserDTO(user, roles);
+        }
+
         public async Task<DeleteResponse> Delete(string id)
         {
             ApplicationUser appUser = await _userManager.FindByIdAsync(id);
@@ -376,20 +390,6 @@ namespace WorldCitiesAPI.Services
                 u.Roles = (await _userManager.GetRolesAsync(appUser)).ToArray();
             }
             return users;
-        }
-
-        public async Task<UserDTO> GetById(string id)
-        {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-            {
-                _logger.LogWarning("GetById:  Could not find user with id: {id}", id);
-                return null!;
-            }
-
-            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
-            return new UserDTO(user, roles);
         }
 
         public RefreshToken[] GetRefreshTokens(string userId)
