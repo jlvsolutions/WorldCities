@@ -339,6 +339,12 @@ namespace WorldCitiesAPI.Services
             return _context.Roles.Select(r => r.Name).ToArray();
         }
 
+        public RefreshToken[] GetRefreshTokens(string userId)
+        {
+            return _context.RefreshTokens
+                        .Where(tok => tok.UserId == userId).ToArray();
+        }
+
         public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
         {
             var user = getUserByRefreshToken(token);
@@ -401,12 +407,6 @@ namespace WorldCitiesAPI.Services
             _context.SaveChanges();
 
             return null;
-        }
-
-        public RefreshToken[] GetRefreshTokens(string userId)
-        {
-            return _context.RefreshTokens
-                        .Where(tok => tok.UserId == userId).ToArray();
         }
 
         private void removeOldRefreshTokens(ApplicationUser user)

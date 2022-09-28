@@ -674,7 +674,6 @@ namespace WorldCitiesAPI.Tests.Services
             //
             // Assert the response
             Assert.True(response);
-
         }
 
         [Fact]
@@ -714,6 +713,68 @@ namespace WorldCitiesAPI.Tests.Services
             Assert.Contains("RegisteredUser", response);
             Assert.Contains("Role1", response);
             Assert.Contains("Role2", response);
+        }
+
+        [Fact]
+        public async Task GetRefreshTokens_NoTokensShouldReturnEmtpy()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+
+            //
+            // Act
+            var response = _userService.GetRefreshTokens(user.Id);
+
+            //
+            // Assert the response
+            Assert.NotNull(response);
+            Assert.Empty(response);
+        }
+
+        [Fact]
+        public async Task GetRefreshTokens_ShouldReturnUsersTokens()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            user.RefreshTokens = new List<RefreshToken>()
+            {
+                new RefreshToken() { UserId = user.Id, Token = "Token1", CreatedByIp = "127.0.0.1" },
+                new RefreshToken() { UserId = user.Id, Token = "Token2", CreatedByIp = "127.0.0.1" }
+            };
+            _context.RefreshTokens.Add(new RefreshToken() { UserId = "NotThisUser", Token = "Token3", CreatedByIp = "127.0.0.1" });
+            _context.Update(user);
+            _context.SaveChanges();
+
+            //
+            // Act
+            var response = _userService.GetRefreshTokens(user.Id);
+
+            //
+            // Assert the response
+            Assert.Equal(2, response.Length);
+            Assert.Contains("Token1", response[0].Token);
+            Assert.Contains("Token2", response[1].Token);
+        }
+
+        [Fact]
+        public async Task RefreshToken_NoUserForTokenShouldFail()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+
+            //
+            // Act
+            var response = await _userService.RefreshToken("notfound", "127.0.0.1");
+
+            //
+            // Assert the response
+            Assert.False(response.Success);
+            Assert.NotEmpty(response.Message);
         }
 
     }
