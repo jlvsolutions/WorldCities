@@ -42,7 +42,7 @@ namespace WorldCitiesAPI.Tests.Services
 
             // Create the option instances required by the ApplicationDbContext
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "WorldCities")
+                .UseInMemoryDatabase(databaseName: "UserService_Tests")
                 .Options;
 
             // Create an ApplicationDbContext instance using the in-memory DB
@@ -189,10 +189,9 @@ namespace WorldCitiesAPI.Tests.Services
         {
             //
             // Arrange
-            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "existsPassword");
-            await _roleManager.CreateAsync(new IdentityRole("RegisteredUser"));
-            _context.SaveChanges();
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "existsPassword", new string[1] { "RegisteredUser" });
             var user = await _userManager.FindByEmailAsync("exists@email.com");
+
             // Add an expired refresh token.
             user.RefreshTokens = new List<RefreshToken>() 
             { 
@@ -203,7 +202,6 @@ namespace WorldCitiesAPI.Tests.Services
                     Token = "TestToken"
                 } 
             };
-            await _userManager.AddToRoleAsync(user, "RegisteredUser");
             _context.SaveChanges();
 
             //
@@ -441,6 +439,7 @@ namespace WorldCitiesAPI.Tests.Services
             Assert.NotEqual(user.SecurityStamp, existingSecurityStamp);
 
         }
+
         [Fact]
         public async Task Update_UpdateShouldUpdateAllFieldsAndRoles()
         {
@@ -497,6 +496,60 @@ namespace WorldCitiesAPI.Tests.Services
             Assert.DoesNotContain("Role2", updatedRoles);
             Assert.DoesNotContain("Role3", updatedRoles);
             Assert.Contains("Role4", updatedRoles);
+        }
+
+        [Fact]
+        public async Task Delete_NotFoundFails()
+        {
+            //
+            // Arrange
+            IdentityHelper.TruncateIdentityTables(_context);
+
+            //
+            // Act
+            var response = await _userService.Delete("BadID");
+
+            //
+            // Assert response
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+            Assert.NotEmpty(response.Message);
+        }
+
+        [Fact]
+        public async Task Delete_ExistingUserAndTokensShouldBeDeleted()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+
+            // Add a refresh token.
+            user.RefreshTokens = new List<RefreshToken>()
+            {
+                new RefreshToken()
+                {
+                    UserId = user.Id,
+                    Created = DateTime.UtcNow.AddDays(-8),
+                    CreatedByIp = "127.0.0.1",
+                    Token = "TestToken"
+                }
+            };
+
+            //
+            // Act
+            var response = await _userService.Delete(user.Id);
+
+            //
+            // Assert response
+            Assert.NotNull(response);
+            Assert.True(response.Success);
+            Assert.NotEmpty(response.Message);
+
+            //
+            // Assert Database
+            Assert.Equal(0, _context.Users.Count());
+            Assert.Equal(0, _context.RefreshTokens.Count());
         }
     }
 }

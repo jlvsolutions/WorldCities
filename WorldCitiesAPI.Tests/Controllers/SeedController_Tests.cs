@@ -30,7 +30,7 @@ namespace WorldCitiesAPI.Tests.Controllers
             // Arrange
             // create the option instances required by the ApplicationDbContext
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "WorldCities")
+                .UseInMemoryDatabase(databaseName: "SeedController_Tests")
                 .Options;
 
             // create a IWebHost environment mock instance
@@ -80,6 +80,8 @@ namespace WorldCitiesAPI.Tests.Controllers
             Assert.NotNull(user_Admin);
             Assert.NotNull(user_User);
             Assert.Null(user_NotExisting);
+
+            context.Dispose();
         }
     }
 }

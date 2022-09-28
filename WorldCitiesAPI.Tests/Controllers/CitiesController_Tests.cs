@@ -16,7 +16,7 @@ namespace WorldCitiesAPI.Tests.Controllers
         {
             // Arrange
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "WorldCities")
+                .UseInMemoryDatabase(databaseName: "CitiesController_Tests")
                 .Options;
             using var context = new ApplicationDbContext(options);
 
