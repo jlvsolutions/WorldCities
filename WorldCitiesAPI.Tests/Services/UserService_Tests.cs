@@ -593,9 +593,55 @@ namespace WorldCitiesAPI.Tests.Services
         }
 
         [Fact]
+        public async Task GetAll_ShouldReturnNoneWhenNoUsers()
+        {
+            //
+            // Arrange
+            IdentityHelper.TruncateIdentityTables(_context);
+
+            //
+            // Act
+            var response = await _userService.GetAll();
+
+            //
+            // Assert the response
+            Assert.NotNull(response);
+            Assert.Empty(response);
+        }
+
+        [Fact]
         public async Task GetAll_ShouldReturnAllUsers()
         {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password",
+                new string[4]
+                {
+                    "RegisteredUser",
+                    "Role1",
+                    "Role2",
+                    "Role3"
+                });
+            ApplicationUser secondUser = new ApplicationUser();
+            secondUser.DisplayName = "DisplaySecond";
+            secondUser.Email = "second@email.com";
+            await _userManager.CreateAsync(secondUser);
+            await _userManager.AddToRoleAsync(secondUser, "Role2");
+            await _userManager.AddToRoleAsync(secondUser, "Role3");
+            _context.SaveChanges();
 
+            //
+            // Act
+            var response = await _userService.GetAll();
+
+            //
+            // Assert the response
+            Assert.NotNull(response);
+            Assert.Equal(2, response.Count());
+            Assert.NotNull(response.Single(u => u.Email == "exists@email.com"));
+            Assert.Single(response.Single(u => u.Email == "exists@email.com").Roles);
+            Assert.NotNull(response.Single(u => u.Email == "second@email.com"));
+            Assert.Equal(2, response.Single(u => u.Email == "second@email.com").Roles.Length);
         }
 
         [Fact]
@@ -664,7 +710,7 @@ namespace WorldCitiesAPI.Tests.Services
             //
             // Assert the response
             Assert.NotNull(response);
-            Assert.Equal(3, response);
+            Assert.Equal(3, response.Length);
             Assert.Contains("RegisteredUser", response);
             Assert.Contains("Role1", response);
             Assert.Contains("Role2", response);

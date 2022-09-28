@@ -318,14 +318,14 @@ namespace WorldCitiesAPI.Services
                 EmailConfirmed = c.EmailConfirmed,
                 LockoutEnabled = c.LockoutEnabled,
             });
-
+            var listUsers = users.ToList();
             ApplicationUser appUser = new ApplicationUser();
-            foreach (UserDTO u in users)
+            foreach (UserDTO u in listUsers)
             {
                 appUser.Id = u.Id;
                 u.Roles = (await _userManager.GetRolesAsync(appUser)).ToArray();
             }
-            return users;
+            return listUsers.AsQueryable();
         }
 
         public async Task<bool> IsDupeEmail(string email)
