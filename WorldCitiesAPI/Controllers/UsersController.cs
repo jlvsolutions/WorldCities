@@ -219,7 +219,7 @@ namespace WorldCitiesAPI.Controllers
         public IActionResult GetRoles()
         {
             _logger.LogDebug("Received GetRoles request.");
-            return Ok(_userService.GetRoles());
+            return Ok(_userService.GetAllRoles());
         }
 
         [HttpPut("{id}")]

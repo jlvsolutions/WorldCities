@@ -21,7 +21,7 @@ namespace WorldCitiesAPI.Services
         Task<IQueryable<UserDTO>> GetAll();
         Task<UserDTO> GetById(string id);
         Task<bool> IsDupeEmail(string email);
-        string[] GetRoles();
+        string[] GetAllRoles();
     }
 
     public class UserService : IUserService
@@ -279,6 +279,20 @@ namespace WorldCitiesAPI.Services
             return new UpdateResponse() { Success = true, Message = "Update successful." };
         }
 
+        public async Task<DeleteResponse> Delete(string id)
+        {
+            ApplicationUser appUser = await _userManager.FindByIdAsync(id);
+            if (appUser == null)
+            {
+                _logger.LogWarning("Delete: Could not find user with id: {id}", id);
+                return new DeleteResponse() { Success = false, Message = $"User not found. Id: {id}" };
+            }
+            await _userManager.DeleteAsync(appUser);
+            _context.SaveChanges();
+
+            return new DeleteResponse() { Success = true, Message = $"User deleted. Id: {id}" };
+        }
+
         public async Task<UserDTO> GetById(string id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -293,18 +307,36 @@ namespace WorldCitiesAPI.Services
             return new UserDTO(user, roles);
         }
 
-        public async Task<DeleteResponse> Delete(string id)
+        public async Task<IQueryable<UserDTO>> GetAll()
         {
-            ApplicationUser appUser = await _userManager.FindByIdAsync(id);
-            if (appUser == null)
+            var users = _context.Users.AsNoTracking()
+            .Select(c => new UserDTO()
             {
-                _logger.LogWarning("Delete: Could not find user with id: {id}", id);
-                return new DeleteResponse() { Success = false, Message = $"User not found. Id: {id}" };
-            }
-            await _userManager.DeleteAsync(appUser);
-            _context.SaveChanges();
+                Id = c.Id,
+                Name = c.DisplayName,
+                Email = c.Email,
+                EmailConfirmed = c.EmailConfirmed,
+                LockoutEnabled = c.LockoutEnabled,
+            });
 
-            return new DeleteResponse() { Success = true, Message = $"User deleted. Id: {id}" };
+            ApplicationUser appUser = new ApplicationUser();
+            foreach (UserDTO u in users)
+            {
+                appUser.Id = u.Id;
+                u.Roles = (await _userManager.GetRolesAsync(appUser)).ToArray();
+            }
+            return users;
+        }
+
+        public async Task<bool> IsDupeEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            return user != null;
+        }
+
+        public string[] GetAllRoles()
+        {
+            return _context.Roles.Select(r => r.Name).ToArray();
         }
 
         public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
@@ -371,42 +403,10 @@ namespace WorldCitiesAPI.Services
             return null;
         }
 
-        public async Task<IQueryable<UserDTO>> GetAll()
-        {
-            var users = _context.Users.AsNoTracking()
-            .Select(c => new UserDTO()
-            {
-                Id = c.Id,
-                Name = c.DisplayName,
-                Email = c.Email,
-                EmailConfirmed = c.EmailConfirmed,
-                LockoutEnabled = c.LockoutEnabled,
-            });
-
-            ApplicationUser appUser = new ApplicationUser();
-            foreach (UserDTO u in users)
-            {
-                appUser.Id = u.Id;
-                u.Roles = (await _userManager.GetRolesAsync(appUser)).ToArray();
-            }
-            return users;
-        }
-
         public RefreshToken[] GetRefreshTokens(string userId)
         {
             return _context.RefreshTokens
                         .Where(tok => tok.UserId == userId).ToArray();
-        }
-
-        public async Task<bool> IsDupeEmail(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            return user != null;
-        }
-
-        public string[] GetRoles()
-        {
-            return _context.Roles.Select(r => r.Name).ToArray();
         }
 
         private void removeOldRefreshTokens(ApplicationUser user)

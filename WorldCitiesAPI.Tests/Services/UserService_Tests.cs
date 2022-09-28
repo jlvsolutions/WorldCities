@@ -499,46 +499,6 @@ namespace WorldCitiesAPI.Tests.Services
         }
 
         [Fact]
-        public async Task GetById_NotFoundShouldReturnNull()
-        {
-            //
-            // Arrange
-            IdentityHelper.TruncateIdentityTables(_context);
-
-            //
-            // Act
-            var response = await _userService.GetById("BadId");
-
-            //
-            // Assert the response
-            Assert.Null(response);
-        }
-
-        [Fact]
-        public async Task GetById_ShouldReturnUserIncludingRoles()
-        {
-            //
-            // Arrange
-            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password",
-                new string[2] { "RegisteredUser", "Role2" });
-            var user = await _userManager.FindByEmailAsync("exists@email.com");
-            await _userManager.AddToRoleAsync(user, "Role2");
-            _context.SaveChanges();
-
-            //
-            // Act
-            var response = await _userService.GetById(user.Id);
-
-            //
-            // Assert the response
-            Assert.NotNull(response);
-            Assert.Equal("exists@email.com", response.Email);
-            Assert.Equal(2, response.Roles.Length);
-            Assert.Contains("RegisteredUser", response.Roles);
-            Assert.Contains("Role2", response.Roles);
-        }
-
-        [Fact]
         public async Task Delete_NotFoundFails()
         {
             //
@@ -591,5 +551,124 @@ namespace WorldCitiesAPI.Tests.Services
             Assert.Equal(0, _context.Users.Count());
             Assert.Equal(0, _context.RefreshTokens.Count());
         }
+
+        [Fact]
+        public async Task GetById_NotFoundShouldReturnNull()
+        {
+            //
+            // Arrange
+            IdentityHelper.TruncateIdentityTables(_context);
+
+            //
+            // Act
+            var response = await _userService.GetById("BadId");
+
+            //
+            // Assert the response
+            Assert.Null(response);
+        }
+
+        [Fact]
+        public async Task GetById_ShouldReturnUserIncludingRoles()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password",
+                new string[2] { "RegisteredUser", "Role2" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            await _userManager.AddToRoleAsync(user, "Role2");
+            _context.SaveChanges();
+
+            //
+            // Act
+            var response = await _userService.GetById(user.Id);
+
+            //
+            // Assert the response
+            Assert.NotNull(response);
+            Assert.Equal("exists@email.com", response.Email);
+            Assert.Equal(2, response.Roles.Length);
+            Assert.Contains("RegisteredUser", response.Roles);
+            Assert.Contains("Role2", response.Roles);
+        }
+
+        [Fact]
+        public async Task GetAll_ShouldReturnAllUsers()
+        {
+
+        }
+
+        [Fact]
+        public async Task IsDupeEmail_ShouldReturnFalseWhenUnique()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+
+            //
+            // Act
+            var response = await _userService.IsDupeEmail("isunique@email.com");
+
+            //
+            // Assert the response
+            Assert.False(response);
+        }
+
+        [Fact]
+        public async Task IsDupeEmail_ShouldReturnTrueWhenIsDuplicate()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+
+            //
+            // Act
+            var response = await _userService.IsDupeEmail("exists@email.com");
+
+            //
+            // Assert the response
+            Assert.True(response);
+
+        }
+
+        [Fact]
+        public void GetAllRoles_ShouldReturnNoneWhenNoRoles()
+        {
+            //
+            // Act
+            var response = _userService.GetAllRoles();
+
+            //
+            // Assert the response
+            Assert.NotNull(response);
+            Assert.Empty(response);
+        }
+
+        [Fact]
+        public async Task GetAllRoles_ShouldReturnAllRoles()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password",
+                new string[3]
+                {
+                    "RegisteredUser",
+                    "Role1",
+                    "Role2"
+                });
+
+            //
+            // Act
+            var response = _userService.GetAllRoles();
+
+            //
+            // Assert the response
+            Assert.NotNull(response);
+            Assert.Equal(3, response);
+            Assert.Contains("RegisteredUser", response);
+            Assert.Contains("Role1", response);
+            Assert.Contains("Role2", response);
+        }
+
     }
 }
