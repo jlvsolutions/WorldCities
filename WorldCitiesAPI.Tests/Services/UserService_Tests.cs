@@ -756,8 +756,10 @@ namespace WorldCitiesAPI.Tests.Services
             //
             // Assert the response
             Assert.Equal(2, response.Length);
-            Assert.Contains("Token1", response[0].Token);
-            Assert.Contains("Token2", response[1].Token);
+            var qResponse = response.AsQueryable();
+            Assert.NotNull(qResponse);
+            Assert.NotNull(qResponse.Single(t => t.Token == "Token1"));
+            Assert.NotNull(qResponse.Single(t => t.Token == "Token2"));
         }
 
         [Fact]
@@ -775,6 +777,128 @@ namespace WorldCitiesAPI.Tests.Services
             // Assert the response
             Assert.False(response.Success);
             Assert.NotEmpty(response.Message);
+        }
+
+        [Fact]
+        public async Task RefreshToken_ShouldRevokeChildTokensIfThisTokenRevoked()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            user.RefreshTokens = new List<RefreshToken>()
+            {
+                new RefreshToken() { UserId = user.Id, Token = "GrandchildToken", CreatedByIp = "127.0.0.1", 
+                    Expires = DateTime.UtcNow.AddDays(7) },
+                new RefreshToken() { UserId = user.Id, Token = "ChildToken", CreatedByIp = "127.0.0.1", 
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    Revoked = DateTime.UtcNow,
+                    ReasonRevoked = "RevokeTesting",
+                    ReplacedByToken = "GrandchildToken" },
+                new RefreshToken() { UserId = user.Id, Token = "TokenToRefreshButRevoked", CreatedByIp = "127.0.0.1", 
+                    Expires = DateTime.UtcNow.AddDays(7), 
+                    Revoked = DateTime.UtcNow, 
+                    ReasonRevoked = "RevokeTesting",
+                    ReplacedByToken = "ChildToken" }
+            };
+            _context.RefreshTokens.Add(new RefreshToken() { UserId = "SomebodyElse", Token = "SomebodyElsesToken", CreatedByIp = "127.0.0.1" });
+            _context.Update(user);
+            _context.SaveChanges();
+
+            //
+            // Act
+            var response = await _userService.RefreshToken("TokenToRefreshButRevoked", "127.0.0.1");
+
+            //
+            // Assert the response
+            Assert.False(response.Success);
+            Assert.NotEmpty(response.Message);
+
+            //
+            // Assert the database
+            Assert.Equal(4, _context.RefreshTokens.Count());
+            
+            // someone else's token untouched
+            var t = _context.RefreshTokens.Single(t => t.UserId == "SomebodyElse");
+            Assert.NotNull(t);
+            Assert.False(t.IsRevoked);
+
+            // original token detected, no need for changes
+            t = _context.RefreshTokens.Single(t => t.Token == "TokenToRefreshButRevoked");
+            Assert.NotNull(t);
+            Assert.True(t.IsRevoked);
+            Assert.Equal("RevokeTesting", t.ReasonRevoked);
+            Assert.Null(t.RevokedByIp);
+
+            // child token detected, no need for changes
+            t = _context.RefreshTokens.Single(t => t.Token == "ChildToken");
+            Assert.NotNull(t);
+            Assert.True(t.IsRevoked);
+            Assert.Equal("RevokeTesting", t.ReasonRevoked);
+            Assert.Null(t.RevokedByIp);
+
+            // grandchild token detected and changed to revoked
+            t = _context.RefreshTokens.Single(t => t.Token == "GrandchildToken");
+            Assert.NotNull(t);
+            Assert.True(t.IsRevoked);
+            Assert.StartsWith("Attempted reuse of revoked ancestor token:", t.ReasonRevoked);
+            Assert.Equal("127.0.0.1", t.RevokedByIp);
+        }
+
+        [Fact]
+        public async Task RefreshToken_ShouldReplaceTokenandJwtWithSuccess()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            user.RefreshTokens = new List<RefreshToken>()
+            {
+                new RefreshToken()
+                { 
+                    UserId = user.Id,
+                    Token = "OriginalToken",
+                    Created = DateTime.UtcNow,
+                    CreatedByIp = "127.0.0.1",
+                    Expires = DateTime.UtcNow.AddDays(7)
+                },
+            };
+            _context.Update(user);
+            _context.SaveChanges();
+
+            //
+            // Act
+            var response = await _userService.RefreshToken("OriginalToken", "127.0.0.1");
+
+            //
+            // Assert the response
+            Assert.True(response.Success);
+            Assert.NotEmpty(response.Message);
+            Assert.NotEmpty(response.Token);
+            Assert.NotEmpty(response.RefreshToken);
+
+            //
+            // Assert the database
+            Assert.Equal(2, _context.RefreshTokens.Count());
+            
+            // original token
+            var t = _context.RefreshTokens.Single(t => t.Token == "OriginalToken");
+            Assert.NotNull(t);
+            Assert.True(t.IsRevoked);
+            Assert.NotNull(t.Revoked);
+            Assert.Equal("Replaced by new token", t.ReasonRevoked);
+            Assert.Equal("127.0.0.1", t.RevokedByIp);
+            Assert.NotEmpty(t.ReplacedByToken);
+
+            // new token
+            t = _context.RefreshTokens.Single(t => t.Token == response.RefreshToken);
+            Assert.NotNull(t);
+            Assert.False(t.IsRevoked);// fails here
+            Assert.Null(t.Revoked);
+            Assert.Null(t.ReasonRevoked);
+            Assert.Null(t.RevokedByIp);
+            Assert.Null(t.ReplacedByToken);
+            Assert.NotNull(t.CreatedByIp);
         }
 
     }
