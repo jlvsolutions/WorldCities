@@ -393,11 +393,11 @@ namespace WorldCitiesAPI.Services
             if (user == null)
             {
                 _logger.LogWarning("RefreshToken:  Invalid token: IP Address: {ipAddress}, Token: {token}", ipAddress, token);
-                return "Invalid token.";
+                return "Invalid token. User not found.";
             }
             var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
             if (!refreshToken.IsActive)
-                return "Invalid token.";
+                return "Invalid token. Token is not active.";
 
             // Revoke token and save
             revokeRefreshToken(refreshToken, ipAddress, "Revoked without replacement");

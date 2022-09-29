@@ -901,5 +901,159 @@ namespace WorldCitiesAPI.Tests.Services
             Assert.NotNull(t.CreatedByIp);
         }
 
+        [Fact]
+        public async Task RevokeToken_ShouldFailIfTokenUserNotFound()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            user.RefreshTokens = new List<RefreshToken>()
+            {
+                new RefreshToken()
+                {
+                    UserId = user.Id,
+                    Token = "OriginalToken",
+                    Created = DateTime.UtcNow,
+                    CreatedByIp = "127.0.0.1",
+                    Expires = DateTime.UtcNow.AddDays(7)
+                },
+            };
+            _context.Update(user);
+            _context.SaveChanges();
+
+            //
+            // Act
+            var response = _userService.RevokeToken("NonExistingToken", "127.0.0.1");
+
+            //
+            // Assert the response
+            Assert.NotEmpty(response);
+            Assert.Contains("User not found.", response);
+
+            //
+            // Assert the database
+            Assert.Equal(1, _context.RefreshTokens.Count());
+        }
+
+        [Fact]
+        public async Task RevokeToken_ShouldFailIfExpiredToken()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            user.RefreshTokens = new List<RefreshToken>()
+            {
+                new RefreshToken()
+                {
+                    UserId = user.Id,
+                    Token = "ExpiredToken",
+                    Created = DateTime.UtcNow.AddDays(-1),
+                    CreatedByIp = "127.0.0.1",
+                    Expires = DateTime.UtcNow
+                },
+            };
+            _context.Update(user);
+            _context.SaveChanges();
+
+            //
+            // Act
+            var response = _userService.RevokeToken("ExpiredToken", "127.0.0.1");
+
+            //
+            // Assert the response
+            Assert.Contains("Token is not active.", response);
+
+            //
+            // Assert the database
+            Assert.Equal(1, _context.RefreshTokens.Count());
+            var token = await _context.RefreshTokens.FirstAsync(t => t.Token == "ExpiredToken");
+            Assert.True(token.Revoked == null);
+            Assert.Null(token.RevokedByIp);
+            Assert.Null(token.ReasonRevoked);
+            Assert.Null(token.ReplacedByToken);
+        }
+
+        [Fact]
+        public async Task RevokeToken_ShouldFailIfRevokedToken()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            DateTime revokedDateTime = DateTime.UtcNow;
+            user.RefreshTokens = new List<RefreshToken>()
+            {
+                new RefreshToken()
+                {
+                    UserId = user.Id,
+                    Token = "RevokedToken",
+                    Created = DateTime.UtcNow,
+                    CreatedByIp = "127.0.0.1",
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    Revoked = revokedDateTime,
+                    RevokedByIp = "127.0.0.1",
+                    ReasonRevoked = "testing",
+                    ReplacedByToken = "replaced"
+                },
+            };
+            _context.Update(user);
+            _context.SaveChanges();
+
+            //
+            // Act
+            var response = _userService.RevokeToken("RevokedToken", "127.0.0.1");
+
+            //
+            // Assert the response
+            Assert.Contains("Token is not active.", response);
+
+            //
+            // Assert the database
+            var token = await _context.RefreshTokens.FirstAsync(t => t.Token == "RevokedToken");
+            Assert.Equal(revokedDateTime, token.Revoked);
+            Assert.Equal("127.0.0.1", token.RevokedByIp);
+            Assert.Equal("testing", token.ReasonRevoked);
+            Assert.Equal("replaced", token.ReplacedByToken);
+        }
+
+        [Fact]
+        public async Task RevokeToken_ShouldRevokeActiveToken()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            user.RefreshTokens = new List<RefreshToken>()
+            {
+                new RefreshToken()
+                {
+                    UserId = user.Id,
+                    Token = "ActiveToken",
+                    Created = DateTime.UtcNow,
+                    CreatedByIp = "127.0.0.1",
+                    Expires = DateTime.UtcNow.AddDays(7)
+                },
+            };
+            _context.Update(user);
+            _context.SaveChanges();
+
+            //
+            // Act
+            var response = _userService.RevokeToken("ActiveToken", "127.0.0.1");
+
+            //
+            // Assert the response
+            Assert.Null(response);
+
+            //
+            // Assert the database
+            var token = await _context.RefreshTokens.FirstAsync(t => t.Token == "ActiveToken");
+            Assert.True(token.Revoked <= DateTime.UtcNow);
+            Assert.Equal("127.0.0.1", token.RevokedByIp);
+            Assert.Equal("Revoked without replacement", token.ReasonRevoked);
+            Assert.Null(token.ReplacedByToken);
+        }
     }
 }
