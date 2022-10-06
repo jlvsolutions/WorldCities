@@ -7,9 +7,9 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinct, distinctUntilChanged } from 'rxjs/operators';
 
 import { City } from './city';
-import { CityService } from './city.service';
-import { AuthService } from './../auth/auth.service';
-import { AuthGaurd } from '../auth/auth.guard';
+import { CityService } from '../_services/city.service';
+import { AuthService } from '../_services/auth.service';
+import { AuthGaurd } from '../_helpers/auth.guard';
 
 @Component({
   selector: 'app-cities',

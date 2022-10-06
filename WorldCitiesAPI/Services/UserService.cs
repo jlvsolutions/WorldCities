@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Models.Users;
 using WorldCitiesAPI.Data.Entities;
@@ -310,28 +311,28 @@ namespace WorldCitiesAPI.Services
         public async Task<IQueryable<UserDTO>> GetAll()
         {
             var users = _context.Users.AsNoTracking()
-            .Select(c => new UserDTO()
+            .Select( c => new UserDTO()
             {
                 Id = c.Id,
                 Name = c.DisplayName,
                 Email = c.Email,
                 EmailConfirmed = c.EmailConfirmed,
-                LockoutEnabled = c.LockoutEnabled,
-            });
-            var listUsers = users.ToList();
-            ApplicationUser appUser = new ApplicationUser();
-            foreach (UserDTO u in listUsers)
-            {
-                appUser.Id = u.Id;
-                u.Roles = (await _userManager.GetRolesAsync(appUser)).ToArray();
-            }
-            return listUsers.AsQueryable();
+                LockoutEnabled = c.LockoutEnabled
+        });
+
+            return users;
         }
 
         public async Task<bool> IsDupeEmail(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             return user != null;
+        }
+
+        public async Task<string[]> GetRoles(string id)
+        {
+            ApplicationUser user = new ApplicationUser() { Id = id };
+            return (await _userManager.GetRolesAsync(user)).ToArray();
         }
 
         public string[] GetAllRoles()

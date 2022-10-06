@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, tap } from 'rxjs';
 
-import { environment } from './../../environments/environment';
-import { LoginRequest } from './login-request';
-import { LoginResult } from './login-result';
-import { RegisterRequest } from './register-request';
-import { RegisterResult } from './register-result';
-import { User } from './user';
-import { DupeEmailRequest } from './dupe-email-request';
+import { environment } from '@environments/environment';
+import { LoginRequest } from '@app/auth/login-request';
+import { LoginResult } from '@app/auth/login-result';
+import { RegisterRequest } from '@app/auth/register-request';
+import { RegisterResult } from '@app/auth/register-result';
+import { DupeEmailRequest } from '@app/auth/dupe-email-request';
 
 @Injectable({
   providedIn: 'root'

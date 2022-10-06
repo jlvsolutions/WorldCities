@@ -8,7 +8,7 @@ import { environment } from './../../environments/environment';
 import { City } from './city';
 import { Country } from './../countries/country';
 import { BaseFormComponent } from './../base-form.component';
-import { CityService } from './city.service';
+import { CityService } from '../_services/city.service';
 
 @Component({
   selector: 'app-city-edit',

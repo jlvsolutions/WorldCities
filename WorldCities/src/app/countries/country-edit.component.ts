@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
 import { Country } from './country';
-import { BaseFormComponent } from '../base-form.component';
-import { CountryService } from './country.service';
+import { BaseFormComponent } from '@app/base-form.component';
+import { CountryService } from '@app/_services/country.service';
 
 @Component({
   selector: 'app-country-edit',

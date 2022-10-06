@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BaseService, ApiResult, DeleteResult } from '../base.service';
+import { BaseService, ApiResult, DeleteResult } from './base.service';
 import { Observable } from 'rxjs';
 
-import { Country } from './country';
+import { Country } from '@app/countries/country';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 
 @Injectable({

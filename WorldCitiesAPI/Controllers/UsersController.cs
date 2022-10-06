@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using WorldCitiesAPI.Services;
 using WorldCitiesAPI.Data;
@@ -172,6 +173,7 @@ namespace WorldCitiesAPI.Controllers
             _logger.LogDebug("Received GetAll users request. PageIndex: {pageIndex}, SortOrder: {sortOrder}", pageIndex, sortOrder);
 
             var allUsers = await _userService.GetAll();
+
             var apiResult = await ApiResult<UserDTO>.CreateAsync(
                 allUsers,
                 pageIndex,
@@ -180,6 +182,9 @@ namespace WorldCitiesAPI.Controllers
                 sortOrder,
                 filterColumn,
                 filterQuery);
+
+            foreach(UserDTO user in apiResult.Data)
+                user.Roles = await _userService.GetRoles(user.Id);
 
             return apiResult;
         }

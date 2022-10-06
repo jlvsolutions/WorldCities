@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BaseService, ApiResult, DeleteResult } from '../base.service';
+import { BaseService, ApiResult, DeleteResult } from './base.service';
 import { Observable, map, combineLatest } from 'rxjs';
 
-import { City } from './city';
-import { Country } from '../countries/country';
+import { City } from '@app/cities/city';
+import { Country } from '@app/countries/country';
 // GraphQL
 import { Apollo, gql } from 'apollo-angular';
 

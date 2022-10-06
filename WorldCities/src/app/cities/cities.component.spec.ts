@@ -6,8 +6,8 @@ import { of } from 'rxjs';
 
 import { CitiesComponent } from './cities.component';
 import { City } from './city';
-import { CityService } from './city.service';
-import { ApiResult } from '../base.service';
+import { CityService } from '@app/_services/city.service';
+import { ApiResult } from '@app/_services/base.service';
 
 describe('CitiesComponent', () => {
   let component: CitiesComponent;

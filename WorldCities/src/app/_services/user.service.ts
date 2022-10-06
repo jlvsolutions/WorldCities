@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BaseService, ApiResult, DeleteResult } from '../base.service';
+import { BaseService, ApiResult, DeleteResult } from './base.service';
 import { Observable } from 'rxjs';
 
-import { User } from './../auth/user';
-import { UserResult } from './user-result';
+import { User } from '@app/auth/user';
+import { UserResult } from '../users/user-result';
 
 @Injectable({
   providedIn: 'root'

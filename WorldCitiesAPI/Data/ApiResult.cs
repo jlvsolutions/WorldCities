@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
 using EFCore.BulkExtensions;
@@ -62,6 +63,7 @@ namespace WorldCitiesAPI.Data
             }
 
             // Get the Count...
+
             var count = await source.CountAsync();
 
             if (!string.IsNullOrEmpty(sortColumn) && IsValidProperty(sortColumn))
@@ -80,8 +82,8 @@ namespace WorldCitiesAPI.Data
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize);
 #if DEBUG
-            // retrieve the SQL query (for debug purposes)
-            //var sql = source.ToParametrizedSql();
+            //retrieve the SQL query (for debug purposes)
+            var sql = source.ToParametrizedSql();
 #endif
             var data = await source.ToListAsync(); // Note: this executes the SQL query
 

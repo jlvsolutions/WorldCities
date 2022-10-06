@@ -8,8 +8,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { Country } from './country';
-import { CountryService } from './country.service';
-import { AuthService } from './../auth/auth.service';
+import { CountryService } from '@app/_services/country.service';
+import { AuthService } from '@app/_services/auth.service';
 
 @Component({
   selector: 'app-countries',

@@ -8,10 +8,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { debounceTime, distinct, distinctUntilChanged } from 'rxjs/operators';
 
-import { User } from './../auth/user';
-import { UserService } from './user.service';
-import { AuthService } from './../auth/auth.service';
-import { ShowMessageComponent } from '../show-message/show-message.component';
+import { User } from '@app/auth/user';
+import { UserService } from '@app/_services/user.service';
+import { AuthService } from '@app/_services/auth.service';
+import { ShowMessageComponent } from '@app/show-message/show-message.component';
 
 @Component({
   selector: 'app-users',

@@ -4,12 +4,12 @@ import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, Async
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
-import { environment } from './../../environments/environment';
-import { User } from './../auth/user';
-import { BaseFormComponent } from '../base-form.component';
-import { ShowMessageComponent } from '../show-message/show-message.component';
-import { UserService } from './user.service';
-import { AuthService } from './../auth/auth.service';
+import { environment } from '@environments/environment';
+import { User } from '@app/auth/user';
+import { BaseFormComponent } from '@app/base-form.component';
+import { ShowMessageComponent } from '@app/show-message/show-message.component';
+import { UserService } from '@app/_services/user.service';
+import { AuthService } from '@app/_services/auth.service';
 import { validateHorizontalPosition } from '@angular/cdk/overlay';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 

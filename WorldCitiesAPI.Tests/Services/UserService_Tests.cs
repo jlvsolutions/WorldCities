@@ -626,8 +626,6 @@ namespace WorldCitiesAPI.Tests.Services
             secondUser.DisplayName = "DisplaySecond";
             secondUser.Email = "second@email.com";
             await _userManager.CreateAsync(secondUser);
-            await _userManager.AddToRoleAsync(secondUser, "Role2");
-            await _userManager.AddToRoleAsync(secondUser, "Role3");
             _context.SaveChanges();
 
             //
@@ -638,10 +636,8 @@ namespace WorldCitiesAPI.Tests.Services
             // Assert the response
             Assert.NotNull(response);
             Assert.Equal(2, response.Count());
-            Assert.NotNull(response.Single(u => u.Email == "exists@email.com"));
-            Assert.Single(response.Single(u => u.Email == "exists@email.com").Roles);
-            Assert.NotNull(response.Single(u => u.Email == "second@email.com"));
-            Assert.Equal(2, response.Single(u => u.Email == "second@email.com").Roles.Length);
+            response.Single(u => u.Email == "exists@email.com");
+            response.Single(u => u.Email == "second@email.com");
         }
 
         [Fact]
@@ -675,6 +671,26 @@ namespace WorldCitiesAPI.Tests.Services
             // Assert the response
             Assert.True(response);
         }
+
+        [Fact]
+        public async Task GetRoles_ShouldReturnRoles()
+        {
+            //
+            // Arrange
+            await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
+            var id = _context.Users.First().Id;
+
+            //
+            // Act
+            var response = await _userService.GetRoles(id);
+
+            //
+            // assert the response
+            Assert.NotNull(response);
+            response.Single(r => r == "RegisteredUser");
+
+        }
+
 
         [Fact]
         public void GetAllRoles_ShouldReturnNoneWhenNoRoles()
@@ -756,10 +772,8 @@ namespace WorldCitiesAPI.Tests.Services
             //
             // Assert the response
             Assert.Equal(2, response.Length);
-            var qResponse = response.AsQueryable();
-            Assert.NotNull(qResponse);
-            Assert.NotNull(qResponse.Single(t => t.Token == "Token1"));
-            Assert.NotNull(qResponse.Single(t => t.Token == "Token2"));
+            response.Single(t => t.Token == "Token1");
+            response.Single(t => t.Token == "Token2");
         }
 
         [Fact]
