@@ -11,15 +11,19 @@ export class AuthGaurd implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {
   }
 
-  // extend the canActivate interface
+  // Extend the canActivate interface
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): 
     Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-    if (this.authService.isAuthenticated()) {
-      return true;
-    }
+    const user = this.authService.userValue;
 
-    this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
-    return false;
+    if (user)
+      // Logged in
+      return true;
+    else {
+      // Not logged in.  Redirect to login page.
+      this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+      return false;
+    }
   }
 }

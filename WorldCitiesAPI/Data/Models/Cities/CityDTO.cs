@@ -1,4 +1,4 @@
-﻿namespace WorldCitiesAPI.Data
+﻿namespace WorldCitiesAPI.Data.Models.Cities
 {
     public class CityDTO
     {

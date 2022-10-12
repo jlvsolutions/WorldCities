@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using WorldCitiesAPI.Data;
 using Microsoft.AspNetCore.Authorization;
 using WorldCitiesAPI.Data.Entities;
+using WorldCitiesAPI.Data.Models.Countries;
+using WorldCitiesAPI.Data.Models;
 
 namespace WorldCitiesAPI.Controllers
 {

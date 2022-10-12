@@ -9,6 +9,8 @@ using WorldCitiesAPI.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using WorldCitiesAPI.Data.Entities;
+using WorldCitiesAPI.Data.Models.Cities;
+using WorldCitiesAPI.Data.Models;
 
 namespace WorldCitiesAPI.Controllers
 {

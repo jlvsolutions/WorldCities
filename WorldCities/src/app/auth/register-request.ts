@@ -1,5 +1,5 @@
-import { LoginRequest } from "./login-request";
-
-export interface RegisterRequest extends LoginRequest {
+export interface RegisterRequest {
+  email: string;
+  password: string;
   name: string;
 }

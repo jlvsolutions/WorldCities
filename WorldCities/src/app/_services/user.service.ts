@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { BaseService, ApiResult, DeleteResult } from './base.service';
 import { Observable } from 'rxjs';
 
-import { User } from '@app/auth/user';
+import { User } from '@app/_models';
 import { UserResult } from '../users/user-result';
 
 @Injectable({

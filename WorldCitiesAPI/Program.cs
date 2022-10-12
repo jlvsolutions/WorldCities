@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Cors;
 using WorldCitiesAPI.Data.GraphQL;
 using WorldCitiesAPI.Services;
 using WorldCitiesAPI.Data.Entities;
+using WorldCitiesAPI.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 

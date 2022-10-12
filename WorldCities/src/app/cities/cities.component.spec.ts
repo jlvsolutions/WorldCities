@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
 import { CitiesComponent } from './cities.component';
-import { City } from './city';
+import { City } from '@app/_models/city';
 import { CityService } from '@app/_services/city.service';
 import { ApiResult } from '@app/_services/base.service';
 

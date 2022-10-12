@@ -7,7 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-import { Country } from './country';
+import { Country } from '../_models';
 import { CountryService } from '@app/_services/country.service';
 import { AuthService } from '@app/_services/auth.service';
 
@@ -20,7 +20,7 @@ export class CountriesComponent implements OnInit, OnDestroy {
   public displayedColumns: string[] = ['id', 'name', 'iso2', 'iso3', 'totCities'];
   public countries!: MatTableDataSource<Country>;
   defaultPageIndex: number = 0;
-  defaultPageSize: number = 10;
+  defaultPageSize: number = 15;
   public defaultSortColumn: string = "name";
   public defaultSortOrder: "asc" | "desc" = "asc";
 

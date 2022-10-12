@@ -5,10 +5,10 @@ import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
 import { environment } from './../../environments/environment';
-import { City } from './city';
-import { Country } from './../countries/country';
+import { City } from '@app/_models';
+import { Country } from '@app/_models';
 import { BaseFormComponent } from './../base-form.component';
-import { CityService } from '../_services/city.service';
+import { CityService } from '@app/_services';
 
 @Component({
   selector: 'app-city-edit',

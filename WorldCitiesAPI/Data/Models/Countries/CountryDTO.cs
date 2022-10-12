@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace WorldCitiesAPI.Data
+namespace WorldCitiesAPI.Data.Models.Countries
 {
     /// <summary>
     /// Data Transfer Object (DTO) class for Country with TotCities

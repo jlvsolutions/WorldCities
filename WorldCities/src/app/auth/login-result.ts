@@ -1,8 +1,12 @@
-import { User } from './user';
+import { User } from '@app/_models/user';
 
 export interface LoginResult {
+  /** Indicates whether the login request was successful. */
   success: boolean;
+  /** Login request's result message. */
   message: string;
-  token?: string;
+  /** On successful login, the JWT provided by the API. */
+  jwtToken?: string;
+  /** Data describing the user. */
   user: User;
 }

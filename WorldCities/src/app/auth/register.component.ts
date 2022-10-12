@@ -13,7 +13,7 @@ import { RegisterRequest } from './register-request';
 import { RegisterResult } from './register-result';
 import { LoginRequest } from './login-request';
 import { LoginResult } from './login-result';
-import { User } from './user';
+import { User } from '@app/_models/user';
 
 @Component({
   selector: 'app-register',

@@ -1,6 +1,8 @@
 ﻿using HotChocolate.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using WorldCitiesAPI.Data.Entities;
+using WorldCitiesAPI.Data.Models.Cities;
+using WorldCitiesAPI.Data.Models.Countries;
 
 namespace WorldCitiesAPI.Data.GraphQL
 {

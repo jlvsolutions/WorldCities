@@ -3,8 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { BaseService, ApiResult, DeleteResult } from './base.service';
 import { Observable, map, combineLatest } from 'rxjs';
 
-import { City } from '@app/cities/city';
-import { Country } from '@app/countries/country';
+import { City } from '@app/_models';
+import { Country } from '@app/_models/country';
 // GraphQL
 import { Apollo, gql } from 'apollo-angular';
 
@@ -53,6 +53,15 @@ export class CityService extends BaseService<City, number> {
   }
   */
 
+  /**
+   * GraphQL implementation
+   * @param pageIndex
+   * @param pageSize
+   * @param sortColumn
+   * @param sortOrder
+   * @param filterColumn
+   * @param filterQuery
+   */
   getData(
     pageIndex: number,
     pageSize: number,
@@ -122,6 +131,10 @@ export class CityService extends BaseService<City, number> {
   }
   */
 
+  /**
+   * GraphQL implementation
+   * @param id
+   */
   get(id: number): Observable<City> {
     return this.apollo
       .query({

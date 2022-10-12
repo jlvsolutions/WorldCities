@@ -8,7 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { debounceTime, distinct, distinctUntilChanged } from 'rxjs/operators';
 
-import { User } from '@app/auth/user';
+import { User } from '@app/_models';
 import { UserService } from '@app/_services/user.service';
 import { AuthService } from '@app/_services/auth.service';
 import { ShowMessageComponent } from '@app/show-message/show-message.component';

@@ -5,7 +5,7 @@ import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
 import { environment } from '@environments/environment';
-import { User } from '@app/auth/user';
+import { User } from '@app/_models';
 import { BaseFormComponent } from '@app/base-form.component';
 import { ShowMessageComponent } from '@app/show-message/show-message.component';
 import { UserService } from '@app/_services/user.service';

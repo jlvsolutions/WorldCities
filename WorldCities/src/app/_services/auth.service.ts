@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject, tap } from 'rxjs';
+import { Observable, Subject, BehaviorSubject, tap, map } from 'rxjs';
 
 import { environment } from '@environments/environment';
 import { LoginRequest } from '@app/auth/login-request';
@@ -8,6 +9,7 @@ import { LoginResult } from '@app/auth/login-result';
 import { RegisterRequest } from '@app/auth/register-request';
 import { RegisterResult } from '@app/auth/register-result';
 import { DupeEmailRequest } from '@app/auth/dupe-email-request';
+import { RevokeTokenRequest } from '@app/_models';
 
 @Injectable({
   providedIn: 'root'
@@ -16,125 +18,123 @@ export class AuthService {
 
   private tokenKey: string = "token";  // localStorage token's key
   private nameKey: string = "name"; // localStorage user name's key
-  private adminKey: string = "Administrator"; // localStorage
 
-  private _authStatus = new Subject<boolean>();
-  public authStatus = this._authStatus.asObservable();
+  /** The name of the Administrator role */
+  public readonly AdminRoleName: string = "Administrator";
 
-  private _displayName = new Subject<string>();
-  public displayName = this._displayName.asObservable();
+  private userSubject: BehaviorSubject<LoginResult>;
+  public user: Observable<LoginResult>;
 
-  private _administrator = new Subject<boolean>();
-  public administrator = this._administrator.asObservable();
 
-  constructor(protected http: HttpClient) {
+  //
+  // Ctor
+  constructor(protected http: HttpClient, router: Router) {
+    this.userSubject = new BehaviorSubject<LoginResult>(null!);
+    this.user = this.userSubject.asObservable();
   }
 
-  /** Returns whether the user has the administrator role via checking local storage. */
-  isAdministrator(): boolean {
-    return localStorage.getItem(this.adminKey) ? true : false;
+  /** Allows access to the current user without having to subscribe to the user observable. */
+  public get userValue(): LoginResult {
+    return this.userSubject.value;
   }
 
-  /** Determines authentication status via checking local storage for a token. */
-  isAuthenticated(): boolean {
-    return this.getToken() != null;
+  /** Returns whether the user has the administrator role. */
+  public isAdministrator(): boolean {
+    return this.userValue && this.userValue.user.roles.includes(this.AdminRoleName);
   }
 
-  /** Returns the token from local storage or returns null. */
+  /** Determines authentication status. */
+  public isAuthenticated(): boolean {
+    return (this.userValue !== null) && (this.userValue.jwtToken !== null);
+  }
+
+  public userName(): string {
+    return (this.userValue !== null) ? this.userValue.user.name : "";
+  }
+
+  /** Returns the JWT token. */
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
-  }
-
-  /** Returns the users' name from local storage or returns an empty string. */
-  getUserName(): string {
-    var userName = localStorage.getItem(this.nameKey);
-    return userName ? userName : "";
+    return this.userValue.jwtToken ?? null;
   }
 
   /** Called in app.component ngOnInit() */
   init(): void {
+    /*
     if (this.isAuthenticated()) {
       this.setAuthStatus(true);
       this.setName(this.getUserName());
       if (this.isAdministrator())
         this.setAdministrator(true);
-    }
+    }*/
   }
 
-  /**
-   * Sends a http post to the Login API.
-   * @param item
-   */
-  login(item: LoginRequest): Observable<LoginResult> {
-    var url = environment.baseUrl + 'api/Users/Login';
-    return this.http.post<LoginResult>(url, item)
-      .pipe(tap(loginResult => {
-        if (loginResult.success && loginResult.token && loginResult.user.name) {
-
-          localStorage.setItem(this.nameKey, loginResult.user.name);
-          this.setName(loginResult.user.name);
-
-          localStorage.setItem(this.tokenKey, loginResult.token);
-          this.setAuthStatus(true);
-
-          if (loginResult.user.roles.find(x => x == this.adminKey)) {
-            localStorage.setItem(this.adminKey, this.adminKey);
-            this.setAdministrator(true);
-          }
-        }
-      }));
-  }
-
-  /** Removes items from local storage and resets Subject values */
-  logout() {
-    localStorage.removeItem(this.nameKey);
-    localStorage.removeItem(this.tokenKey);
-    localStorage.removeItem(this.adminKey)
-    this.setAuthStatus(false);
-    this.setName("");
-    this.setAdministrator(false);
-  }
-
-  /**
-   * Sets the authStatus Subject.next
-   * @param isAuthenticated
-   */
-  private setAuthStatus(isAuthenticated: boolean): void {
-    this._authStatus.next(isAuthenticated);
-  }
-  /**
-   * Sets the displayName Subject.next
-   * @param name
-   */
-  private setName(name: string): void {
-    this._displayName.next(name);
-  }
-
-  /**
-   * Sets the administrator Subject.next
-   * @param isAdministrator
-   */
-  private setAdministrator(isAdministrator: boolean): void {
-    this._administrator.next(isAdministrator);
-  }
-
-  /**
-   * Sends http post to the Register API.
-   * @param item
+  /** Sends http post to the Register API.
+   * @param item RegisterRequest
    */
   register(item: RegisterRequest): Observable<RegisterResult> {
     var url = this.getUrl("api/Users/Register");
     return this.http.post<RegisterResult>(url, item);
   }
 
-  /**
-   * Send http post to the IsDupeEmail API.
-   * @param email
+  /** Sends a http post to the Login API.
+   * @param item LoginRequest
+   */
+  login(item: LoginRequest): Observable<LoginResult> {
+    var url = environment.baseUrl + 'api/Users/Login';
+    return this.http.post<LoginResult>(url, item)
+      .pipe(tap(loginResult => {
+
+        this.userSubject.next(loginResult);
+        this.startRefreshTokenTimer();
+      }));
+  }
+
+  /** Sends revoke-token request and stops the refresh token timer. */
+  logout() {
+    var url = environment.baseUrl + 'api/Users/revoke-token';
+    var req = <RevokeTokenRequest> { token: null };
+    this.http.post<any>(url, req, { withCredentials: true }).subscribe();
+    this.userSubject.next(null!);
+    this.stopRefreshTokenTimer();
+  }
+
+  /** Sends a refresh-token request to the back end api */
+  refreshToken() {
+    var url = environment.baseUrl + 'api/Users/refresh-token';
+    return this.http.post<any>(url, {}, { withCredentials: true })
+      .pipe(map((user) => {
+        this.userSubject.next(user);
+        this.startRefreshTokenTimer();
+        return user;
+      }));
+  }
+
+  /** Send http post to the IsDupeEmail API.
+   * @param email Email to check
    */
   isDupeEmail(email: string): Observable<boolean> {
     var url = this.getUrl("api/Users/IsDupeEmail");
-    var de = <DupeEmailRequest> { email: email };
-    return this.http.post<boolean>(url, de);
+    var dupEmail = <DupeEmailRequest>{ email: email };
+    return this.http.post<boolean>(url, dupEmail);
+  }
+
+
+  //
+  // Helper Methods
+  private refreshTokenTimeout: any;  //: NodeJS.Timeout | undefined;
+
+  private startRefreshTokenTimer() {
+    // parse json object from base64 encoded jwt token
+    const jwtToken = JSON.parse(atob(this.userValue.jwtToken!.split('.')[1]));
+
+    // set a timeout to refresh the token a minute before it expires
+    const expires = new Date(jwtToken.exp * 1000);
+    const timeout = expires.getTime() - Date.now() - (60 * 1000);
+    this.refreshTokenTimeout = setTimeout(() => this.refreshToken().subscribe(), timeout);
+  }
+
+  private stopRefreshTokenTimer() {
+    clearTimeout(this.refreshTokenTimeout);
   }
 
   private getUrl(url: string) {

@@ -4,9 +4,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Entities;
 
-namespace WorldCitiesAPI.Data
+namespace WorldCitiesAPI.Helpers
 {
     public class JwtHandler
     {
@@ -59,7 +60,7 @@ namespace WorldCitiesAPI.Data
                 new Claim(ClaimTypes.Email, user.Email)
             };
 
-            foreach(var role in await _userManager.GetRolesAsync(user))
+            foreach (var role in await _userManager.GetRolesAsync(user))
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
@@ -73,15 +74,15 @@ namespace WorldCitiesAPI.Data
         /// <returns>The newly created refresh token.</returns>
         public RefreshToken GenerateRefreshToken(string ipAddress)
         {
-            return new RefreshToken() 
-            { 
+            return new RefreshToken()
+            {
                 Token = setUniqueToken(),
                 Expires = DateTime.UtcNow.AddDays(7),  // Token is valid for 7 days.
                 Created = DateTime.UtcNow,
                 CreatedByIp = ipAddress
             };
         }
-        
+
         private string setUniqueToken()
         {
             // Token is a cryptographically strong random sequence of values

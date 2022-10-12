@@ -6,7 +6,7 @@ import { MatSort } from '@angular/material/sort';
 import { Subject } from 'rxjs';
 import { debounceTime, distinct, distinctUntilChanged } from 'rxjs/operators';
 
-import { City } from './city';
+import { City } from '@app/_models';
 import { CityService } from '../_services/city.service';
 import { AuthService } from '../_services/auth.service';
 import { AuthGaurd } from '../_helpers/auth.guard';
@@ -22,7 +22,7 @@ export class CitiesComponent implements OnInit {
   isLoggedIn: boolean = false;
 
   defaultPageIndex: number = 0;
-  defaultPageSize: number = 10;
+  defaultPageSize: number = 15;
   public defaultSortColumn: string = "name";
   public defaultSortOrder: "asc" | "desc" = "asc";
 

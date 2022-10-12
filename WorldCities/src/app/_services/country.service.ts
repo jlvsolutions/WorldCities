@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { BaseService, ApiResult, DeleteResult } from './base.service';
 import { Observable } from 'rxjs';
 
-import { Country } from '@app/countries/country';
+import { Country } from '@app/_models';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 
 @Injectable({

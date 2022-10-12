@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Models.Users;
 using WorldCitiesAPI.Data.Entities;
+using WorldCitiesAPI.Helpers;
 
 namespace WorldCitiesAPI.Services
 {
@@ -19,7 +20,7 @@ namespace WorldCitiesAPI.Services
         Task<DeleteResponse> Delete(string id);
         Task<AuthenticateResponse> RefreshToken(string token, string ipAddress);
         string? RevokeToken(string token, string ipAddress);
-        Task<IQueryable<UserDTO>> GetAll();
+        IQueryable<UserDTO> GetAll();
         Task<UserDTO> GetById(string id);
         Task<bool> IsDupeEmail(string email);
         string[] GetAllRoles();
@@ -27,6 +28,7 @@ namespace WorldCitiesAPI.Services
 
     public class UserService : IUserService
     {
+        const string Role_RegisteredUser = "RegisteredUser";
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -52,9 +54,9 @@ namespace WorldCitiesAPI.Services
 
         public async Task<AuthenticateResponse> Login(AuthenticateRequest model, string ipAddress)
         {
-            // Validate
             var user = await _userManager.FindByNameAsync(model.Email);
 
+            // Validate
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 _logger.LogInformation("Authentication failed:  Invalid Email or Password. Login: {Email}", model.Email);
@@ -90,9 +92,6 @@ namespace WorldCitiesAPI.Services
                 return new RegisterResponse() { Success = false, Message = "Registration failed.  User Email already exists." };
             }
 
-            // Setup the default role names
-            string role_RegisteredUser = "RegisteredUser";
-
             // Create a new standard ApplicationUser account
             var appUser = new ApplicationUser()
             {
@@ -106,7 +105,7 @@ namespace WorldCitiesAPI.Services
             await _userManager.CreateAsync(appUser, model.Password);
 
             // Assign the "RegisteredUser" role
-            await _userManager.AddToRoleAsync(appUser, role_RegisteredUser);
+            await _userManager.AddToRoleAsync(appUser, Role_RegisteredUser);
 
             // Force Confirm the e-mail and Remove Lockout.
             appUser.EmailConfirmed = true;
@@ -308,7 +307,7 @@ namespace WorldCitiesAPI.Services
             return new UserDTO(user, roles);
         }
 
-        public async Task<IQueryable<UserDTO>> GetAll()
+        public IQueryable<UserDTO> GetAll()
         {
             var users = _context.Users.AsNoTracking()
             .Select( c => new UserDTO()
@@ -422,7 +421,9 @@ namespace WorldCitiesAPI.Services
         {
             var user = _context.Users.SingleOrDefault(x => x.RefreshTokens.Any(t => t.Token == token));
 
-            if (user == null)
+            if (user != null)
+                user.RefreshTokens = _context.RefreshTokens.Where(t => t.UserId == user.Id).ToList();
+            else
                 _logger.LogWarning("getUserByRefreshToken:  Could not find a user with token: '{token}'", token);
 
             return user;

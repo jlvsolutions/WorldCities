@@ -4,7 +4,7 @@ import { FormGroup, FormBuilder, Validators, AbstractControl, AsyncValidatorFn, 
 import { Observable } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
-import { Country } from './country';
+import { Country } from '@app/_models';
 import { BaseFormComponent } from '@app/base-form.component';
 import { CountryService } from '@app/_services/country.service';
 

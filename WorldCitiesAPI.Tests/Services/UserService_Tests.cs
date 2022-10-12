@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using WorldCitiesAPI.Data.Models.Users;
+using WorldCitiesAPI.Helpers;
 
 namespace WorldCitiesAPI.Tests.Services
 {
@@ -214,7 +215,7 @@ namespace WorldCitiesAPI.Tests.Services
             Assert.NotNull(response);
             Assert.True(response.Success);
             Assert.NotEmpty(response.Message);
-            Assert.NotEmpty(response.Token);
+            Assert.NotEmpty(response.JwtToken);
             Assert.NotEmpty(response.RefreshToken);
             Assert.NotNull(response.User);
             Assert.NotEmpty(response.User?.Id);
@@ -593,7 +594,7 @@ namespace WorldCitiesAPI.Tests.Services
         }
 
         [Fact]
-        public async Task GetAll_ShouldReturnNoneWhenNoUsers()
+        public void GetAll_ShouldReturnNoneWhenNoUsers()
         {
             //
             // Arrange
@@ -601,7 +602,7 @@ namespace WorldCitiesAPI.Tests.Services
 
             //
             // Act
-            var response = await _userService.GetAll();
+            var response = _userService.GetAll();
 
             //
             // Assert the response
@@ -630,7 +631,7 @@ namespace WorldCitiesAPI.Tests.Services
 
             //
             // Act
-            var response = await _userService.GetAll();
+            var response = _userService.GetAll();
 
             //
             // Assert the response
@@ -888,7 +889,7 @@ namespace WorldCitiesAPI.Tests.Services
             // Assert the response
             Assert.True(response.Success);
             Assert.NotEmpty(response.Message);
-            Assert.NotEmpty(response.Token);
+            Assert.NotEmpty(response.JwtToken);
             Assert.NotEmpty(response.RefreshToken);
 
             //

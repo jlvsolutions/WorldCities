@@ -5,41 +5,18 @@ namespace WorldCitiesAPI.Data.Models.Users
 {
     public class AuthenticateResponse
     {
-        /// <summary>
-        /// TRUE if the Login attempt is successful, FALSE otherwise.
-        /// </summary>
         public bool Success { get; set; }
-
-        /// <summary>
-        /// Login attempt result message.
-        /// </summary>
         public string Message { get; set; } = null!;
-
-        /// <summary>
-        /// The JWT token if the Login attempt is successful, or NULL if not.
-        /// </summary>
-        public string? Token { get; set; }
-
-        /// <summary>
-        /// Refresh token is returned in the http only cookie.
-        /// </summary>
+        public string? JwtToken { get; set; }
         [JsonIgnore]
         public string? RefreshToken { get; set; }
-
-        /// <summary>
-        /// User information DTO.
-        /// </summary>
         public UserDTO? User { get; set; }
 
-        public AuthenticateResponse()
-        {
-        }
-
-        public AuthenticateResponse(bool success, string message, string? token = null, string? refreshToken = null, ApplicationUser? user = null, string[]? roles = null)
+        public AuthenticateResponse(bool success, string message, string? jwtToken = null, string? refreshToken = null, ApplicationUser? user = null, string[]? roles = null)
         {
             Success = success;
             Message = message;
-            Token = token;
+            JwtToken = jwtToken;
             RefreshToken = refreshToken;
             if (user != null)
             {

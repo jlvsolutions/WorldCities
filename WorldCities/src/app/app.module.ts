@@ -1,5 +1,5 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -18,7 +18,7 @@ import { CountriesComponent } from './countries/countries.component';
 import { CityEditComponent } from './cities/city-edit.component';
 import { CountryEditComponent } from './countries/country-edit.component';
 import { LoginComponent } from './auth/login.component';
-import { AuthInterceptor } from './auth/auth.interceptor';
+import { JwtInterceptor } from './_helpers/jwt.interceptor';
 import { RegisterComponent } from './auth/register.component';
 import { UsersComponent } from './users/users.component';
 import { UserEditComponent } from './users/user-edit.component';
@@ -30,6 +30,9 @@ import { APOLLO_OPTIONS } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache } from '@apollo/client/core';
 import { ShowMessageComponent } from './show-message/show-message.component';
+import { ErrorInterceptor } from './_helpers/error.interceptor';
+import { appInitializer } from './_helpers/app.initializer';
+import { AuthService } from './_services';
 
 @NgModule({
   declarations: [
@@ -93,11 +96,9 @@ import { ShowMessageComponent } from './show-message/show-message.component';
         requestMethod: "head"
       }
     },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    }
+    { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [AuthService] },
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

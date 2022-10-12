@@ -4,7 +4,7 @@ using System.Linq.Dynamic.Core;
 using System.Reflection;
 using EFCore.BulkExtensions;
 
-namespace WorldCitiesAPI.Data
+namespace WorldCitiesAPI.Data.Models
 {
     public class ApiResult<T>
     {
@@ -12,9 +12,9 @@ namespace WorldCitiesAPI.Data
         /// Private constructor called by the Create method.
         /// </summary>
         private ApiResult(
-            List<T> data, 
-            int count, 
-            int pageIndex, 
+            List<T> data,
+            int count,
+            int pageIndex,
             int pageSize,
             string? sortColumn,
             string? sortOrder,
@@ -74,7 +74,7 @@ namespace WorldCitiesAPI.Data
 
                 sortOrder = sortOrder.ToUpper() == "DESC" ? "DESC" : "ASC";
 
-                source = source.OrderBy( string.Format("{0} {1}", sortColumn, sortOrder) );
+                source = source.OrderBy(string.Format("{0} {1}", sortColumn, sortOrder));
             }
 
             // Get the page
@@ -103,7 +103,7 @@ namespace WorldCitiesAPI.Data
                 BindingFlags.IgnoreCase |
                 BindingFlags.Public |
                 BindingFlags.Instance);
-            
+
             if (prop == null && throwExceptionIfNotFound)
                 throw new NotSupportedException($"ERROR: Property '{propertyName}' does not exist.");
 
@@ -140,9 +140,9 @@ namespace WorldCitiesAPI.Data
         /// <summary>
         /// TRUE if the current page has a previous page, FALSE otherwise.
         /// </summary>
-        public bool HasPreviousPage 
-        {  
-            get { return (PageIndex > 0); }
+        public bool HasPreviousPage
+        {
+            get { return PageIndex > 0; }
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace WorldCitiesAPI.Data
         /// </summary>
         public bool HasNextPage
         {
-            get { return ((PageIndex + 1) < TotalPages); }
+            get { return PageIndex + 1 < TotalPages; }
         }
 
         /// <summary>

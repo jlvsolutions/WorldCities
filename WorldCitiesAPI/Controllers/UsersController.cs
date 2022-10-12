@@ -7,8 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using WorldCitiesAPI.Services;
-using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Models.Users;
+using WorldCitiesAPI.Data.Models;
+using WorldCitiesAPI.Helpers;
 
 namespace WorldCitiesAPI.Controllers
 {
@@ -40,7 +41,7 @@ namespace WorldCitiesAPI.Controllers
             if (!response.Success)
             {
                 _logger.LogInformation("Login: Authenticattion failed.  Email: {Email}", model.Email);
-                return Ok(response);
+                return Ok(response); // Unauthorized( new LoginResult...
             }
 
             // Success, provide a refresh token.
@@ -172,7 +173,7 @@ namespace WorldCitiesAPI.Controllers
         {
             _logger.LogDebug("Received GetAll users request. PageIndex: {pageIndex}, SortOrder: {sortOrder}", pageIndex, sortOrder);
 
-            var allUsers = await _userService.GetAll();
+            var allUsers = _userService.GetAll();
 
             var apiResult = await ApiResult<UserDTO>.CreateAsync(
                 allUsers,
