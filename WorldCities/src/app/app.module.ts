@@ -33,6 +33,7 @@ import { ShowMessageComponent } from './show-message/show-message.component';
 import { ErrorInterceptor } from './_helpers/error.interceptor';
 import { appInitializer } from './_helpers/app.initializer';
 import { AuthService } from './_services';
+import { WCMapComponent } from './wcmap/wcmap.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { AuthService } from './_services';
     RegisterComponent,
     UsersComponent,
     UserEditComponent,
-    ShowMessageComponent
+    ShowMessageComponent,
+    WCMapComponent
   ],
   imports: [
     BrowserModule,

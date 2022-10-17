@@ -1,4 +1,4 @@
-<div class="city-edit">
+<div class="city-edit upper-centered mat-elevation-z15 rounded-padding">
   <h1>{{title}}</h1>
   <p *ngIf="this.id && !city"><em>Loading...</em></p>
 
@@ -9,7 +9,6 @@
     </mat-error>
   </p>
 
-  <div class="shadow">
     <!--<div [formGroup]="form" (ngSubmit)="onSubmit()"> this is also a choice -->
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
@@ -80,7 +79,6 @@
         <button mat-flat-button color="secondary" [routerLink]="['/cities']">Cancel</button>
       </div>
     </form>
-  </div>
 </div>
 
 <!-- Form debug info panel -->

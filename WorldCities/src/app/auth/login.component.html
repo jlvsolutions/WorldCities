@@ -1,4 +1,4 @@
-<div class="login">
+<div class="login upper-centered mat-elevation-z15 rounded-padding">
   <h1>Login</h1>
   <div class="shadow">
 
@@ -9,7 +9,7 @@
       <!-- Name -->
       <mat-form-field>
         <mat-label>Email:</mat-label>
-        <input matInput formControlName="email" required placeholder="Insert email">
+        <input matInput formControlName="email" required placeholder="Enter your email">
         <mat-error *ngFor="let error of getErrors(form.get('email')!, 'Email')">
           {{error}}
         </mat-error>
@@ -18,15 +18,25 @@
       <!-- Password -->
       <mat-form-field>
         <mat-label>Password:</mat-label>
-        <input matInput type="password" formControlName="password" required placeholder="Insert Password">
+        <input matInput type="password" formControlName="password" required placeholder="Enter your password">
         <mat-error *ngFor="let error of getErrors(form.get('password')!, 'Password')">
           {{error}}
         </mat-error>
       </mat-form-field>
 
-      <div>
-        <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">Login</button>
-        <button mat-flat-button color="secondary" [routerLink]="['/']">Cancel</button>
+      <div class="flex-container">
+        <div>
+          <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">Login</button>
+          <button mat-flat-button color="secondary" [routerLink]="['/']">Cancel</button>
+        </div>
+        <span class="flex-separator"></span>
+
+        <div *ngIf="wasRedirected">
+          Don't have a login?
+          <b>
+            <mat-label color="primary" [routerLink]="['/register']">Join Here</mat-label>
+          </b>
+        </div>
       </div>
     </form>
     </div>

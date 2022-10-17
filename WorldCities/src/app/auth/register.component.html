@@ -1,6 +1,6 @@
-<div class="register">
+<div class="register upper-centered mat-elevation-z15 rounded-padding">
   <h1>Register New Login</h1>
-  <div class="shadow">
+  <div class="shadow2">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
       <app-show-message></app-show-message>
@@ -8,7 +8,7 @@
       <!-- Name -->
       <mat-form-field>
         <mat-label>Name:</mat-label>
-        <input matInput formControlName="name" required placeholder="Insert user name">
+        <input matInput formControlName="name" required placeholder="Enter your new user name">
         <mat-error *ngFor="let error of getErrors(form.get('name')!, 'Name')">
           {{error}}
         </mat-error>
@@ -17,7 +17,7 @@
       <!-- Email -->
       <mat-form-field>
         <mat-label>Email:</mat-label>
-        <input matInput formControlName="email" required placeholder="Insert email">
+        <input matInput formControlName="email" required placeholder="Enter your email">
         <mat-error *ngFor="let error of getErrors(form.get('email')!, 'Email')">
           {{error}}
         </mat-error>
@@ -26,15 +26,16 @@
       <!-- Password -->
       <mat-form-field>
         <mat-label>Password:</mat-label>
-        <input matInput type="password" formControlName="password" required placeholder="Insert Password">
+        <input matInput type="password" formControlName="password" required placeholder="Enter your new password">
         <mat-error *ngFor="let error of getErrors(form.get('password')!, 'Password')">
           {{error}}
         </mat-error>
       </mat-form-field>
 
-      <div>
+      <div class="flex-container">
         <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">Join</button>
         <button mat-flat-button color="secondary" [routerLink]="['/']">Cancel</button>
+        <span class="flex-separator"></span>
         <mat-checkbox matInput formControlName="login" (change)="onLoginCbChanged($event)">Login After Registering</mat-checkbox>
       </div>
     </form>

@@ -23,7 +23,6 @@ import { User } from '@app/_models/user';
 export class RegisterComponent
   extends BaseFormComponent implements OnInit {
 
-  title?: string;
   @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
    
 

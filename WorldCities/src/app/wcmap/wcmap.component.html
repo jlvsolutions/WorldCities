@@ -1,0 +1,26 @@
+<div class=wcmap>
+  <h1>World Cities Map</h1>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <mat-label>Place:</mat-label>
+      <input matInput formControlName="place" placeholder="Enter a place" type="text" #placename />
+      <mat-error *ngIf="this.form.controls['place'].errors?.['required']">
+        A place must be entered.
+      </mat-error>
+      <mat-error *ngIf="this.form.controls['place'].errors?.['maxLength']">
+        Place must be less that 40 characters long.
+      </mat-error>
+    </mat-form-field>
+    <button type="submit" >Show Map</button>
+  </form>
+
+  <iframe width=100%
+          height="450"
+          style="border:0"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          [src]="safeMapURL">
+  </iframe>
+</div>
+

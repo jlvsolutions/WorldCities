@@ -16,7 +16,8 @@ import { LoginResult } from './login-result';
 export class LoginComponent
   extends BaseFormComponent implements OnInit {
 
-  title?: string;
+  returnUrl: string = '/';
+  wasRedirected: boolean = false;
   @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
 
   constructor(
@@ -27,6 +28,8 @@ export class LoginComponent
   }
 
   ngOnInit(): void {
+    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
+    this.wasRedirected = this.returnUrl !== '/';
     this.form = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', Validators.required)
@@ -45,7 +48,7 @@ export class LoginComponent
 
         console.log(`Login result: ${result.message}`);
         if (result.success)
-          this.router.navigate(["/"]);
+          this.router.navigateByUrl(this.returnUrl);
         else
           this.show.setMessages(false, result.message);
 

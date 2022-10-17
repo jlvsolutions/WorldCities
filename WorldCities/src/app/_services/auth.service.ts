@@ -40,7 +40,7 @@ export class AuthService {
 
   /** Returns whether the user has the administrator role. */
   public isAdministrator(): boolean {
-    return this.userValue && this.userValue.user.roles.includes(this.AdminRoleName);
+    return (this.userValue !== null) && this.userValue.user.roles?.includes(this.AdminRoleName);
   }
 
   /** Determines authentication status. */
@@ -59,13 +59,6 @@ export class AuthService {
 
   /** Called in app.component ngOnInit() */
   init(): void {
-    /*
-    if (this.isAuthenticated()) {
-      this.setAuthStatus(true);
-      this.setName(this.getUserName());
-      if (this.isAdministrator())
-        this.setAdministrator(true);
-    }*/
   }
 
   /** Sends http post to the Register API.
