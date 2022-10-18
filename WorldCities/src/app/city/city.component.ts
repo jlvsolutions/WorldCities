@@ -10,8 +10,7 @@ import { CityService } from '@app/_services';
   templateUrl: './city.component.html',
   styleUrls: ['./city.component.scss']
 })
-export class CityComponent implements OnInit, OnChanges, DoCheck,
-  AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, OnDestroy {
+export class CityComponent implements OnInit {
 
   // the view title
   title?: string;
@@ -28,13 +27,11 @@ export class CityComponent implements OnInit, OnChanges, DoCheck,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private cityService: CityService) {
-    
   }
 
   ngOnInit(): void {
     var idParam = this.activatedRoute.snapshot.paramMap.get('id') ?? '0';
     this.id = +idParam;
-    console.log('CityComponent: OnInit() id=' + this.id);
     this.loadData(this.id);
   }
 
@@ -47,18 +44,7 @@ export class CityComponent implements OnInit, OnChanges, DoCheck,
     this.cityService.get(id).subscribe(city => {
       this.city = city;  // this will be used to fill out the template.
       this.title = city.name;
-      this.wcMap.place = city.name;
-      console.log('CityComponent loadData received data for id = ' + id + ' ' + city.name);
-      console.log('Calling wcMap.showPlace');
       this.wcMap.showPlace(city.name);
     }, error => console.error(error));
   }
-
-  ngOnChanges() { console.log('CityComponent: OnChanges()'); }
-  ngDoCheck() { console.log('CityComponent: DoCheck()'); }
-  ngAfterContentInit() { console.log('CityComponent: AfterContentInit()'); }
-  ngAfterContentChecked() { console.log('CityComponent: AfterContentChecked()'); }
-  ngAfterViewInit() { console.log('CityComponent: AfterViewInit()'); }
-  ngAfterViewChecked() { console.log('CityComponent: AfterViewChecked()'); }
-  ngOnDestroy() { console.log('CityComponent: OnDestroy()'); }
 }

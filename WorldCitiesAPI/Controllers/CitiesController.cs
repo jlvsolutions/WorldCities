@@ -19,6 +19,7 @@ namespace WorldCitiesAPI.Controllers
     public class CitiesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        //private readonly AutoMapper _mapper;
         private readonly ILogger<CitiesController> _logger;
 
         public CitiesController(ApplicationDbContext context, ILogger<CitiesController> logger)
@@ -71,7 +72,7 @@ namespace WorldCitiesAPI.Controllers
                 return NotFound();
             
             var city = await _context.Cities.FindAsync(id);
-
+            
             if (city == null)
                 return NotFound();
 
