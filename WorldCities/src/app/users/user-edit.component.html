@@ -43,24 +43,11 @@
       </mat-form-field>
 
       <!-- Email Confirmed -->
-      <!-- <mat-form-field>-->
       <mat-checkbox matInpux formControlName="emailConfirmed">Email Confirmed</mat-checkbox>
-      <!-- <input matInput formControlName="emailConfirmed" required placeholder="Type in true or false">
-    <mat-error *ngFor="let error of getErrors(form.get('emailConfirmed')!, 'Email Confirmed')">
-      {{error}}
-    </mat-error>
-      -->
-      <!--</mat-form-field>-->
+
       <!-- Lockout Enabled -->
       <mat-checkbox matInput formControlName="lockoutEnabled">Lockout Enabled</mat-checkbox>
-      <!--<mat-form-field>
-      <mat-label>Lockout Enabled:</mat-label>
-      <input matInput formControlName="lockoutEnabled" required placeholder="Type in true or false">
-      <mat-error *ngFor="let error of getErrors(form.get('lockoutEnabled')!, 'Lockout Enabled')">
-        {{error}}
-      </mat-error>
-    </mat-form-field>
-      -->
+
       <!-- Set Password -->
       <div>
         <mat-checkbox *ngIf="this.id" matInput formControlName="setPassword" (change)="onSetPasswordCbChanged($event)">Set new password</mat-checkbox>
@@ -69,7 +56,8 @@
       <!-- Password -->
       <mat-form-field *ngIf="setPasswordChecked">
         <mat-label>Password:</mat-label>
-        <input matInput formControlName="password" required placeholder="Enter a new password">
+        <input matInput [type]=" showPassword ? 'text' : 'password' " formControlName="password" required placeholder="Enter a new password">
+        <mat-icon matSuffix (click)="showHidePassword()">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         <mat-error *ngFor="let error of getErrors(form.get('password')!, 'New Password',
                    {'isPasswordRequired' : 'is required when Set new password is checked'})">
           {{error}}

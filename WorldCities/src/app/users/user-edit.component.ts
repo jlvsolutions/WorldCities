@@ -23,6 +23,7 @@ export class UserEditComponent
 
   /** The view title */
   title?: string;
+  showPassword: boolean = false;
 
   @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
 
@@ -240,6 +241,9 @@ export class UserEditComponent
     }
   }
 
+  showHidePassword() {
+    this.showPassword = !this.showPassword;
+  }
   /*
   isPasswordRequired(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: boolean } | null => {

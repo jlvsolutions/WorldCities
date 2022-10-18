@@ -23,6 +23,8 @@ import { User } from '@app/_models/user';
 export class RegisterComponent
   extends BaseFormComponent implements OnInit {
 
+  showPassword: boolean = false;
+
   @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
    
 
@@ -113,5 +115,9 @@ export class RegisterComponent
           return (result ? { isDupeEmail: true } : null);
         }));
     }
+  }
+
+  showHidePassword() {
+    this.showPassword = !this.showPassword;
   }
 }
