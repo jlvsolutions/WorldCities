@@ -76,7 +76,6 @@ export class AuthService {
     var url = environment.baseUrl + 'api/Users/Login';
     return this.http.post<LoginResult>(url, item)
       .pipe(tap(loginResult => {
-
         this.userSubject.next(loginResult);
         this.startRefreshTokenTimer();
       }));
@@ -94,10 +93,14 @@ export class AuthService {
   /** Sends a refresh-token request to the back end api */
   refreshToken() {
     var url = environment.baseUrl + 'api/Users/refresh-token';
-    return this.http.post<any>(url, {}, { withCredentials: true })
+    return this.http.post<LoginResult>(url, {}, { withCredentials: true })
       .pipe(map((user) => {
         this.userSubject.next(user);
-        this.startRefreshTokenTimer();
+        if (user.success) {
+          console.log('refreshToken starting new timer.')
+          this.startRefreshTokenTimer();
+        } else
+          console.log('refreshToken failed.')
         return user;
       }));
   }

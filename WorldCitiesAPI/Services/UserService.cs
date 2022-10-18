@@ -384,7 +384,9 @@ namespace WorldCitiesAPI.Services
             var secToken = await _jwtHandler.GenerateJwtToken(user);
             var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
 
-            return new AuthenticateResponse(true, "Token successfully refreshed.", jwt, newRefreshToken.Token, user);
+            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+
+            return new AuthenticateResponse(true, "Token successfully refreshed.", jwt, newRefreshToken.Token, user, roles);
         }
 
         public string? RevokeToken(string token, string ipAddress)

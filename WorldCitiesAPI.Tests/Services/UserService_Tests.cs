@@ -891,6 +891,7 @@ namespace WorldCitiesAPI.Tests.Services
             Assert.NotEmpty(response.Message);
             Assert.NotEmpty(response.JwtToken);
             Assert.NotEmpty(response.RefreshToken);
+            Assert.Contains("RegisteredUser", response.User?.Roles);
 
             //
             // Assert the database

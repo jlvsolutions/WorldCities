@@ -16,9 +16,12 @@ import { LoginResult } from './login-result';
 export class LoginComponent
   extends BaseFormComponent implements OnInit {
 
+  showPassword: boolean = false;
+
   returnUrl: string = '/';
   wasRedirected: boolean = false;
   @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
+
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -56,5 +59,9 @@ export class LoginComponent
         console.error(error);
         this.show.setMessages(false, 'We had a problem on our end.  Please try again.');
       });
+  }
+
+  showHidePassword() {
+    this.showPassword = !this.showPassword;
   }
 }
