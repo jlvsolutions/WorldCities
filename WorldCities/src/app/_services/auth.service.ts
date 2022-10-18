@@ -40,7 +40,7 @@ export class AuthService {
 
   /** Returns whether the user has the administrator role. */
   public isAdministrator(): boolean {
-    return (this.userValue !== null) && this.userValue.user.roles?.includes(this.AdminRoleName);
+    return (this.userValue !== null) && this.userValue.user?.roles?.includes(this.AdminRoleName);
   }
 
   /** Determines authentication status. */
@@ -77,7 +77,11 @@ export class AuthService {
     return this.http.post<LoginResult>(url, item)
       .pipe(tap(loginResult => {
         this.userSubject.next(loginResult);
-        this.startRefreshTokenTimer();
+        if (loginResult.success) {
+          console.log('login starting new timer.');
+          this.startRefreshTokenTimer();
+        } else
+          console.log('login failed.');
       }));
   }
 
@@ -94,14 +98,14 @@ export class AuthService {
   refreshToken() {
     var url = environment.baseUrl + 'api/Users/refresh-token';
     return this.http.post<LoginResult>(url, {}, { withCredentials: true })
-      .pipe(map((user) => {
-        this.userSubject.next(user);
-        if (user.success) {
+      .pipe(map((result) => {
+        this.userSubject.next(result);
+        if (result.success) {
           console.log('refreshToken starting new timer.')
           this.startRefreshTokenTimer();
         } else
           console.log('refreshToken failed.')
-        return user;
+        return result;
       }));
   }
 
