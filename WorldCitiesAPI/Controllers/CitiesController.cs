@@ -68,15 +68,12 @@ namespace WorldCitiesAPI.Controllers
         {
             _logger.LogInformation("Entering GetCity. Id: {id}", id);
             if (_context.Cities == null)
-            {
                 return NotFound();
-            }
+            
             var city = await _context.Cities.FindAsync(id);
 
             if (city == null)
-            {
                 return NotFound();
-            }
 
             return city;
         }

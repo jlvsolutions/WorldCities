@@ -11,12 +11,15 @@ import { AdminAuthGaurd } from './_helpers/admin-auth.guard';
 import { RegisterComponent } from './auth/register.component';
 import { UsersComponent } from './users/users.component';
 import { UserEditComponent } from './users/user-edit.component';
+import { CityComponent } from './city/city.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
   { path: 'cities', component: CitiesComponent },
-  { path: 'city/:id', component: CityEditComponent, canActivate: [AuthGaurd] },
-  { path: 'city', component: CityEditComponent, canActivate: [AuthGaurd] },
+  { path: 'city/:id', component: CityComponent },
+  { path: 'city', component: CityComponent },
+  { path: 'cityedit/:id', component: CityEditComponent, canActivate: [AuthGaurd] },
+  { path: 'cityedit', component: CityEditComponent, canActivate: [AuthGaurd] },
   { path: 'countries', component: CountriesComponent },
   { path: 'country/:id', component: CountryEditComponent, canActivate: [AuthGaurd] },
   { path: 'country', component: CountryEditComponent, canActivate: [AuthGaurd] },

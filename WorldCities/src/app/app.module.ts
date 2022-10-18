@@ -2,9 +2,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatIconModule } from '@angular/material/icon';
+
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -34,6 +32,7 @@ import { ErrorInterceptor } from './_helpers/error.interceptor';
 import { appInitializer } from './_helpers/app.initializer';
 import { AuthService } from './_services';
 import { WCMapComponent } from './wcmap/wcmap.component';
+import { CityComponent } from './city/city.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +48,8 @@ import { WCMapComponent } from './wcmap/wcmap.component';
     UsersComponent,
     UserEditComponent,
     ShowMessageComponent,
-    WCMapComponent
+    WCMapComponent,
+    CityComponent
   ],
   imports: [
     BrowserModule,
@@ -58,7 +58,6 @@ import { WCMapComponent } from './wcmap/wcmap.component';
     BrowserAnimationsModule,
     AngularMaterialModule,
     ReactiveFormsModule,
-    MatCheckboxModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable
@@ -66,8 +65,6 @@ import { WCMapComponent } from './wcmap/wcmap.component';
       registrationStrategy: 'registerWhenStable:30000'
     }),
     GraphQLModule,
-    MatMenuModule,
-    MatIconModule
   ],
   providers: [
     {

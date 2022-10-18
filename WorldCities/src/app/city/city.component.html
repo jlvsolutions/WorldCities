@@ -1,0 +1,14 @@
+<div class="city  mat-elevation-z15 rounded-padding">
+  <h1>{{title}}</h1>
+  <p *ngIf="this.id && !city"><em>Loading...</em></p>
+
+  <mat-card class="city-card">
+    <mat-card-header>
+      <div mat-card-avatar class="city-header-image"></div>
+      <mat-card-title>{{city?.name}}</mat-card-title>
+      <mat-card-subtitle>{{city?.countryId }}, Population {{city?.population | number:'1.0-0' }}</mat-card-subtitle>
+    </mat-card-header>
+    <app-wcmap [place]="city?.name"></app-wcmap>
+  </mat-card>>
+
+</div>
