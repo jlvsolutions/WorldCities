@@ -65,7 +65,7 @@ export class AuthService {
    * @param item RegisterRequest
    */
   register(item: RegisterRequest): Observable<RegisterResult> {
-    var url = this.getUrl("api/Users/Register");
+    var url = this.getUrl('api/Users/Register');
     return this.http.post<RegisterResult>(url, item);
   }
 
@@ -73,7 +73,7 @@ export class AuthService {
    * @param item LoginRequest
    */
   login(item: LoginRequest): Observable<LoginResult> {
-    var url = environment.baseUrl + 'api/Users/Login';
+    var url = this.getUrl('api/Users/Login');
     return this.http.post<LoginResult>(url, item)
       .pipe(tap(loginResult => {
         this.userSubject.next(loginResult);
@@ -87,7 +87,7 @@ export class AuthService {
 
   /** Sends revoke-token request and stops the refresh token timer. */
   logout() {
-    var url = environment.baseUrl + 'api/Users/revoke-token';
+    var url = this.getUrl('api/Users/revoke-token');
     var req = <RevokeTokenRequest> { token: null };
     this.http.post<any>(url, req, { withCredentials: true }).subscribe();
     this.userSubject.next(null!);
@@ -96,7 +96,7 @@ export class AuthService {
 
   /** Sends a refresh-token request to the back end api */
   refreshToken() {
-    var url = environment.baseUrl + 'api/Users/refresh-token';
+    var url = this.getUrl('api/Users/refresh-token');
     return this.http.post<LoginResult>(url, {}, { withCredentials: true })
       .pipe(map((result) => {
         this.userSubject.next(result);
@@ -113,7 +113,7 @@ export class AuthService {
    * @param email Email to check
    */
   isDupeEmail(email: string): Observable<boolean> {
-    var url = this.getUrl("api/Users/IsDupeEmail");
+    var url = this.getUrl('api/Users/IsDupeEmail');
     var dupEmail = <DupeEmailRequest>{ email: email };
     return this.http.post<boolean>(url, dupEmail);
   }

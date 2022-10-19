@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using WorldCitiesAPI.Data.Entities;
 using WorldCitiesAPI.Data.Models.Cities;
 using WorldCitiesAPI.Data.Models;
+using AutoMapper;
 
 namespace WorldCitiesAPI.Controllers
 {
@@ -19,12 +20,13 @@ namespace WorldCitiesAPI.Controllers
     public class CitiesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        //private readonly AutoMapper _mapper;
+        private readonly IMapper _mapper;
         private readonly ILogger<CitiesController> _logger;
 
-        public CitiesController(ApplicationDbContext context, ILogger<CitiesController> logger)
+        public CitiesController(ApplicationDbContext context, IMapper mapper, ILogger<CitiesController> logger)
         {
             _context = context;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -65,7 +67,7 @@ namespace WorldCitiesAPI.Controllers
 
         // GET: api/Cities/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<City>> GetById(int id) // TODO:  Change to CityDTO
+        public async Task<ActionResult<CityDTO>> GetById(int id)
         {
             _logger.LogInformation("Entering GetCity. Id: {id}", id);
             if (_context.Cities == null)
@@ -76,7 +78,12 @@ namespace WorldCitiesAPI.Controllers
             if (city == null)
                 return NotFound();
 
-            return city;
+            var cityDTO = _mapper.Map<CityDTO>(city);
+
+            var country = await _context.Countries.FindAsync(city.CountryId);
+            cityDTO.CountryName = country == null ? "" : country.Name;
+
+            return cityDTO;
         }
 
         // PUT: api/Cities/5

@@ -42,9 +42,9 @@ export class CityComponent implements OnInit {
 
     // get the city from server
     this.cityService.get(id).subscribe(city => {
-      this.city = city;  // this will be used to fill out the template.
+      this.city = city;
       this.title = city.name;
-      this.wcMap.showPlace(city.name);
+      this.wcMap.showPlace(city.name + "," + city.countryName);
     }, error => console.error(error));
   }
 }

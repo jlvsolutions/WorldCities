@@ -7,9 +7,9 @@ export function appInitializer(authservice: AuthService) {
     console.log("appInitializer:  Sending refreshToken request.");
     authservice.refreshToken()
       .subscribe(result => {
-        console.log(`appInitializer: result.success = ${result.success}, message = ${result.message}`);
+        console.log(`appInitializer: result.success = ${result.success}, message = ${result.message}`); 
       }, error =>
-        console.log(`appInitializer: refreshToken result = ${error}`))
+        console.log(`appInitializer: refreshToken error result = ${error.statusText}, ${error.error}`))
       .add(resolve("appInitializer resolve."));
   });
 }

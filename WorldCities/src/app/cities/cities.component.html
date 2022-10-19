@@ -11,7 +11,7 @@
 <!-- the hidden is not working... hmm.. added the *ngIf="cities" -->
 <mat-form-field [hidden]="!cities" *ngIf="cities" >
   <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
-         placeholder="Filter by name (or part of it)..."> <!-- no /> on input elements.?-->
+         placeholder="Filter by name (or part of it)...">
 </mat-form-field>
 
 <table mat-table [dataSource]="cities"

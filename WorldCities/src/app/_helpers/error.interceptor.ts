@@ -17,12 +17,15 @@ export class ErrorInterceptor implements HttpInterceptor {
 
         // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
         if ([400, 403].includes(error.status) && this.authService.userValue) {
-          //this.authService.logout();
+          this.authService.logout();
         }
 
-        const tError = (error && error.error && error.error.message) || error.statusText;
+        var errorToThrow = error.statusText;
+        if (error.error)
+          errorToThrow = errorToThrow + ", " + error.error;
+        //const tError = (error && error.error && error.error.message) || error.statusText;
         console.error(error);
-        return throwError(tError);
+        return throwError(error);
       })
     );
   }

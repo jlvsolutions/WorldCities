@@ -32,8 +32,9 @@ builder.Host.UseSerilog((ctx, lc) => lc
     .WriteTo.Console()
     );
 
+//
 // Add services to the container.
-
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers(); //;
 // This kept here commented out for reference sake.
 //    .AddJsonOptions(options =>

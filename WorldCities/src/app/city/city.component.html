@@ -6,7 +6,12 @@
     <mat-card-header>
       <div mat-card-avatar class="city-header-image"></div>
       <mat-card-title>{{city?.name}}</mat-card-title>
-      <mat-card-subtitle>{{city?.countryId }}, Population {{city?.population | number:'1.0-0' }}</mat-card-subtitle>
+      <mat-card-subtitle>
+        {{city?.countryName }}, 
+        Population {{city?.population | number:'1.0-0' }},
+        Lat {{city?.lat}},
+        Lon {{city?.lon}}
+      </mat-card-subtitle>
     </mat-card-header>
     <app-wcmap></app-wcmap>
   </mat-card>>

@@ -65,7 +65,7 @@ namespace WorldCitiesAPI.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken()
+        public async Task<ActionResult<AuthenticateResponse>> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
             _logger.LogDebug("Recieved RefreshToken request. In cookie Token: {refreshToken}", refreshToken);

@@ -124,17 +124,16 @@ export class CityService extends BaseService<City, number> {
   /**
    *  RESTful implementation
    * @param id
-   *
+   */
   get(id: number): Observable<City> {
     var url = this.getUrl("api/Cities/" + id);
     return this.http.get<City>(url);
   }
-  */
 
   /**
    * GraphQL implementation
    * @param id
-   */
+  
   get(id: number): Observable<City> {
     return this.apollo
       .query({
@@ -159,7 +158,7 @@ export class CityService extends BaseService<City, number> {
     .pipe(map((result: any) =>
         result.data.cities.nodes[0]));
   }
-
+   */
 
   put(item: City): Observable<City> {
     var url = this.getUrl("api/Cities/" + item.id);
