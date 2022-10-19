@@ -27,7 +27,7 @@ export class CityService extends BaseService<City, number> {
    * @param sortOrder
    * @param filterColumn
    * @param filterQuery
-   *
+   */
   getData(
     pageIndex: number,
     pageSize: number,
@@ -51,7 +51,6 @@ export class CityService extends BaseService<City, number> {
 
     return this.http.get<ApiResult<City>>(url, { params });
   }
-  */
 
   /**
    * GraphQL implementation
@@ -61,7 +60,6 @@ export class CityService extends BaseService<City, number> {
    * @param sortOrder
    * @param filterColumn
    * @param filterQuery
-   */
   getData(
     pageIndex: number,
     pageSize: number,
@@ -120,6 +118,7 @@ export class CityService extends BaseService<City, number> {
       .pipe(map((result: any) =>
         result.data.citiesApiResult));
   }
+   */
 
   /**
    *  RESTful implementation
