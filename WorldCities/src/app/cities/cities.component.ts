@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -34,10 +35,22 @@ export class CitiesComponent implements OnInit {
 
   filterTextChanged: Subject<string> = new Subject<string>();
 
-  constructor(private cityService: CityService, private authService: AuthService) {
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private cityService: CityService,
+    private authService: AuthService) {
   }
 
   ngOnInit() {
+    this.defaultPageIndex = +this.activatedRoute.snapshot.queryParams['pageIndex'] || 0;
+    this.defaultPageSize = +this.activatedRoute.snapshot.queryParams['pageSize'] || 15;
+    let ps = this.activatedRoute.snapshot.queryParamMap.get('pageSize') || 16;
+    this.defaultSortColumn = this.activatedRoute.snapshot.queryParams['sortColumn'] ?? "name";
+    this.defaultSortOrder = this.activatedRoute.snapshot.queryParams['sortOrder'] ?? "asc";
+    this.defaultFilterColumn = this.activatedRoute.snapshot.queryParams['filterColumn'] ?? "name";
+    this.filterQuery = this.activatedRoute.snapshot.queryParams['filterQuery'] ?? "";
+
     this.isLoggedIn = this.authService.isAuthenticated();
     this.loadData();
   }
@@ -55,7 +68,7 @@ export class CitiesComponent implements OnInit {
   }
 
   loadData(query?: string) {
-    var pageEvent = new PageEvent();
+    let pageEvent = new PageEvent();
     pageEvent.pageIndex = this.defaultPageIndex;
     pageEvent.pageSize = this.defaultPageSize;
     this.filterQuery = query;

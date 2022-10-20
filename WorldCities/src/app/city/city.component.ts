@@ -31,7 +31,12 @@ export class CityComponent implements OnInit {
 
   ngOnInit(): void {
     var idParam = this.activatedRoute.snapshot.paramMap.get('id') ?? '0';
+    //var pageIndex = this.activatedRoute.snapshot.paramMap.get('pageIndex') || 123;
+    //var pageSize = this.activatedRoute.snapshot.paramMap.get('pageSize') || 456;
+    //var pageIndex2 = this.activatedRoute.snapshot.queryParamMap.get('pageIndex') || 789;
+    //var pageSize2 = this.activatedRoute.snapshot.queryParamMap.get('pageSize') || 111;
     this.id = +idParam;
+    console.log(`CityComponent: OnInit()`);
     this.loadData(this.id);
   }
 

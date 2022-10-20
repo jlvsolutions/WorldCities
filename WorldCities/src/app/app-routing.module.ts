@@ -21,7 +21,6 @@ const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
   { path: 'cities', component: CitiesComponent },
   { path: 'city/:id', component: CityComponent },
-  { path: 'city', component: CityComponent },
   { path: 'cityedit/:id', component: CityEditComponent, canActivate: [AuthGaurd] },
   { path: 'cityedit', component: CityEditComponent, canActivate: [AuthGaurd] },
   { path: 'countries', component: CountriesComponent },
