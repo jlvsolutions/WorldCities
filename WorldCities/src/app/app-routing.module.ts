@@ -19,7 +19,7 @@ import { UserEditComponent } from './users/user-edit.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
-  { path: 'cities', component: CitiesComponent },
+  { path: 'cities', component: CitiesComponent, data: { saveComponent: true } },
   { path: 'city/:id', component: CityComponent },
   { path: 'cityedit/:id', component: CityEditComponent, canActivate: [AuthGaurd] },
   { path: 'cityedit', component: CityEditComponent, canActivate: [AuthGaurd] },

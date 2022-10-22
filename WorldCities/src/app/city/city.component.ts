@@ -10,7 +10,7 @@ import { CityService } from '@app/_services';
   templateUrl: './city.component.html',
   styleUrls: ['./city.component.scss']
 })
-export class CityComponent implements OnInit {
+export class CityComponent implements OnInit, OnDestroy {
 
   // the view title
   title?: string;
@@ -20,6 +20,7 @@ export class CityComponent implements OnInit {
 
   // the city object id, as fetched from the active route.
   id?: number;
+  public routeParam = 0;
 
   @ViewChild(WCMapComponent) wcMap!: WCMapComponent;
 
@@ -31,12 +32,16 @@ export class CityComponent implements OnInit {
 
   ngOnInit(): void {
     var idParam = this.activatedRoute.snapshot.paramMap.get('id') ?? '0';
+
+    this.activatedRoute.params.subscribe(p => this.routeParam = +p['id']);
+
+    //var state = this.router.getCurrentNavigation()?.extras.state?.['tracingId'];
     //var pageIndex = this.activatedRoute.snapshot.paramMap.get('pageIndex') || 123;
     //var pageSize = this.activatedRoute.snapshot.paramMap.get('pageSize') || 456;
     //var pageIndex2 = this.activatedRoute.snapshot.queryParamMap.get('pageIndex') || 789;
     //var pageSize2 = this.activatedRoute.snapshot.queryParamMap.get('pageSize') || 111;
     this.id = +idParam;
-    console.log(`CityComponent: OnInit()`);
+    console.log(`CityComponent: OnInit() routeParam = ${this.routeParam}`);
     this.loadData(this.id);
   }
 
@@ -51,5 +56,8 @@ export class CityComponent implements OnInit {
       this.title = city.name;
       this.wcMap.showPlace(city.name + "," + city.countryName);
     }, error => console.error(error));
+  }
+  ngOnDestroy() {
+    console.log(`CityComponent: OnDestroy() Id = ${this.id} routeParam = ${this.routeParam}`);
   }
 }

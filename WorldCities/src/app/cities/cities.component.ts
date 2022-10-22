@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { debounceTime, distinct, distinctUntilChanged } from 'rxjs/operators';
 
 import { City } from '@app/_models';
@@ -17,10 +17,11 @@ import { AuthGaurd } from '../_helpers/auth.guard';
   templateUrl: './cities.component.html',
   styleUrls: ['./cities.component.scss']
 })
-export class CitiesComponent implements OnInit {
+export class CitiesComponent implements OnInit, OnDestroy {
   public displayedColumns: string[] = ['id', 'name', 'lat', 'lon', 'population', 'countryName'];
   public cities!: MatTableDataSource<City>;
   isLoggedIn: boolean = false;
+  private destroySubject = new Subject();
 
   defaultPageIndex: number = 0;
   defaultPageSize: number = 15;
@@ -28,7 +29,7 @@ export class CitiesComponent implements OnInit {
   public defaultSortOrder: "asc" | "desc" = "asc";
 
   defaultFilterColumn: string = "name";
-  filterQuery?: string;
+  filterQuery?: string | null = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -40,18 +41,20 @@ export class CitiesComponent implements OnInit {
     private router: Router,
     private cityService: CityService,
     private authService: AuthService) {
+
+    this.authService.user
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(user => {
+        console.log(`CitiesComponent:  user = ${user?.user?.name}, ${user?.user?.email}`);
+        this.isLoggedIn = authService.isAuthenticated();
+      })
   }
 
   ngOnInit() {
-    this.defaultPageIndex = +this.activatedRoute.snapshot.queryParams['pageIndex'] || 0;
-    this.defaultPageSize = +this.activatedRoute.snapshot.queryParams['pageSize'] || 15;
-    let ps = this.activatedRoute.snapshot.queryParamMap.get('pageSize') || 16;
-    this.defaultSortColumn = this.activatedRoute.snapshot.queryParams['sortColumn'] ?? "name";
-    this.defaultSortOrder = this.activatedRoute.snapshot.queryParams['sortOrder'] ?? "asc";
-    this.defaultFilterColumn = this.activatedRoute.snapshot.queryParams['filterColumn'] ?? "name";
-    this.filterQuery = this.activatedRoute.snapshot.queryParams['filterQuery'] ?? "";
-
+    console.log("CitiesComponent: OnInit()");
+    this.filterQuery = '';
     this.isLoggedIn = this.authService.isAuthenticated();
+    this.clearSearch();
     this.loadData();
   }
 
@@ -95,5 +98,17 @@ export class CitiesComponent implements OnInit {
           this.paginator.pageSize = result.pageSize;
           this.cities = new MatTableDataSource<City>(result.data);
         }, error => console.error(error));
+  }
+
+  clearSearch() {
+    console.log(`clear search value ${this.filterQuery}`);
+    this.filterQuery = '';
+    this.loadData();
+  }
+
+  ngOnDestroy() {
+    console.log("CitiesComponent: OnDestroy()");
+    this.destroySubject.next(true);
+    this.destroySubject.complete();
   }
 }

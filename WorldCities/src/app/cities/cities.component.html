@@ -1,76 +1,86 @@
 <h1>Cities</h1>
 
-<p>Here's a list of cities:  Have fun with it:)</p>
+<p>
+  Here's a list of cities:  Have fun with it:)
+  <button mat-flat-button color="primary" class="btn-right" *ngIf="cities && isLoggedIn" [routerLink]="['/cityedit']">
+    Add a new City
+  </button>
+</p>
 
 <p *ngIf="!cities"><em>Loading...</em></p>
 
-<button mat-flat-button color="primary" class="btn-add" *ngIf="cities && isLoggedIn" [routerLink]="['/city']">
-  Add a new City
-</button>
- 
-<!-- the hidden is not working... hmm.. added the *ngIf="cities" -->
-<mat-form-field [hidden]="!cities" *ngIf="cities" >
-  <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
-         placeholder="Filter by name (or part of it)...">
-</mat-form-field>
 
-<table mat-table [dataSource]="cities"
-       class="mat-elevation-z8"
-       [hidden]="!cities"
-       matSort (matSortChange)="loadData()"
-       [matSortActive]="defaultSortColumn"
-       [matSortDirection]="defaultSortOrder">
+<div class="mat-elevation-z15 rounded-padding">
+  <div class="filter" *ngIf="cities">
+    <mat-form-field [hidden]="!cities">
+      <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
+             placeholder="Filter by name (or part of it)..."
+             [value]="filterQuery ?? ''">
+      <mat-icon matSuffix (click)="clearSearch()">clear_text</mat-icon>
+    </mat-form-field>
+    <div>
+      <button mat-flat-button class="filter-btn" color="primary" (click)="clearSearch()">Clear Search</button>
+    </div>
+  </div>
 
-  <!-- Id Column -->
-  <ng-container matColumnDef="id">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-    <td mat-cell *matCellDef="let city">{{city.id}}</td>
-  </ng-container>
+  <table mat-table [dataSource]="cities"
+         class="mat-elevation-z8"
+         [hidden]="!cities"
+         matSort (matSortChange)="loadData()"
+         [matSortActive]="defaultSortColumn"
+         [matSortDirection]="defaultSortOrder">
 
-  <!-- Name Column -->
-  <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-    <td mat-cell *matCellDef="let city">
-      <a [routerLink]="['/city', city.id]" [state]="{fname:'jerry', role:'developer'}">{{city.name}}</a>
-    </td>
-  </ng-container>
+    <!-- Id Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+      <td mat-cell *matCellDef="let city">{{city.id}}</td>
+    </ng-container>
 
-  <!-- Lat Column -->
-  <ng-container matColumnDef="lat">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Latitude</th>
-    <td mat-cell *matCellDef="let city">{{city.lat}}</td>
-  </ng-container>
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <td mat-cell *matCellDef="let city">
+        <a [routerLink]="['/city', city.id]">{{city.name}}</a>
+      </td>
+       <
+    </ng-container>
 
-  <!-- Lon Column-->
-  <ng-container matColumnDef="lon">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Longitude</th>
-    <td mat-cell *matCellDef="let city">{{city.lon}}</td>
-  </ng-container>
+    <!-- Lat Column -->
+    <ng-container matColumnDef="lat">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Latitude</th>
+      <td mat-cell *matCellDef="let city">{{city.lat}}</td>
+    </ng-container>
 
-  <!-- CountryName Column-->
-  <ng-container matColumnDef="countryName">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Country</th>
-    <td mat-cell *matCellDef="let city">
-      <a [routerLink]="['/country', city.countryId]">{{city.countryName}}</a>
-    </td>
-  </ng-container>
+    <!-- Lon Column-->
+    <ng-container matColumnDef="lon">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Longitude</th>
+      <td mat-cell *matCellDef="let city">{{city.lon}}</td>
+    </ng-container>
 
-  <!-- Population Column-->
-  <ng-container matColumnDef="population">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Population</th>
-    <td mat-cell *matCellDef="let city">{{city.population | number: '1.0-0'}}</td>
-  </ng-container>
+    <!-- CountryName Column-->
+    <ng-container matColumnDef="countryName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Country</th>
+      <td mat-cell *matCellDef="let city">
+        <a [routerLink]="['/country', city.countryId]">{{city.countryName}}</a>
+      </td>
+    </ng-container>
+
+    <!-- Population Column-->
+    <ng-container matColumnDef="population">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Population</th>
+      <td mat-cell *matCellDef="let city">{{city.population | number: '1.0-0'}}</td>
+    </ng-container>
 
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>"
-</table>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>"
+  </table>
 
-<!-- Pagination directive -->
-<!-- hidden it's working, again... see above'-->
-<mat-paginator [hidden]="!cities"
-               (page)="getData($event)"
-               [pageSize]="15"
-               [pageSizeOptions]="[10, 15, 20, 50, 100, 500, 1000, 5000]"
-               showFirstLastButtons>
-</mat-paginator>
+  <!-- Pagination directive -->
+  <mat-paginator [hidden]="!cities"
+                 (page)="getData($event)"
+                 [pageSize]="15"
+                 [pageSizeOptions]="[10, 15, 20, 50, 100, 500, 1000, 5000]"
+                 showFirstLastButtons>
+  </mat-paginator>
+</div>

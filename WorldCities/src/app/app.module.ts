@@ -32,6 +32,8 @@ import { appInitializer } from './_helpers/app.initializer';
 import { AuthService } from './_services';
 import { WCMapComponent } from './wcmap/wcmap.component';
 import { CityComponent } from './city/city.component';
+import { RouteReuseStrategy } from '@angular/router';
+import { WCReuseStrategy } from './_helpers/wcReuseStrategy';
 
 @NgModule({
   declarations: [
@@ -90,13 +92,14 @@ import { CityComponent } from './city/city.component';
         enableHeartbeat: true,
         heartbeatUrl: environment.baseUrl + 'api/heartbeat',
         heartbeatInterval: 30000,
-        heartbeatRetryInterval: 10000,
+        heartbeatRetryInterval: 1000,
         requestMethod: "head"
       }
     },
     { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [AuthService] },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: RouteReuseStrategy, useClass: WCReuseStrategy }
   ],
   bootstrap: [AppComponent]
 })
