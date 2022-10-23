@@ -43,6 +43,7 @@ namespace WorldCitiesAPI.Tests.Services
 
             // Create the option instances required by the ApplicationDbContext
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseLazyLoadingProxies()
                 .UseInMemoryDatabase(databaseName: "UserService_Tests")
                 .Options;
 

@@ -38,7 +38,7 @@ namespace WorldCitiesAPI.Controllers
             if (!response.Success)
             {
                 _logger.LogInformation("Login: Authenticattion failed.  Email: {Email}", model.Email);
-                return Ok(response); // Unauthorized( new LoginResult...
+                return Unauthorized(response); // Unauthorized( new LoginResult...
             }
 
             // Success, provide a refresh token.
@@ -200,7 +200,7 @@ namespace WorldCitiesAPI.Controllers
                 _logger.LogWarning("GetById:  User not found for id: {id}", id);
                 return NotFound();
             }
-            return user;
+            return Ok(user);
         }
 
         [HttpGet("{id}/refresh-tokens")]

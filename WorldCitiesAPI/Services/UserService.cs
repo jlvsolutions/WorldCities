@@ -55,6 +55,8 @@ namespace WorldCitiesAPI.Services
         public async Task<AuthenticateResponse> Login(AuthenticateRequest model, string ipAddress)
         {
             var user = await _userManager.FindByNameAsync(model.Email);
+            var u = _context.Users.SingleOrDefault(user => user.Email == model.Email);
+            //var u = _context.Users.SingleOrDefault(user => user.RefreshTokens.Any(t => t.Token == "90bb9889-22b6-4e30-ab41-16b01385091d"));
 
             // Validate
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
@@ -69,8 +71,6 @@ namespace WorldCitiesAPI.Services
             var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
             var refreshToken = _jwtHandler.GenerateRefreshToken(ipAddress);
 
-            if (user.RefreshTokens == null)
-                user.RefreshTokens = new List<RefreshToken>();
             user.RefreshTokens.Add(refreshToken);
 
             // Remove old refresh tokens from user.

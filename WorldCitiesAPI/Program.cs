@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Proxies;
 using WorldCitiesAPI.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -58,9 +59,8 @@ builder.Services.AddCors(options =>
 
 // Add ApplicationDbContext and SQL Server support
 builder.Services.AddDbContext<ApplicationDbContext>( options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-        )
+    options.UseLazyLoadingProxies()
+           .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
 // Add ASP.NET Core Identity support

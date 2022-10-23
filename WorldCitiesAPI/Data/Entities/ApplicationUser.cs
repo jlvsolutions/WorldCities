@@ -9,7 +9,7 @@ namespace WorldCitiesAPI.Data.Entities
 
         #region Navigtation Properties
         [JsonIgnore]
-        public List<RefreshToken> RefreshTokens { get; set; } = null!;
+        public virtual List<RefreshToken> RefreshTokens { get; set; } = null!;
         #endregion
     }
 }

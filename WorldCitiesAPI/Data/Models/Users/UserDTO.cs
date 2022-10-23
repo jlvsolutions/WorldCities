@@ -43,6 +43,10 @@ namespace WorldCitiesAPI.Data.Models.Users
         /// </summary>
         public string[] Roles { get; set; } = null!;
 
+        public string? JwtToken { get; set; }
+        [JsonIgnore]
+        public string? RefreshToken { get; set; }
+
         public UserDTO() { }
 
         public UserDTO(ApplicationUser user, string[] roles)

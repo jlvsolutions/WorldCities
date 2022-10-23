@@ -6,11 +6,22 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using WorldCitiesAPI.Data.Entities;
+using WorldCitiesAPI.Data.Models.Cities;
+using WorldCitiesAPI.Helpers;
+using AutoMapper;
 
 namespace WorldCitiesAPI.Tests.Controllers
 {
     public class CitiesController_Tests
     {
+        private readonly IMapper _mapper;
+        public CitiesController_Tests()
+        {
+            MapperConfiguration mapperConfig = new MapperConfiguration(cfg =>
+                cfg.AddProfile(new AutoMapperProfile()));
+            _mapper = new Mapper(mapperConfig);
+        }
+
         [Fact]
         public async Task GetCity()
         {
@@ -31,9 +42,9 @@ namespace WorldCitiesAPI.Tests.Controllers
             });
             context.SaveChanges();
 
-            var controller = new CitiesController(context, new NullLogger<CitiesController>());
-            City? city_existing = null;
-            City? city_notExisting = null;
+            var controller = new CitiesController(context, _mapper, new NullLogger<CitiesController>());
+            CityDTO? city_existing = null;
+            CityDTO? city_notExisting = null;
 
 
             // Act

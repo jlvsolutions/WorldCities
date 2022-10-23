@@ -46,7 +46,7 @@ namespace WorldCitiesAPI.Data.Entities
         /// <summary>
         /// The ApplicationUser related to this RefreshToken.
         /// </summary>
-        public ApplicationUser? User { get; set; } = null!;
+        public virtual ApplicationUser? User { get; set; } = null!;
         #endregion
 
     }

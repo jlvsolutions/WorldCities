@@ -53,7 +53,7 @@ namespace WorldCitiesAPI.Data.Entities
         /// <summary>
         /// The country related to this city.
         /// </summary>
-        public Country? Country { get; set; } = null!;
+        public virtual Country? Country { get; set; } = null!;
         #endregion
     }
 }
