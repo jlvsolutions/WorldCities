@@ -34,9 +34,6 @@ namespace WorldCitiesAPI.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<AuthenticateResponse>> Login(AuthenticateRequest model)
         {
-            _logger.LogDebug("Received Login Request. Email: {Email}", model.Email);
-            
-            // Authenticate the user
             var response = await _userService.Login(model, ipAddress());
             if (!response.Success)
             {

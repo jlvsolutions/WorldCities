@@ -57,10 +57,6 @@ export class AuthService {
     return this.userValue.jwtToken ?? null;
   }
 
-  /** Called in app.component ngOnInit() */
-  init(): void {
-  }
-
   /** Sends http post to the Register API.
    * @param item RegisterRequest
    */

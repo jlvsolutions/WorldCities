@@ -12,7 +12,7 @@ import { LoginResult } from './auth/login-result';
 export class AppComponent implements OnInit {
   title = 'WorldCities';
 
-  user: LoginResult = null!;
+  user: LoginResult = null!; // not currently used
 
   hasNetworkConnection: boolean = true;
   hasInternetAccess: boolean = true;
@@ -26,11 +26,10 @@ export class AppComponent implements OnInit {
       this.hasInternetAccess = currentState.hasInternetAccess;
     });
 
-    this.authService.user.subscribe(x => this.user = x);
+    this.authService.user.subscribe(newUser => this.user = newUser);
   }
 
   ngOnInit(): void {
-    this.authService.init();
   }
 
   public isOnline() {
