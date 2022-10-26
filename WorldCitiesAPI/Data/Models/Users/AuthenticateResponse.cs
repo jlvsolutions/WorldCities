@@ -7,17 +7,19 @@ namespace WorldCitiesAPI.Data.Models.Users
     {
         public bool Success { get; set; }
         public string Message { get; set; } = null!;
-        public string? JwtToken { get; set; }
-        [JsonIgnore]
-        public string? RefreshToken { get; set; }
-        public UserDTO? User { get; set; }
+        public UserDTO User { get; set; } = null!;
 
-        public AuthenticateResponse(bool success, string message, string? jwtToken = null, string? refreshToken = null, ApplicationUser? user = null, string[]? roles = null)
+        public AuthenticateResponse() { }
+        /*
+        public AuthenticateResponse(
+            bool success, 
+            string message, 
+            string jwtToken = null!, 
+            string refreshToken = null!, 
+            ApplicationUser? user = null)
         {
             Success = success;
             Message = message;
-            JwtToken = jwtToken;
-            RefreshToken = refreshToken;
             if (user != null)
             {
                 User = new UserDTO()
@@ -27,9 +29,12 @@ namespace WorldCitiesAPI.Data.Models.Users
                     Email = user.Email,
                     EmailConfirmed = user.EmailConfirmed,
                     LockoutEnabled = user.LockoutEnabled,
-                    Roles = roles!
+                    Roles = roles!,
+                    JwtToken = jwtToken,
+                    RefreshToken = refreshToken
                 };
             }
         }
+        */
     }
 }

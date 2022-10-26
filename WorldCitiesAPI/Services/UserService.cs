@@ -8,6 +8,7 @@ using WorldCitiesAPI.Data;
 using WorldCitiesAPI.Data.Models.Users;
 using WorldCitiesAPI.Data.Entities;
 using WorldCitiesAPI.Helpers;
+using AutoMapper;
 
 namespace WorldCitiesAPI.Services
 {
@@ -23,7 +24,9 @@ namespace WorldCitiesAPI.Services
         IQueryable<UserDTO> GetAll();
         Task<UserDTO> GetById(string id);
         Task<bool> IsDupeEmail(string email);
+        Task<string[]> GetRoles(string id);
         string[] GetAllRoles();
+        RefreshToken[] GetRefreshTokens(string userId);
     }
 
     public class UserService : IUserService
@@ -34,6 +37,7 @@ namespace WorldCitiesAPI.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtHandler _jwtHandler;
+        private readonly IMapper _mapper;
         private readonly ILogger<UserService> _logger;
 
         public UserService(
@@ -42,6 +46,7 @@ namespace WorldCitiesAPI.Services
             RoleManager<IdentityRole> roleManager,
             UserManager<ApplicationUser> userManager,
             JwtHandler jwtHandler,
+            IMapper mapper,
             ILogger<UserService> logger)
         {
             _configuration = configuration;
@@ -49,6 +54,7 @@ namespace WorldCitiesAPI.Services
             _roleManager = roleManager;
             _userManager = userManager;
             _jwtHandler = jwtHandler;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -56,13 +62,15 @@ namespace WorldCitiesAPI.Services
         {
             var user = await _userManager.FindByNameAsync(model.Email);
             var u = _context.Users.SingleOrDefault(user => user.Email == model.Email);
-            //var u = _context.Users.SingleOrDefault(user => user.RefreshTokens.Any(t => t.Token == "90bb9889-22b6-4e30-ab41-16b01385091d"));
 
             // Validate
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                _logger.LogInformation("Authentication failed:  Invalid Email or Password. Login: {Email}", model.Email);
-                return new AuthenticateResponse(false, "Invalid Email or Password");
+                return new AuthenticateResponse()
+                {
+                    Success = false,
+                    Message = "Invalid Email or Password"
+                };
             }
             var roles = (await _userManager.GetRolesAsync(user)).ToArray();
 
@@ -80,7 +88,17 @@ namespace WorldCitiesAPI.Services
             _context.Update(user);
             _context.SaveChanges();
 
-            return new AuthenticateResponse(true, "Authentication Success", jwt, refreshToken.Token, user, roles);
+            var userDTO = _mapper.Map<UserDTO>(user);
+            userDTO.Roles = roles;
+            userDTO.JwtToken = jwt;
+            userDTO.RefreshToken = refreshToken.Token;
+            
+            return new AuthenticateResponse()
+            {
+                Success = true,
+                Message = "Authentication Success",
+                User = userDTO
+            };
         }
 
         public async Task<RegisterResponse> Register(RegisterRequest model)
@@ -88,7 +106,6 @@ namespace WorldCitiesAPI.Services
             // Ensure user does not already exists.
             if (await _userManager.FindByEmailAsync(model.Email) != null)
             {
-                _logger.LogInformation("Register:  Registration failed:  User Email already exists.  Email: {Email}", model.Email);
                 return new RegisterResponse() { Success = false, Message = "Registration failed.  User Email already exists." };
             }
 
@@ -102,9 +119,8 @@ namespace WorldCitiesAPI.Services
             };
 
             // Insert the new RegisteredUser into the DB
+            // TODO:  Consider adding more error detection.
             await _userManager.CreateAsync(appUser, model.Password);
-
-            // Assign the "RegisteredUser" role
             await _userManager.AddToRoleAsync(appUser, Role_RegisteredUser);
 
             // Force Confirm the e-mail and Remove Lockout.
@@ -116,41 +132,124 @@ namespace WorldCitiesAPI.Services
             return new RegisterResponse() { Success = true, Message = "Registration was successful." };
         }
 
-        public async Task<CreateResponse> Create(UserDTO user)
+        public async Task<CreateResponse> Create(UserDTO model)
         {
             // Setup the default role name
             string role_RegisteredUser = "RegisteredUser";
-            if (user.Roles == null || user.Roles.Length == 0)
+            if (model.Roles == null || model.Roles.Length == 0)
+                model.Roles = new string[] { role_RegisteredUser };
+
+            if (await _userManager.FindByEmailAsync(model.Email) != null)
             {
-                user.Roles = new string[] { role_RegisteredUser };
+                return new CreateResponse()
+                { 
+                    Success = false,
+                    Message = $"User with Email {model.Email} already exists."
+                };
             }
 
-            if (await _userManager.FindByEmailAsync(user.Email) != null)
+            if (string.IsNullOrEmpty(model.NewPassword))
             {
-                _logger.LogWarning("Create: User with Email {Email} already exists.", user.Email);
-                return new CreateResponse() { Success = false, Message = $"User with Email {user.Email} already exists." };
+                return new CreateResponse()
+                {
+                    Success = false,
+                    Message = "Password is required."
+                };
             }
 
             // Create a new standard ApplicationUser account
-            var appUser = new ApplicationUser()
+            var appUser = _mapper.Map<ApplicationUser>(model);  // TODO:  Working on the Automapper now.....
+            appUser.Id = Guid.NewGuid().ToString();
+            //appUser.SecurityStamp = Guid.NewGuid().ToString();
+
+            // Insert the application user into the DB
+            var identityResult = await _userManager.CreateAsync(appUser, model.NewPassword);
+            if (!identityResult.Succeeded)
             {
-                UserName = user.Email,
-                Email = user.Email,
-                DisplayName = user.Name,
-                EmailConfirmed = user.EmailConfirmed,
-                LockoutEnabled = user.LockoutEnabled
+                return new CreateResponse()
+                {
+                    Success = false,
+                    Message = $"Failed to create user for {model.Email}. {identityResult.ToString}"
+                };
+            }
+            var saveResult = await _context.SaveChangesAsync();
+
+            string newId = (await _userManager.FindByEmailAsync(model.Email)).Id;
+
+            // Feature:  If a new role is found in the updated users' Roles,
+            // go ahead and add that role into the database.
+            // TODO: Possibly add flag/setting that enables/disables this logic.
+            foreach (string role in model.Roles)
+            {
+                if ((await _roleManager.FindByNameAsync(role)) == null)
+                    await _roleManager.CreateAsync(new IdentityRole(role));
+                if (!(await _userManager.IsInRoleAsync(appUser, role)))
+                    await _userManager.AddToRoleAsync(appUser, role);
+            }
+                
+            await _context.SaveChangesAsync();
+
+            return new CreateResponse()
+            {
+                Success = true,
+                Message = newId
             };
+        }
 
-            try
+        public async Task<UpdateResponse> Update(string id, UserDTO model)
+        {
+            // Check for unauthorized update
+            if (string.IsNullOrEmpty(model.Id) || !id.Equals(model.Id))
             {
-                // Insert the application user into the DB
-                await _userManager.CreateAsync(appUser, user.NewPassword);
-                await _context.SaveChangesAsync();
+                return new UpdateResponse()
+                {
+                    Unauthorized = true,
+                    Message = "Unauthorized update."
+                };
+            }
 
-                // Feature:  If a new role is found in the updated users' Roles,
-                // go ahead and add that role in the database.
-                // TODO: Add flag that enables/disables this logic.
-                foreach (string role in user.Roles)
+            // Check for id existing
+            var appUser = _context.Users.Find(id);
+            if (appUser == null)
+            {
+                return new UpdateResponse()
+                {
+                    NotFound = true,
+                    Message = $"User with Id: {id} not found."
+                };
+            }
+
+            // Check for Email/UserName conflict
+            if (_context.Users.Any(user => user.Email.Equals(model.Email) && user.Id != id))
+            {
+                return new UpdateResponse()
+                {
+                    Conflict = true,
+                    Message = "Email/UserName already exists."
+                };
+            }
+
+            _mapper.Map(model, appUser);
+            appUser.SecurityStamp = Guid.NewGuid().ToString();
+
+            // User
+            var updateResult = await _userManager.UpdateAsync(appUser);
+            if (!updateResult.Succeeded)
+            {
+                _logger.LogError("Update: UpdateAsync failed. id:{id}, name:{Name} email: {Email} Errors: {errors}", id, model.Name, model.Email, updateResult.ToString());
+                return new UpdateResponse()
+                { 
+                    Success = false, 
+                    Message = $"Unable to update user. {updateResult}"
+                };
+            }
+
+            // Roles
+            // Feature:  If a new role is found in the updated users' Roles,
+            // go ahead and add that role in the database.
+            // TODO: Add flag that enables/disables this logic.
+            if (model.Roles != null && model.Roles.Length > 0)
+                foreach (string role in model.Roles)
                 {
                     if ((await _roleManager.FindByNameAsync(role)) == null)
                         await _roleManager.CreateAsync(new IdentityRole(role));
@@ -158,124 +257,26 @@ namespace WorldCitiesAPI.Services
                         await _userManager.AddToRoleAsync(appUser, role);
                 }
 
-                await _context.SaveChangesAsync();
+            // Check for any roles that were removed
+            var currentRoles = await _userManager.GetRolesAsync(appUser);
+            if (model.Roles != null)
+                foreach (string role in currentRoles)
+                    if (!model.Roles.Contains(role))
+                        await _userManager.RemoveFromRoleAsync(appUser, role);
 
-                string msg = $"User {appUser.DisplayName}, {appUser.Email} created successfully.";
-                _logger.LogInformation("Create: {msg}", msg);
-
-                return new CreateResponse() { Success = true, Message = msg };
-            }
-            catch (Exception ex)
-            {
-                string msg = ex.Message;
-                _logger.LogError(ex, "Create: Error: {msg}", msg);
-                return new CreateResponse() { Success = false, Message = "Error adding to/creating user." };
-            }
-        }
-
-        public async Task<UpdateResponse> Update(string id, UserDTO user)
-        {
-            var appUser = await _userManager.FindByIdAsync(id);
-
-            if (appUser == null)
-            {
-                _logger.LogWarning("Update: User Id not found: {id}.", id);
-                return new UpdateResponse() { Success = false,  Message = "User Id not found." };
-            }
-
-            // Check for Email/UserName conflict
-            ApplicationUser appUserByEmail = await _userManager.FindByEmailAsync(user.Email);
-            if (appUserByEmail != null && appUserByEmail.Id != appUser.Id)
-            {
-                _logger.LogWarning("Update: Email/UserName already exists: {Email}", user.Email);
-                return new UpdateResponse() { Success = false, Message = "Email/UserName already exists." };
-            }
-
-            // Set new security stamp if credentials change.
-            if (user.Email != appUser.UserName)
-                appUser.SecurityStamp = Guid.NewGuid().ToString();
-            appUser.DisplayName = user.Name;
-            appUser.UserName = user.Email;
-            appUser.Email = user.Email;
-            appUser.EmailConfirmed = user.EmailConfirmed;
-            appUser.LockoutEnabled = user.LockoutEnabled;
-
-            // User
-            try
-            {
-                // Perform the user update.
-                var updateResult = await _userManager.UpdateAsync(appUser);
-                if (!updateResult.Succeeded)
-                {
-                    _logger.LogError("Update: UpdateAsync failed. id:{id}, name:{Name} email: {Email} message: {", id, user.Name, user.Email);
-                    foreach (var error in updateResult.Errors)
-                        _logger.LogError("Update: ErrorCode: {Code} Description: {Description}", error.Code, error.Description);
-                    return new UpdateResponse() { Success = false, Message = "Unable to update user." };
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Update:  Exception occurred performing user update. id:{id}, name:{Name} email: {Email}", id, user.Name, user.Email);
-                return new UpdateResponse() { Success = false, Message = "Unable to update user." };
-            }
-
-            // Roles
-            try
-            {
-                // Feature:  If a new role is found in the updated users' Roles,
-                // go ahead and add that role in the database.
-                // TODO: Add flag that enables/disables this logic.
-                if (user.Roles != null && user.Roles.Length > 0)
-                    foreach (string role in user.Roles)
-                    {
-                        if ((await _roleManager.FindByNameAsync(role)) == null)
-                            await _roleManager.CreateAsync(new IdentityRole(role));
-                        if (!(await _userManager.IsInRoleAsync(appUser, role)))
-                            await _userManager.AddToRoleAsync(appUser, role);
-                    }
-
-                // Check for any roles that were removed
-                var currentRoles = await _userManager.GetRolesAsync(appUser);
-                if (user.Roles != null)
-                    foreach (string role in currentRoles)
-                        if (!user.Roles.Contains(role))
-                            await _userManager.RemoveFromRoleAsync(appUser, role);
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Update: Exception occurred updating user roles. id:{id}, name:{Name} email: {Email}", id, user.Name, user.Email);
-                return new UpdateResponse() { Success = false, Message = "Unable to update roles for user." };
-            }
 
             //Password
-            try
+            if (!string.IsNullOrEmpty(model.NewPassword))
             {
-
-                if (!string.IsNullOrEmpty(user.NewPassword))
-                {
-                    _logger.LogDebug("Update: Changing password for {email}", appUser.Email);
-                    await _userManager.RemovePasswordAsync(appUser);
-                    await _userManager.AddPasswordAsync(appUser, user.NewPassword);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Update:  Exception occurred changing password. id:{id}, name:{Name} email: {Email}", id, user.Name, user.Email);
-                return new UpdateResponse() { Success = false, Message = "Unable to update password for user." };
+                _logger.LogDebug("Update: Changing password for {email}", appUser.Email);
+                await _userManager.RemovePasswordAsync(appUser);
+                await _userManager.AddPasswordAsync(appUser, model.NewPassword);
             }
 
             //Save Changes
-            try
-            {
-                _context.SaveChanges();
-                _logger.LogInformation("Update:  User update successful: {Email}", user.Email);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Update: Exception occurred saving changes. id:{id}, name:{Name} email: {Email}", id, user.Name, user.Email);
-                return new UpdateResponse() { Success = false, Message = "Unable to save changes for user." };
-            }
+            _context.SaveChanges();
+            _logger.LogInformation("Update:  User update successful: {Email}", model.Email);
+
             return new UpdateResponse() { Success = true, Message = "Update successful." };
         }
 
@@ -284,13 +285,20 @@ namespace WorldCitiesAPI.Services
             ApplicationUser appUser = await _userManager.FindByIdAsync(id);
             if (appUser == null)
             {
-                _logger.LogWarning("Delete: Could not find user with id: {id}", id);
-                return new DeleteResponse() { Success = false, Message = $"User not found. Id: {id}" };
+                return new DeleteResponse()
+                { 
+                    Success = false,
+                    Message = $"User not found. Id: {id}"
+                };
             }
             await _userManager.DeleteAsync(appUser);
             _context.SaveChanges();
 
-            return new DeleteResponse() { Success = true, Message = $"User deleted. Id: {id}" };
+            return new DeleteResponse()
+            { 
+                Success = true, 
+                Message = $"User deleted. Id: {id}"
+            };
         }
 
         public async Task<UserDTO> GetById(string id)
@@ -303,8 +311,9 @@ namespace WorldCitiesAPI.Services
                 return null!;
             }
 
-            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
-            return new UserDTO(user, roles);
+            var userDTO = _mapper.Map<UserDTO>(user);
+            userDTO.Roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            return userDTO;
         }
 
         public IQueryable<UserDTO> GetAll()
@@ -347,46 +356,62 @@ namespace WorldCitiesAPI.Services
 
         public async Task<AuthenticateResponse> RefreshToken(string token, string ipAddress)
         {
-            var user = getUserByRefreshToken(token);
-            if (user == null)
+            var appUser = getUserByRefreshToken(token);
+            if (appUser == null)
             {
-                _logger.LogWarning("RefreshToken:  Invalid token: {token}", token);
-                return new AuthenticateResponse(false, "Invalid token.");
+                return new AuthenticateResponse() 
+                { 
+                    Success = false, 
+                    Message = "Invalid token." 
+                };
             }
 
-            var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
+            var refreshToken = appUser.RefreshTokens.Single(x => x.Token == token);
             if (refreshToken.IsRevoked)
             {
                 // Revoke all descendant tokens in case this token has been compromised.
-                revokeDescendantRefreshTokens(refreshToken, user, ipAddress, $"Attempted reuse of revoked ancestor token: {token}");
-                _context.Update(user);
+                revokeDescendantRefreshTokens(refreshToken, appUser, ipAddress, $"Attempted reuse of revoked ancestor token: {token}");
+                _context.Update(appUser);
                 _context.SaveChanges();
             }
 
             if (!refreshToken.IsActive)
             {
-                _logger.LogWarning("RefreshToken:  Invalid token: {token}", token);
-                return new AuthenticateResponse(false, "Invalid token");
+                return new AuthenticateResponse()
+                {
+                    Success = false,
+                    Message = "Invalid token not active."
+                };
             }
 
             // Replace old refresh token with a new one (rotate them)
             var newRefreshToken = rotateRefreshToken(refreshToken, ipAddress);
-            user.RefreshTokens.Add(newRefreshToken);
+            appUser.RefreshTokens.Add(newRefreshToken);
 
             // Remove old refresh tokens from user
-            removeOldRefreshTokens(user);
+            removeOldRefreshTokens(appUser);
 
             // Save changes to db
-            _context.Update(user);
+            _context.Update(appUser);
             _context.SaveChanges();
 
+            
             // Generate new jwt
-            var secToken = await _jwtHandler.GenerateJwtToken(user);
+            var secToken = await _jwtHandler.GenerateJwtToken(appUser);
             var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
+            var roles = (await _userManager.GetRolesAsync(appUser)).ToArray();
+            
+            var userDTO = _mapper.Map<UserDTO>(appUser);
+            userDTO.JwtToken = jwt;
+            userDTO.RefreshToken = newRefreshToken.Token;
+            userDTO.Roles = roles;
 
-            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
-
-            return new AuthenticateResponse(true, "Token successfully refreshed.", jwt, newRefreshToken.Token, user, roles);
+            return new AuthenticateResponse()
+            {
+                Success = true,
+                Message = "Token successfully refreshed.",
+                User = userDTO
+            };
         }
 
         public string? RevokeToken(string token, string ipAddress)

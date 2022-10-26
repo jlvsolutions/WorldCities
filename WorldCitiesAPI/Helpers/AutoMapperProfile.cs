@@ -8,13 +8,31 @@
     {
         public AutoMapperProfile()
         {
-            // UserDTO -> AuthenticateResponse
-            CreateMap<UserDTO, AuthenticateResponse>();
+            // ApplicationUser Entity -> AuthenticateResponse
+            CreateMap<ApplicationUser, AuthenticateResponse>();
 
-            // RegisterRequest -> UserDTO
-            CreateMap<RegisterRequest, UserDTO>();
+            // ApplicationUser Entity -> UserDTO
+            CreateMap<ApplicationUser, UserDTO>() // TODO:  Ignore Id if it is null, Identity ctor sets it
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.DisplayName));
 
-            // UpdateRequest -> UserDTO
+            // UserDTO -> ApplicationUser Entity
+            CreateMap<UserDTO, ApplicationUser>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name))
+                .ForAllMembers(x => x.Condition(
+                    (src, dest, prop) =>
+                    {
+                        // ignore null & empty string properties
+                        if (prop == null) return false;
+                        if (prop.GetType() == typeof(string) && string.IsNullOrEmpty((string)prop)) return false;
+
+                        return true;
+                    }
+                ));
+
+            // City Entity -> CityDTO
+            CreateMap<City, CityDTO>();
+
             /* CreateMap<UpdateRequest, UserDTO>()
                  .ForAllMembers(x => x.Condition(
                      (src, dest, prop) =>
@@ -28,8 +46,6 @@
                  ));
             */
 
-            // City Entity -> CityDTO
-            CreateMap<City, CityDTO>();
         }
     }
 }

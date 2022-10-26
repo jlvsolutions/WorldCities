@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using WorldCitiesAPI.Data.Models.Users;
 using WorldCitiesAPI.Helpers;
+using AutoMapper;
 
 namespace WorldCitiesAPI.Tests.Services
 {
@@ -25,6 +26,7 @@ namespace WorldCitiesAPI.Tests.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtHandler _jwtHandler;
+        private readonly IMapper _mapper;
         private readonly ILogger<UserService> _logger;
         private readonly UserService _userService;
 
@@ -59,7 +61,12 @@ namespace WorldCitiesAPI.Tests.Services
             // Create a JwtHandler instance
             _jwtHandler = new JwtHandler(_configuration, _userManager, new NullLogger<JwtHandler>(), _context);
 
-            // Create a ILogger instance for the service
+            // Create an IMapper instance for the service
+            MapperConfiguration mapperConfig = new MapperConfiguration(cfg =>
+                cfg.AddProfile(new AutoMapperProfile()));
+            _mapper = new Mapper(mapperConfig);
+
+            // Create an ILogger instance for the service
             _logger = new NullLogger<UserService>();
 
             // Create the service to test
@@ -69,6 +76,7 @@ namespace WorldCitiesAPI.Tests.Services
                 _roleManager,
                 _userManager,
                 _jwtHandler,
+                _mapper,
                 _logger);
 
         }
@@ -216,8 +224,8 @@ namespace WorldCitiesAPI.Tests.Services
             Assert.NotNull(response);
             Assert.True(response.Success);
             Assert.NotEmpty(response.Message);
-            Assert.NotEmpty(response.JwtToken);
-            Assert.NotEmpty(response.RefreshToken);
+            Assert.NotEmpty(response.User.JwtToken);
+            Assert.NotEmpty(response.User.RefreshToken);
             Assert.NotNull(response.User);
             Assert.NotEmpty(response.User?.Id);
             Assert.NotEmpty(response.User?.Name);
@@ -366,19 +374,52 @@ namespace WorldCitiesAPI.Tests.Services
 
             //
             // Act
-            var response = await _userService.Update("BadId", new UserDTO());
+            var response = await _userService.Update("NonExistingId", new UserDTO() {  Id = "NonExistingId" });
 
             //
             // Assert
             Assert.NotNull(response);
             Assert.False(response.Success);
-            Assert.NotEmpty(response.Message);
+            Assert.Contains("NOT FOUND", response.Message.ToUpper());
 
             //
             // Assert database
             Assert.Equal(0, _context.Users.Count());
             Assert.Equal(0, _context.Roles.Count());
             Assert.Equal(0, _context.RefreshTokens.Count());
+        }
+
+        [Fact]
+        public async Task Update_EmptyIdShouldFail()
+        {
+            // Act
+            var response = await _userService.Update("", new UserDTO() { Id = "" });
+
+            // Assert the response
+            Assert.False(response.Success);
+            Assert.Contains("UNAUTHORIZED", response.Message.ToUpper());
+        }
+
+        [Fact]
+        public async Task Update_NullIdShouldFail()
+        {
+            // Act
+            var response = await _userService.Update(null!, new UserDTO() { Id = null! });
+
+            // Assert the response
+            Assert.False(response.Success);
+            Assert.Contains("UNAUTHORIZED", response.Message.ToUpper());
+        }
+
+        [Fact]
+        public async Task Update_NonMatchingIdsShouldFail()
+        {
+            // Act
+            var response = await _userService.Update("one", new UserDTO() { Id = "two" });
+
+            // Assert the response
+            Assert.False(response.Success);
+            Assert.Contains("UNAUTHORIZED", response.Message.ToUpper());
         }
 
         [Fact]
@@ -400,13 +441,13 @@ namespace WorldCitiesAPI.Tests.Services
 
             //
             // Act
-            var response = await _userService.Update(userToUpdate.Id, new UserDTO() { Email = "exists@email.com" });
+            var response = await _userService.Update(userToUpdate.Id, new UserDTO() { Id = userToUpdate.Id, Email = "exists@email.com" });
 
             //
             // Assert
             Assert.NotNull(response);
             Assert.False(response.Success);
-            Assert.NotEmpty(response.Message);
+            Assert.Contains("EXISTS", response.Message.ToUpper());
 
             //
             // Assert database
@@ -419,26 +460,27 @@ namespace WorldCitiesAPI.Tests.Services
         public async Task Update_EmailChangeShouldUpdateSecurityStamp()
         {
             //
-            // Arrange
+            // Arrange 
             await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "password", new string[1] { "RegisteredUser" });
-            var user = await _userManager.FindByEmailAsync("exists@email.com");
-            var updatedUserDTO = new UserDTO(user, Array.Empty<string>());
+            
+            var user = _context.Users.First(u => u.Email.Equals("exists@email.com"));
+            var previousSecurityStamp = user.SecurityStamp;
+            var updatedUserDTO = _mapper.Map<UserDTO>(user);
             updatedUserDTO.Email = "newemail@email.com";
-            var existingSecurityStamp = user.SecurityStamp;
-
+            
             //
             // Act
-            var response = await _userService.Update(user.Id, updatedUserDTO);
+            var response = await _userService.Update(updatedUserDTO.Id, updatedUserDTO);
 
             //
             // Assert response
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.NotEmpty(response.Message);
+            Assert.Contains("SUCCESSFUL", response.Message.ToUpper());
 
             //
             // Assert Database
-            Assert.NotEqual(user.SecurityStamp, existingSecurityStamp);
+            Assert.NotEqual(_context.Users.First(u => u.Email.Equals("newemail@email.com")).SecurityStamp, previousSecurityStamp);
 
         }
 
@@ -460,12 +502,8 @@ namespace WorldCitiesAPI.Tests.Services
             await _userManager.AddToRoleAsync(user, "Role3");
             _context.SaveChanges();
 
-            var updatedUserDTO = new UserDTO(user,
-                new string[2]
-                {
-                    "Role1",
-                    "Role4"
-                });
+            var updatedUserDTO = _mapper.Map<UserDTO>(user);
+            updatedUserDTO.Roles = new string[2] { "Role1", "Role4" };
             updatedUserDTO.Name = "NewName";
             updatedUserDTO.Email = "NewEmail@email.com";
             updatedUserDTO.EmailConfirmed = false;
@@ -890,8 +928,8 @@ namespace WorldCitiesAPI.Tests.Services
             // Assert the response
             Assert.True(response.Success);
             Assert.NotEmpty(response.Message);
-            Assert.NotEmpty(response.JwtToken);
-            Assert.NotEmpty(response.RefreshToken);
+            Assert.NotEmpty(response.User.JwtToken);
+            Assert.NotEmpty(response.User.RefreshToken);
             Assert.Contains("RegisteredUser", response.User?.Roles);
 
             //
@@ -908,7 +946,9 @@ namespace WorldCitiesAPI.Tests.Services
             Assert.NotEmpty(t.ReplacedByToken);
 
             // new token
-            t = _context.RefreshTokens.Single(t => t.Token == response.RefreshToken);
+            Assert.NotNull(response);
+            Assert.NotNull(response.User);
+            t = _context.RefreshTokens.Single(t => t.Token == response.User!.RefreshToken);
             Assert.NotNull(t);
             Assert.False(t.IsRevoked);// fails here
             Assert.Null(t.Revoked);

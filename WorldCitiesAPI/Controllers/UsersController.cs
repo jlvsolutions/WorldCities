@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using WorldCitiesAPI.Services;
 using WorldCitiesAPI.Data.Models.Users;
 using WorldCitiesAPI.Data.Models;
-using WorldCitiesAPI.Helpers;
+using System.ComponentModel.DataAnnotations;
 
 namespace WorldCitiesAPI.Controllers
 {
@@ -17,79 +17,80 @@ namespace WorldCitiesAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
         private readonly ILogger<UsersController> _logger;
-        private readonly JwtHandler _jwtHandler;
 
         public UsersController(
-            UserService userService,
-            JwtHandler jwtHandler,
+            IUserService userService,
             ILogger<UsersController> logger)
         {
             _userService = userService;
-            _jwtHandler = jwtHandler;
             _logger = logger;
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult<AuthenticateResponse>> Login(AuthenticateRequest model)
+        public async Task<IActionResult> Login(AuthenticateRequest model)
         {
-            var response = await _userService.Login(model, ipAddress());
-            if (!response.Success)
+            _logger.LogDebug("Received Login Request. Email: {Email}",model.Email);
+
+            var loginResult = await _userService.Login(model, ipAddress());
+            if (!loginResult.Success)
             {
-                _logger.LogInformation("Login: Authenticattion failed.  Email: {Email}", model.Email);
-                return Unauthorized(response); // Unauthorized( new LoginResult...
+                _logger.LogWarning("Login failed.  Email: {Email} Message: {Message}", model.Email, loginResult.Message);
+                return Unauthorized(loginResult.Message);
             }
 
-            // Success, provide a refresh token.
-            setTokenCookie(response.RefreshToken ?? "");
-            _logger.LogInformation("Login: Authentication Successful. Email: {Email}", model.Email);
+            setTokenCookieToHttpResponse(loginResult.User.RefreshToken);
+            
+            _logger.LogInformation("Login Successful. Name: {Name}, Email: {Email}", loginResult.User.Name, loginResult.User.Email);
 
-            return Ok(response);
+            return Ok(loginResult.User);
         }
 
         [HttpPost("Register")]
-        public async Task<ActionResult> Register(RegisterRequest model)
+        public async Task<IActionResult> Register(RegisterRequest model)
         {
             _logger.LogDebug("Received Register Request. Name: {Name}, Email: {Email}", model.Name, model.Email);
 
-            var response = await _userService.Register(model);
-            if (response.Success)
-                _logger.LogInformation("Register: Registration for new user succeeded. Email: {Email}", model.Email);
-            else
-                _logger.LogWarning("Registration for new user failed.  Message: {Message}, Email: {Email}", response.Message, model.Email);
-            return Ok(response);
+            var registerResult = await _userService.Register(model);
+            if (!registerResult.Success)
+            {
+                _logger.LogWarning("Registration for new user failed.   Email: {Email}, Message: {Message}", model.Email, registerResult.Message);
+                return Unauthorized(registerResult.Message); // TODO:  Consider returning 409 Conflict.
+            }
+
+            _logger.LogInformation("Register: Registration for new user succeeded. Email: {Email}", model.Email);
+            return Ok(registerResult);
         }
 
         [HttpPost("refresh-token")]
-        public async Task<ActionResult<AuthenticateResponse>> RefreshToken()
+        public async Task<IActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
             _logger.LogDebug("Recieved RefreshToken request. In cookie Token: {refreshToken}", refreshToken);
 
             if (refreshToken == null)
             {
-                _logger.LogWarning("RefreshToken:  No token received.");
-                return BadRequest("Refresh token required.");
+                _logger.LogWarning("RefreshToken:  No refresh token received.");
+                return BadRequest("No refresh token received.");
             }
 
-            var response = await _userService.RefreshToken(refreshToken, ipAddress());
-            if (response.RefreshToken == null)
+            var refreshResult = await _userService.RefreshToken(refreshToken, ipAddress());
+            if (!refreshResult.Success)
             {
-                _logger.LogWarning("RefreshToken:  Did not get a new refresh token for {refreshToken}", refreshToken);
-                return BadRequest(response);
+                _logger.LogWarning("RefreshToken:  {Message}", refreshResult.Message);
+                return BadRequest(refreshResult.Message);
             }
 
-            setTokenCookie(response.RefreshToken);
-            return Ok(response);
+            setTokenCookieToHttpResponse(refreshResult.User.RefreshToken);
+            return Ok(refreshResult.User);
         }
-
-        // Thought:  Anonymous access; one could probe for existence of emails in database.
+        
         [HttpPost]
-        [Route("IsDupeEmail")]
+        [Route("IsDupeEmail")] // Thought:  Anonymous access; one could probe for existence of emails in database.
         public async Task<bool> IsDupeEmail(DupeEmailRequest model)
         {
-            _logger.LogDebug("IsDupeEmail Request. Email: {email}", model.Email);
+            _logger.LogDebug("Recieved IsDupeEmail Request. Email: {email}", model.Email);
 
             var isDupe = await _userService.IsDupeEmail(model.Email);
             _logger.LogInformation("IsDupeEmail {email} is {dupe}", model.Email, isDupe);
@@ -106,14 +107,14 @@ namespace WorldCitiesAPI.Controllers
 
             if (string.IsNullOrEmpty(token))
             {
-                _logger.LogWarning("RevokeToken:  No token found in request body or cookies.");
-                return BadRequest(new { message = "Token is required" });
+                _logger.LogWarning("RevokeToken:  No token found in request body or HTTP cookie.");
+                return BadRequest("Token is required.");
             }
 
             var resultMsg = _userService.RevokeToken(token, ipAddress());
             if (!string.IsNullOrEmpty(resultMsg))
             {
-                _logger.LogWarning("RevokeToken: Unable to revoke token: {token}", token);
+                _logger.LogWarning("RevokeToken: Unable to revoke token: {token}, {Message}", token, resultMsg);
                 return BadRequest(resultMsg);
             }
 
@@ -124,38 +125,37 @@ namespace WorldCitiesAPI.Controllers
         [HttpPost()]
         [Authorize(Roles = "Administrator")]
         //[ValidateAntiForgeryToken] check this out later.
-        public async Task<IActionResult> Create(UserDTO user)
+        public async Task<IActionResult> Create(UserDTO model)
         {
-            _logger.LogDebug("Received Create user request. Name: {Name}, Email: {Email}", user.Name, user.Email);
+            _logger.LogDebug("Received Create user request. Name: {Name}, Email: {Email}", model.Name, model.Email);
 
-            if (string.IsNullOrEmpty(user.Email))
+            if (string.IsNullOrEmpty(model.Email))
             {
-                var msg = "Email is required.";
-                _logger.LogWarning("Create: {msg}", msg);
-                return BadRequest(msg);
+                _logger.LogWarning("Create:  Email is required.");
+                return BadRequest("Email is required.");
             }
 
-            if (string.IsNullOrEmpty(user.NewPassword))
+            if (string.IsNullOrEmpty(model.NewPassword))
             {
-                var msg = "Password is required.";
-                _logger.LogWarning("Create: {msg}", msg);
-                return BadRequest(msg);
+                _logger.LogWarning("Create:  Password is required.");
+                return BadRequest("Password is required.");
             }
 
-            if (string.IsNullOrEmpty(user.Name))
+            if (string.IsNullOrEmpty(model.Name))
             {
-                var msg = "User name is required.";
-                _logger.LogWarning("Create: {msg}", msg);
-                return BadRequest(msg);
+                _logger.LogWarning("Create:  Name is required.");
+                return BadRequest("Name is required.");
             }
 
-            var response = await _userService.Create(user);
-            if (response.Success)
-                _logger.LogInformation("Create:  Successfully created user. Email: {Email}", user.Email);
-            else
-                _logger.LogWarning("Create:  Failed to create user. Email: {Email}", user.Email);
+            var createResult = await _userService.Create(model);
+            if (!createResult.Success)
+            {
+                _logger.LogWarning("Create:  Failed to create user. Email: {Email}. {Message}", model.Email, createResult.Message);
+                return BadRequest(createResult.Message);
+            }
+            _logger.LogInformation("Create:  Successfully created user. Email: {Email}", model.Email);
 
-            return Ok(response);
+            return CreatedAtAction(nameof(GetById), new { id = createResult.Message }, model);
         }
 
         [HttpGet]
@@ -190,7 +190,7 @@ namespace WorldCitiesAPI.Controllers
         // GET: api/Users/5
         [HttpGet("{id}")]
         [Authorize(Roles = "Administrator")]
-        public async Task<ActionResult<UserDTO>> GetById(string id)
+        public async Task<IActionResult> GetById(string id)
         {
             _logger.LogDebug("Received GetById user request. Id: {id}", id);
 
@@ -219,7 +219,7 @@ namespace WorldCitiesAPI.Controllers
 
         [HttpGet("Roles")]
         [Authorize(Roles = "Administrator")]
-        public IActionResult GetRoles()
+        public ActionResult<string[]> GetRoles()
         {
             _logger.LogDebug("Received GetRoles request.");
             return Ok(_userService.GetAllRoles());
@@ -227,21 +227,43 @@ namespace WorldCitiesAPI.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> Update(string id, UserDTO user)
+        public async Task<IActionResult> Update(
+            [Required(ErrorMessage = "Id is required.")] string id,
+            [Required(ErrorMessage = "User is required.")] UserDTO model)
         {
-            _logger.LogDebug("Received Update user request.  Updating user: {Email}", user.Email);
+            _logger.LogDebug("Received Update user request.  Updating user: {Email}", model.Email);
 
-            if (string.IsNullOrEmpty(id) || user == null || !id.Equals(user.Id))
+            /* TODO:  remove once Required annotations above are tested.
+            if (string.IsNullOrEmpty(id) || model == null)
             {
-                _logger.LogWarning("Update: Invalid id: {id}", id);
+                _logger.LogWarning("Update: Invalid id: {id} or user", id);
                 return BadRequest(new { message = "Invalid user Id."});
             }
-            var response = await _userService.Update(id, user);
-            if (response.Success)
-                _logger.LogInformation("Updated user. Id: {id}", id);
-            else
-                _logger.LogWarning("Failed to update user. Id: {Id}, Message: {Message}", id, response.Message);
-            return Ok(response);
+            */
+
+            var updateResult = await _userService.Update(id, model);
+            if (!updateResult.Success)
+                _logger.LogWarning("Update:  Failed. Msg: {Messsage}", updateResult.Message);
+
+            if (updateResult.NotFound)
+            {
+                return NotFound(updateResult.Message);
+            }
+            else if (updateResult.Conflict)
+            {
+                return Conflict(updateResult.Message);
+            }
+            else if (updateResult.Unauthorized)
+            {
+                return Unauthorized(updateResult.Message);
+            }
+            else if (!updateResult.Success)
+            {
+                return BadRequest(updateResult.Message);
+            }
+            _logger.LogInformation("Updated user. Id: {id}", id);
+
+            return Ok(updateResult);
         }
 
         [HttpDelete("{id}")]
@@ -250,12 +272,15 @@ namespace WorldCitiesAPI.Controllers
         {
             _logger.LogDebug("Received Delete user request. Id: {Id}", id);
 
-            var response = await _userService.Delete(id);
-            if (response.Success)
-                _logger.LogInformation("Deleted user. {id}", id);
-            else
-                _logger.LogWarning("Failed to Delete user. Id: {Id}, Message: {Message}", id, response.Message);
-            return Ok(response);
+            var deleteResult = await _userService.Delete(id);
+            if (!deleteResult.Success)
+            {
+                _logger.LogWarning("Failed to Delete user. Id: {Id}, Message: {Message}", id, deleteResult.Message);
+                return NotFound(deleteResult.Message);
+            }
+            _logger.LogInformation("Deleted user. {id}", id);
+            
+            return Ok(deleteResult);
         }
 
         #region Helper Methods
@@ -263,7 +288,7 @@ namespace WorldCitiesAPI.Controllers
         /// Appends a HTTP Only cookie with refresh token to the http response.
         /// </summary>
         /// <param name="token"></param>
-        private void setTokenCookie(string token)
+        private void setTokenCookieToHttpResponse(string token)
         {
             var cookieOptions = new CookieOptions
             {

@@ -30,10 +30,6 @@ namespace WorldCitiesAPI.Controllers
             _logger = logger;
         }
 
-        // GET: api/Cities
-        // GET: api/Cities/?pageIndex=0&pageSize=10
-        // GET: api/Cities/?pageIndex=0&pageSize=10&sortColumn=name&sortOrder=asc
-        // GET: api/Cities/?pageIndex=0&pageSize=10&sortColumn=name&sortOrder=asc&filterColumn=name&filterQuery=query
         [HttpGet]
         public async Task<ActionResult<ApiResult<CityDTO>>> GetCities(
             int pageIndex = 0, 
@@ -69,7 +65,7 @@ namespace WorldCitiesAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CityDTO>> GetById(int id)
         {
-            _logger.LogInformation("Entering GetCity. Id: {id}", id);
+            _logger.LogDebug("Entering GetCity. Id: {id}", id);
             if (_context.Cities == null)
                 return NotFound();
             
@@ -81,12 +77,11 @@ namespace WorldCitiesAPI.Controllers
             var cityDTO = _mapper.Map<CityDTO>(city);
 
             var country = await _context.Countries.FindAsync(city.CountryId);
-            cityDTO.CountryName = country == null ? "" : country.Name;
+            cityDTO.CountryName = country?.Name ?? "";
 
-            return cityDTO;
+            return Ok(cityDTO);
         }
 
-        // PUT: api/Cities/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize(Roles = "RegisteredUser")]
