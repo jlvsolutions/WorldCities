@@ -112,7 +112,7 @@ namespace WorldCitiesAPI.Tests.Helpers
         {
             // Arrange
             UserDTO userDTO = new UserDTO() { Id = "", Email = null!, Name = "nameDTO" };
-            ApplicationUser applicationUser = new ApplicationUser() { Id = "prevId", Email = "prevEmail", DisplayName = "prevName" };
+            ApplicationUser applicationUser = new ApplicationUser() { Id = "prevId", Email = "prevEmail", DisplayName = "prevName", UserName = "prevUserName" };
 
             // Act
             _mapper.Map(userDTO, applicationUser);
@@ -120,6 +120,7 @@ namespace WorldCitiesAPI.Tests.Helpers
             // Assert
             Assert.Equal("prevId", applicationUser.Id);
             Assert.Equal("prevEmail", applicationUser.Email);
+            Assert.Equal("prevUserName", applicationUser.UserName);
             Assert.Equal("nameDTO", applicationUser.DisplayName);
         }
 
@@ -152,10 +153,10 @@ namespace WorldCitiesAPI.Tests.Helpers
 
             // Assert
             Assert.Equal("IdDTO", previousUser.Id);
-            Assert.Equal("NameDTO", previousUser.DisplayName); // and this one too...
+            Assert.Equal("NameDTO", previousUser.DisplayName);
             Assert.Equal("EmailDTO", previousUser.Email);
+            Assert.Equal("EmailDTO", previousUser.UserName);
             Assert.Equal("prevNormalizedEmail", previousUser.NormalizedEmail);
-            Assert.Equal("EmailDTO", previousUser.UserName); // Need to add some logic to AutoMapper Profile for this one!:)
             Assert.Equal("prevNormalizedUserName", previousUser.NormalizedUserName);
             Assert.True(previousUser.EmailConfirmed);
             Assert.True(previousUser.LockoutEnabled);

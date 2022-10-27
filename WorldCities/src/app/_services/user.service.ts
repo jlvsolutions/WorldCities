@@ -45,23 +45,12 @@ export class UserService extends BaseService<User, string> {
   }
 
   put(user: User): Observable<User> {
-    // In my debugging, I discovered the API controller
-    // REQIRES the id, email, name and roles fields to be included in the call.
-    user.id = user.id ?? "";
-    user.email = user.email ?? "";
-    user.name = user.name ?? "";
-    user.newPassword = user.newPassword ?? "";
-    user.roles = user.roles ?? [""];
-;
-
     var url = this.getUrl("api/Users/" + user.id);
+    user.id = "differentid";
     return this.http.put<User>(url, user);
-
   }
 
   post(user: User): Observable<User> {
-    // Make sure the Id is not null or undefined;
-    user.id = user.id ?? "";
     var url = this.getUrl("api/Users");
     return this.http.post<User>(url, user);
   }
@@ -71,8 +60,8 @@ export class UserService extends BaseService<User, string> {
     return this.http.get<string[]>(url);
   }
 
-  delete(id: string): Observable<DeleteResult> {
+  delete(id: string): Observable<any> {
     var url = this.getUrl("api/Users/" + id);
-    return this.http.delete<DeleteResult>(url);
+    return this.http.delete<any>(url);
   }
 }

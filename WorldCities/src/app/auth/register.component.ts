@@ -60,34 +60,30 @@ export class RegisterComponent
 
     // Send register request.
     this.authService.register(registerRequest)
-      .subscribe(result => {
+      .subscribe(registerResultMsg => {
 
-        console.log(`Register result: Success: ${result.success}, Message: ${result.message}`);
-        if (!result.success) {
-          this.show.setMessages(result.success, result.message);
-          return;
-        }
+        console.log(`Register result: Success: ${registerResultMsg.message}`);
+        this.show.setMessages(true, registerResultMsg.message);
 
         if (!this.doLogin())
           this.router.navigate(["/"]);
 
         // Perform Login Request as well.
-        console.log("Login checkbox is checked.  Sending login request.");
-        this.show.setMessages(result.success, "Welecome " + registerRequest.name + "!  Logging in...")
+        console.log("Sending login request...");
+        this.show.setMessages(true, "Welecome " + registerRequest.name + "!  Logging in...")
+
         var loginRequest = <LoginRequest>{
           email: this.form.controls['email'].value,
           password: this.form.controls['password'].value
         };
+
         this.authService.login(loginRequest)
-          .subscribe(loginResult => {
-
-            console.log(`Login result: Success: ${loginResult.success}, Message: ${loginResult.message}`);
-            if (loginResult.success)
-              this.router.navigate(["/"]);
-            else
-              this.router.navigate(["login"]); // User story: Give another chance.
-
+          .subscribe(user => {
+            this.show.setMessages(true, 'Login successful');
+            console.log(`Login result: Success: ${user.email}`);
+            this.router.navigate(["/"]);
           }, error => {
+            this.show.setMessages(false, 'We had a problem on our end.  Please try again.')
             console.error(error);
             this.router.navigate(["login"]); // User story: Give another change.
           });

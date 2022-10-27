@@ -53,10 +53,10 @@ export class UsersComponent implements OnInit {
   /**
    * Invoked when the user clicks on a delete button
    * in the list of users.  Shows a delete confirmation dialog.
-   * @param user
+   * @param user The user to delete.
    */
   onDeleteClicked(user: User): void {
-    console.log(`User clicked Delete on ${user.name}, ${user.email}...`);
+    console.log(`Deleting user: ${user.name}, ${user.email}...`);
     this.show.clearMessages();
 
     if (!confirm(`Are you sure you want to delete ${user.name}?`)) {
@@ -69,17 +69,18 @@ export class UsersComponent implements OnInit {
       .subscribe(result => {
 
         console.log(result.message + `, ${user.name}, ${user.email}`);
-        this.show.setMessages(result.success, `User Deleted: ${user.name}, ${user.email}` );
+        this.show.setMessages(true, `User Deleted: ${user.name}, ${user.email}` );
 
         // Reload the users data.
         this.ngOnInit();
       }, error => {
         console.error(error);
         switch (error.status) {
-          case 400:
+          case 400: // Bad Request
+          case 404: // Not Found
+          case 405: // Method Not Allowed
             this.show.setMessages(false, error.message);
             break;
-          case 405:
           default:
             this.show.setMessages(false, `We had a problem on our end. Please try again. Message: ${error.statusText}`);
             break;

@@ -6,8 +6,8 @@ export function appInitializer(authservice: AuthService) {
     // attempt to refresh token on app start up to auto authenticate
     console.log("appInitializer:  Sending refreshToken request.");
     authservice.refreshToken()
-      .subscribe(result => {
-        console.log(`appInitializer: result.success = ${result.success}, message = ${result.message}`); 
+      .subscribe(user => {
+        console.log(`appInitializer: Success for ${user.email}`); 
       }, error =>
         console.log(`appInitializer: refreshToken error result = ${error.statusText}, ${error.error}`))
       .add(resolve("appInitializer resolve."));

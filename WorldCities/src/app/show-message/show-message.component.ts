@@ -7,7 +7,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
     <div class="showMessage">
       <p>
         <mat-error *ngIf="errMessage">
-          <strong>Error</strong>: {{errMessage}}
+          {{errMessage}}
         </mat-error>
         <mat-label class="showMessageLabel" *ngIf="message">
           {{message}}

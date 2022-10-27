@@ -26,8 +26,8 @@
                         if (prop == null) return false;
                         if (prop.GetType() == typeof(string) && string.IsNullOrEmpty((string)prop)) return false;
 
-                        // ignore null role
-                        //if (x.DestinationMember.Name == "Role" && src.Role == null) return false;
+                        // ignore null or empty Email for UserName
+                        //if (x.DestinationMember.Name == "UserName" && string.IsNullOrEmpty(src.Email)) return false;
 
                         return true;
                     }

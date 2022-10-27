@@ -193,7 +193,11 @@ export class UserEditComponent
       this.form.controls['setPassword'].disable();
       this.form.controls['password'].enable();
       // Set the default User Role
-      this.user = { id: '', name: '', email: '', emailConfirmed: true, lockoutEnabled: false, newPassword: '', roles: ['RegisteredUser'] };
+      this.user = <User>{
+        id: '', name: '', email: '', emailConfirmed: true,
+        lockoutEnabled: false, newPassword: '', roles: ['RegisteredUser'],
+        jwtToken: ''
+      };
       this.form.patchValue(this.user);
 
     }

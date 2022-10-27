@@ -31,7 +31,7 @@ namespace WorldCitiesAPI.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(AuthenticateRequest model)
         {
-            _logger.LogDebug("Received Login Request. Email: {Email}",model.Email);
+            _logger.LogDebug("Received Login Request. Email: {Email}", model.Email);
 
             var loginResult = await _userService.Login(model, ipAddress());
             if (!loginResult.Success)
@@ -40,8 +40,11 @@ namespace WorldCitiesAPI.Controllers
                 return Unauthorized(loginResult.Message);
             }
 
+            if (string.IsNullOrEmpty(loginResult.User.RefreshToken))
+                return Unauthorized(loginResult.Message);
+
             setTokenCookieToHttpResponse(loginResult.User.RefreshToken);
-            
+
             _logger.LogInformation("Login Successful. Name: {Name}, Email: {Email}", loginResult.User.Name, loginResult.User.Email);
 
             return Ok(loginResult.User);
@@ -60,7 +63,7 @@ namespace WorldCitiesAPI.Controllers
             }
 
             _logger.LogInformation("Register: Registration for new user succeeded. Email: {Email}", model.Email);
-            return Ok(registerResult);
+            return Ok(new { message = registerResult.Message });
         }
 
         [HttpPost("refresh-token")]
@@ -72,7 +75,7 @@ namespace WorldCitiesAPI.Controllers
             if (refreshToken == null)
             {
                 _logger.LogWarning("RefreshToken:  No refresh token received.");
-                return BadRequest("No refresh token received.");
+                return Unauthorized("No refresh token received.");
             }
 
             var refreshResult = await _userService.RefreshToken(refreshToken, ipAddress());
@@ -82,10 +85,13 @@ namespace WorldCitiesAPI.Controllers
                 return BadRequest(refreshResult.Message);
             }
 
+            if (string.IsNullOrEmpty(refreshResult.User.RefreshToken))
+                return Unauthorized(refreshResult.Message);
+
             setTokenCookieToHttpResponse(refreshResult.User.RefreshToken);
             return Ok(refreshResult.User);
         }
-        
+
         [HttpPost]
         [Route("IsDupeEmail")] // Thought:  Anonymous access; one could probe for existence of emails in database.
         public async Task<bool> IsDupeEmail(DupeEmailRequest model)
@@ -108,7 +114,7 @@ namespace WorldCitiesAPI.Controllers
             if (string.IsNullOrEmpty(token))
             {
                 _logger.LogWarning("RevokeToken:  No token found in request body or HTTP cookie.");
-                return BadRequest("Token is required.");
+                return Unauthorized("Token is required.");
             }
 
             var resultMsg = _userService.RevokeToken(token, ipAddress());
@@ -181,8 +187,9 @@ namespace WorldCitiesAPI.Controllers
                 filterColumn,
                 filterQuery);
 
-            foreach(UserDTO user in apiResult.Data)
-                user.Roles = await _userService.GetRoles(user.Id);
+            foreach (UserDTO user in apiResult.Data)
+                if (!string.IsNullOrEmpty(user.Id))
+                    user.Roles = await _userService.GetRoles(user.Id);
 
             return apiResult;
         }
@@ -227,20 +234,19 @@ namespace WorldCitiesAPI.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> Update(
-            [Required(ErrorMessage = "Id is required.")] string id,
-            [Required(ErrorMessage = "User is required.")] UserDTO model)
+        public async Task<IActionResult> Update(string id, UserDTO model)
         {
             _logger.LogDebug("Received Update user request.  Updating user: {Email}", model.Email);
 
-            /* TODO:  remove once Required annotations above are tested.
-            if (string.IsNullOrEmpty(id) || model == null)
+            // Make sure valid ids are provided.
+            if (string.IsNullOrEmpty(id)
+                || model == null
+                || string.IsNullOrEmpty(model.Id)
+                || !id.Equals(model.Id))
             {
-                _logger.LogWarning("Update: Invalid id: {id} or user", id);
-                return BadRequest(new { message = "Invalid user Id."});
+                _logger.LogWarning($"Update: Invalid id: {id}, user, or user id: {model?.Id}");
+                return BadRequest("Invalid user Id.");
             }
-            */
-
             var updateResult = await _userService.Update(id, model);
             if (!updateResult.Success)
                 _logger.LogWarning("Update:  Failed. Msg: {Messsage}", updateResult.Message);
@@ -280,7 +286,7 @@ namespace WorldCitiesAPI.Controllers
             }
             _logger.LogInformation("Deleted user. {id}", id);
             
-            return Ok(deleteResult);
+            return Ok(new { message = deleteResult.Message });
         }
 
         #region Helper Methods

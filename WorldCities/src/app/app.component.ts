@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@app/_services/auth.service';
 import { ConnectionService } from 'angular-connection-service';
 
-import { LoginResult } from './auth/login-result';
+import { User } from '@app/_models';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +12,7 @@ import { LoginResult } from './auth/login-result';
 export class AppComponent implements OnInit {
   title = 'WorldCities';
 
-  user: LoginResult = null!; // not currently used
+  user: User = null!; // not currently used
 
   hasNetworkConnection: boolean = true;
   hasInternetAccess: boolean = true;

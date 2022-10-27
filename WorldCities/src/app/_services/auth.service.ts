@@ -6,41 +6,38 @@ import { Observable, Subject, BehaviorSubject, tap, map } from 'rxjs';
 import { environment } from '@environments/environment';
 import { LoginRequest } from '@app/auth/login-request';
 import { LoginResult } from '@app/auth/login-result';
+import { User, RevokeTokenRequest } from '@app/_models';
 import { RegisterRequest } from '@app/auth/register-request';
 import { RegisterResult } from '@app/auth/register-result';
 import { DupeEmailRequest } from '@app/auth/dupe-email-request';
-import { RevokeTokenRequest } from '@app/_models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private tokenKey: string = "token";  // localStorage token's key
-  private nameKey: string = "name"; // localStorage user name's key
-
   /** The name of the Administrator role */
-  public readonly AdminRoleName: string = "Administrator";
+  private readonly _adminRoleName: string = "Administrator";
 
-  private userSubject: BehaviorSubject<LoginResult>;
-  public user: Observable<LoginResult>;
+  private userSubject: BehaviorSubject<User>;
+  public user: Observable<User>;
 
 
   //
   // Ctor
   constructor(protected http: HttpClient, router: Router) {
-    this.userSubject = new BehaviorSubject<LoginResult>(null!);
+    this.userSubject = new BehaviorSubject<User>(null!);
     this.user = this.userSubject.asObservable();
   }
 
   /** Allows access to the current user without having to subscribe to the user observable. */
-  public get userValue(): LoginResult {
+  public get userValue(): User {
     return this.userSubject.value;
   }
 
   /** Returns whether the user has the administrator role. */
   public isAdministrator(): boolean {
-    return (this.userValue !== null) && this.userValue.user?.roles?.includes(this.AdminRoleName);
+    return (this.userValue !== null) && this.userValue.roles.includes(this._adminRoleName);
   }
 
   /** Determines authentication status. */
@@ -49,7 +46,7 @@ export class AuthService {
   }
 
   public userName(): string {
-    return (this.userValue !== null) ? this.userValue.user.name : "";
+    return (this.userValue !== null) ? this.userValue.name : "";
   }
 
   /** Returns the JWT token. */
@@ -57,61 +54,59 @@ export class AuthService {
     return this.userValue.jwtToken ?? null;
   }
 
-  /** Sends http post to the Register API.
-   * @param item RegisterRequest
-   */
-  register(item: RegisterRequest): Observable<RegisterResult> {
-    var url = this.getUrl('api/Users/Register');
-    return this.http.post<RegisterResult>(url, item);
-  }
-
-  /** Sends a http post to the Login API.
-   * @param item LoginRequest
-   */
-  login(item: LoginRequest): Observable<LoginResult> {
+  /** Sends a http post to the Login API. */
+  login(item: LoginRequest): Observable<User> {
     var url = this.getUrl('api/Users/Login');
-    return this.http.post<LoginResult>(url, item)
-      .pipe(tap(loginResult => {
-        this.userSubject.next(loginResult);
-        if (loginResult.success) {
-          console.log('login starting new timer.');
+    return this.http.post<User>(url, item)
+      .pipe(tap(user => {
+        this.userSubject.next(user);
+        if (user) {
+          console.log(`AuthService:  Login success, starting new timer for ${user.email}.`);
           this.startRefreshTokenTimer();
-        } else
-          console.log('login failed.');
+        }
+      }, error => {
+        console.log('AuthService:  Login failed.');
+        console.error(error.error);
       }));
   }
 
-  /** Sends revoke-token request and stops the refresh token timer. */
-  logout() {
-    var url = this.getUrl('api/Users/revoke-token');
-    var req = <RevokeTokenRequest> { token: null };
-    this.http.post<any>(url, req, { withCredentials: true }).subscribe();
-    this.userSubject.next(null!);
-    this.stopRefreshTokenTimer();
+  /** Sends http post to the Register API. */
+  register(item: RegisterRequest): Observable<any> {
+    var url = this.getUrl('api/Users/Register');
+    return this.http.post<any>(url, item);
   }
 
   /** Sends a refresh-token request to the back end api */
   refreshToken() {
     var url = this.getUrl('api/Users/refresh-token');
-    return this.http.post<LoginResult>(url, {}, { withCredentials: true })
-      .pipe(map((result) => {
-        this.userSubject.next(result);
-        if (result.success) {
-          console.log('refreshToken starting new timer.')
+    return this.http.post<User>(url, {}, { withCredentials: true })
+      .pipe(tap(user => {
+        this.userSubject.next(user);
+        if (user) {
+          console.log(`AuthService:  Refresh Token, starting new timer for ${user.email}.`)
           this.startRefreshTokenTimer();
-        } else
-          console.log('refreshToken failed.')
-        return result;
+        }
+      }, error => {
+        console.log('AuthService:  Refresh Token failed.');
+        console.error(error.error);
       }));
   }
 
-  /** Send http post to the IsDupeEmail API.
-   * @param email Email to check
-   */
+  /** Send http post to the IsDupeEmail API. */
   isDupeEmail(email: string): Observable<boolean> {
     var url = this.getUrl('api/Users/IsDupeEmail');
     var dupEmail = <DupeEmailRequest>{ email: email };
     return this.http.post<boolean>(url, dupEmail);
+  }
+
+  /** Sends revoke-token request and stops the refresh token timer. */
+  logout() {
+    var url = this.getUrl('api/Users/revoke-token');
+    var req = <RevokeTokenRequest>{ token: null };
+    this.http.post<any>(url, req, { withCredentials: true })
+      .subscribe(msg => console.log(`AuthService: Logout, ${msg}`));
+    this.userSubject.next(null!);
+    this.stopRefreshTokenTimer();
   }
 
 

@@ -16,4 +16,6 @@ export interface User {
   newPassword: string;
   /** The roles the user belongs to. */
   roles: string[];
+  /** JSON web security token */
+  jwtToken: string;
 }

@@ -24,6 +24,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         if (error.error)
           errorToThrow = errorToThrow + ", " + error.error;
         //const tError = (error && error.error && error.error.message) || error.statusText;
+        console.log('ErrorInterceptor: error occurred.');
         console.error(error);
         return throwError(error);
       })

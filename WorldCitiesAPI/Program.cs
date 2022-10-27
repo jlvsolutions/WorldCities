@@ -103,9 +103,9 @@ builder.Services.AddAuthentication(opt =>
     };
 });
 
-// Add JwtHandler to the services for dependency injection
+// Configure dependency injection for application services.
 builder.Services.AddScoped<JwtHandler>();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Add GraphQL services.
 builder.Services.AddGraphQLServer()

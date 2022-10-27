@@ -9,9 +9,7 @@ import { LoginResult } from '@app/auth/login-result';
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.scss']
 })
-  /**
-   * @title Navigation Menu Component
-   */
+
 export class NavMenuComponent implements OnInit, OnDestroy {
 
   private destroySubject = new Subject();
@@ -25,10 +23,10 @@ export class NavMenuComponent implements OnInit, OnDestroy {
     this.authService.user
       .pipe(takeUntil(this.destroySubject))
       .subscribe(user => {
-        console.log(`NavMenuComponent: user = ${user?.user?.name}, ${user?.user?.email}`);
-        this.isLoggedIn = authService.isAuthenticated() ;
-        this.isAdministrator = authService.isAdministrator();
-        this.displayName = user?.user?.name;
+          this.isLoggedIn = authService.isAuthenticated();
+          this.isAdministrator = authService.isAdministrator();
+          this.displayName = user?.name;
+          console.log(`NavMenuComponent: LoggedIn ${this.isLoggedIn}, Administrator ${this.isAdministrator}, Display Name ${this.displayName}`);
       });
   }
 

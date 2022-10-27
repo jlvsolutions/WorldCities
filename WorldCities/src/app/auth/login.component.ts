@@ -49,15 +49,14 @@ export class LoginComponent
     this.authService.login(loginRequest)
       .subscribe(result => {
 
-        console.log(`Login result: ${result.message}`);
-        if (result.success)
-          this.router.navigateByUrl(this.returnUrl);
-        else
-          this.show.setMessages(false, result.message);
-
+        console.log('Logged in.');
+        this.router.navigateByUrl(this.returnUrl);
       }, error => {
-        console.error(error);
-        this.show.setMessages(false, 'We had a problem on our end.  Please try again.');
+        console.log('LoginComponent: error logging in.');
+        if (error.status === 401)
+          this.show.setMessages(false, error.error);
+        else
+          this.show.setMessages(false, 'We had a problem on our end.  Please try again.');
       });
   }
 
