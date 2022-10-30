@@ -16,7 +16,7 @@ namespace WorldCitiesAPI.Data.Models.Users
 
         [JsonIgnore] // one way field
         public string? NewPassword { get; set; }
-        public string[]? Roles { get; set; }
+        public string[] Roles { get; set; } = null!;
         public string? JwtToken { get; set; }
 
         [JsonIgnore] // refresh token is returned in http only cookie

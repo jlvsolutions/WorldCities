@@ -41,9 +41,10 @@ namespace WorldCitiesAPI.Data.Entities
 
         #region Navigation Properties
         /// <summary>
-        /// A collection of all the cities related to this country.
+        /// A list containing all the cities related to this country.
         /// </summary>
-        public virtual ICollection<City>? Cities { get; set; } = null!;
+        [JsonIgnore]
+        public ICollection<City>? Cities { get; set; } = null!;
         #endregion
     }
 }

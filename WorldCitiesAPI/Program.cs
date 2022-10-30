@@ -59,8 +59,7 @@ builder.Services.AddCors(options =>
 
 // Add ApplicationDbContext and SQL Server support
 builder.Services.AddDbContext<ApplicationDbContext>( options =>
-    options.UseLazyLoadingProxies()
-           .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
 // Add ASP.NET Core Identity support

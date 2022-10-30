@@ -1,5 +1,7 @@
-<div class=wcmap>
+<div class="wcmap">
+
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
     <mat-form-field>
       <mat-label>Place:</mat-label>
       <input matInput formControlName="place" placeholder="Enter a place" type="text" #placename />
@@ -10,7 +12,9 @@
         Place must be less that 40 characters long.
       </mat-error>
     </mat-form-field>
+
     <button type="submit" >Show Map</button>
+
   </form>
 
   <iframe width=100%

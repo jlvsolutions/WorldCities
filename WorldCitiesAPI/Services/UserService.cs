@@ -60,8 +60,9 @@ namespace WorldCitiesAPI.Services
 
         public async Task<AuthenticateResponse> Login(AuthenticateRequest model, string ipAddress)
         {
-            var user = await _userManager.FindByNameAsync(model.Email);
-            var u = _context.Users.SingleOrDefault(user => user.Email == model.Email);
+            var user = _context.Users
+                .Include(user => user.RefreshTokens)
+                .SingleOrDefault(user => user.Email == model.Email);
 
             // Validate
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
@@ -399,12 +400,11 @@ namespace WorldCitiesAPI.Services
             // Generate new jwt
             var secToken = await _jwtHandler.GenerateJwtToken(appUser);
             var jwt = new JwtSecurityTokenHandler().WriteToken(secToken);
-            var roles = (await _userManager.GetRolesAsync(appUser)).ToArray();
             
             var userDTO = _mapper.Map<UserDTO>(appUser);
             userDTO.JwtToken = jwt;
             userDTO.RefreshToken = newRefreshToken.Token;
-            userDTO.Roles = roles;
+            userDTO.Roles = (await _userManager.GetRolesAsync(appUser)).ToArray();
 
             return new AuthenticateResponse()
             {
@@ -446,11 +446,11 @@ namespace WorldCitiesAPI.Services
 
         private ApplicationUser? getUserByRefreshToken(string token)
         {
-            var user = _context.Users.SingleOrDefault(x => x.RefreshTokens.Any(t => t.Token == token));
+            var user = _context.Users
+                .Include(u => u.RefreshTokens)
+                .SingleOrDefault(x => x.RefreshTokens.Any(t => t.Token == token));
 
-            if (user != null)
-                user.RefreshTokens = _context.RefreshTokens.Where(t => t.UserId == user.Id).ToList();
-            else
+            if (user == null)
                 _logger.LogWarning("getUserByRefreshToken:  Could not find a user with token: '{token}'", token);
 
             return user;

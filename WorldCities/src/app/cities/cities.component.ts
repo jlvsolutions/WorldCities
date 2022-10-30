@@ -45,7 +45,10 @@ export class CitiesComponent implements OnInit, OnDestroy {
     this.authService.user
       .pipe(takeUntil(this.destroySubject))
       .subscribe(user => {
-        console.log(`CitiesComponent:  user = ${user.name}, ${user.email}`);
+        if (user)
+          console.log(`CitiesComponent:  user = ${user.name}, ${user.email}`);
+        else
+          console.log('CitiesComponent:  No user logged in.');
         this.isLoggedIn = authService.isAuthenticated();
       })
   }

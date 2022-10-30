@@ -45,7 +45,6 @@ namespace WorldCitiesAPI.Tests.Services
 
             // Create the option instances required by the ApplicationDbContext
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseLazyLoadingProxies()
                 .UseInMemoryDatabase(databaseName: "UserService_Tests")
                 .Options;
 
@@ -609,7 +608,7 @@ namespace WorldCitiesAPI.Tests.Services
         }
 
         [Fact]
-        public async Task GetById_ShouldReturnUserIncludingRoles()
+        public async Task GetById_ShouldReturnUserIncludingRolesAndRefreshTokens()
         {
             //
             // Arrange
