@@ -292,6 +292,8 @@ namespace WorldCitiesAPI.Services
                     Message = $"User not found. Id: {id}"
                 };
             }
+            //var refreshTokens = _context.RefreshTokens.Where(t => t.UserId == id).ToArray();
+            //_context.RefreshTokens.RemoveRange(refreshTokens);
             await _userManager.DeleteAsync(appUser);
             _context.SaveChanges();
 

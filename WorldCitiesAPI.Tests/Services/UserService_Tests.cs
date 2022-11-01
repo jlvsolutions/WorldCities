@@ -571,9 +571,17 @@ namespace WorldCitiesAPI.Tests.Services
                     UserId = user.Id,
                     Created = DateTime.UtcNow.AddDays(-8),
                     CreatedByIp = "127.0.0.1",
-                    Token = "TestToken"
+                    Token = "TestToken1"
+                },
+                new RefreshToken()
+                {
+                    UserId = user.Id,
+                    Created = DateTime.UtcNow.AddDays(-8),
+                    CreatedByIp = "127.0.0.1",
+                    Token = "TestToken2"
                 }
             };
+            _context.SaveChanges();
 
             //
             // Act
