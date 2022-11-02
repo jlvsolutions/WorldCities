@@ -62,15 +62,14 @@ export class UserEditComponent
 
   ngOnInit(): void {
     console.log("ngOnInit(): Creating new FormGroup()");
-    this.form = new FormGroup({
-      name: new FormControl('', Validators.required),
-      email: new FormControl('', [Validators.required, Validators.email], this.isDupeEmail()),
-      emailConfirmed: new FormControl('', Validators.required),
-      lockoutEnabled: new FormControl('', Validators.required),
-      setPassword: new FormControl(),
-      password: new FormControl({ value: "", disabled: true }),
-      roles: new FormControl('', Validators.required)
-
+    this.form = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email], this.isDupeEmail()],
+      emailConfirmed: ['', Validators.required],
+      lockoutEnabled: ['', Validators.required],
+      setPassword: [''],
+      password: [{ value: '', disabled: true }],
+      roles: ['', Validators.required]
     });
     console.log("Ctor():  Calling loadData()...")
     this.loadData();
