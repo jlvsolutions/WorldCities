@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormGroup, FormControl, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
@@ -40,6 +40,7 @@ export class CityEditComponent
   private destroySubject = new Subject();
 
   constructor(
+    private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private cityService: CityService) {
@@ -48,29 +49,31 @@ export class CityEditComponent
   }
 
   ngOnInit(): void {
-    this.form = new FormGroup({
-      name: new FormControl('', Validators.required),
-      lat: new FormControl('', [
+    this.form = this.fb.group({
+      name: ['', Validators.required],
+      lat: ['', [
         Validators.required,
         Validators.pattern(/^[-]?[0-9]+(\.[0-9]{1,4})?$/),
         Validators.min(-90),
         Validators.max(90)
-      ]),
-      lon: new FormControl('', [
+      ]],
+      lon: ['', [
         Validators.required,
         Validators.pattern(/^[-]?[0-9]+(\.[0-9]{1,4})?$/),
         Validators.min(-180),
         Validators.max(180)
-      ]),
-      population: new FormControl('', [
+      ]],
+      population: ['', [
         Validators.required,
         Validators.min(0),
         Validators.max(10000000001)
-      ]),
-      countryId: new FormControl('', Validators.required)
-    }, null, this.isDupeCity());
+      ]],
+      countryId: ['', Validators.required]
+    });
 
-    // react to form changes
+    this.form.addAsyncValidators(this.isDupeCity());
+
+    // react to form changes - For testing purposes...
     this.form.valueChanges
       .pipe(takeUntil(this.destroySubject))
       .subscribe(() => {
@@ -82,6 +85,7 @@ export class CityEditComponent
         }
       });
 
+    // testing purposes....
     this.form.get("name")!.valueChanges
       .pipe(takeUntil(this.destroySubject))
       .subscribe(() => {
@@ -178,6 +182,7 @@ export class CityEditComponent
 
   isDupeCity(): AsyncValidatorFn {
     return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
+      console.log("isDupeCity()");
       var city = <City>{};
       city.id = (this.id) ? this.id : 0;
       city.name = this.form.controls['name'].value;

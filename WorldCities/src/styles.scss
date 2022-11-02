@@ -69,6 +69,10 @@ table {
   tr {
     border-bottom: 1px solid #dddddd;
 
+    &.mat-row {
+        height: 30px;
+    }
+
     &:nth-child(even) {
       background-color: #f4f4f4;
     }

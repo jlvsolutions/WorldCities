@@ -74,7 +74,6 @@
       </mat-form-field>
 
       <div>
-        <!--<button mat-flat-button color="primary" (click)="onSubmit()">Save</button> Can be this way if using say, a div -->
         <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">{{ this.id ? "Save" : "Create" }}</button>
         <button mat-flat-button color="secondary" [routerLink]="['/cities']">Cancel</button>
       </div>
