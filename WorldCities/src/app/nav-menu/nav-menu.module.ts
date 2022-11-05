@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { SharedModule } from '@app/_shared/shared.module';
 
@@ -12,7 +11,6 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
     NavMenuComponent
   ],
   imports: [
-    CommonModule,
     SharedModule
   ],
   exports: [

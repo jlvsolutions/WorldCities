@@ -2,10 +2,12 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { ConnectionServiceModule, ConnectionServiceOptions, ConnectionServiceOptionsToken } from 'angular-connection-service';
+
+// App Root
+import { AppComponent } from './app.component';
 
 // Feature Modules
 import { NavMenuModule } from '@app/nav-menu/nav-menu.module';
@@ -15,7 +17,9 @@ import { CountriesModule } from '@app/countries/countries.module';
 import { UsersModule } from '@app/users/users.module';
 import { AuthModule } from '@app/auth/auth.module';
 
-import { AppComponent } from './app.component';
+// Routing Module
+import { AppRoutingModule } from './app-routing.module';
+
 import { JwtInterceptor } from './_helpers/jwt.interceptor';
 import { environment } from '../environments/environment';
 import { APOLLO_OPTIONS } from 'apollo-angular';

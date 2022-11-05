@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { SharedModule } from '@app/_shared/shared.module';
 
@@ -16,7 +15,6 @@ import { CityEditComponent } from './city-edit/city-edit.component';
     CityEditComponent
   ],
   imports: [
-    CommonModule,
     SharedModule
   ],
   exports: [

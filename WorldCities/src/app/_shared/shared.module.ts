@@ -21,6 +21,7 @@ import { ShowMessageComponent, WCMapComponent, UserFormComponent, PasswordFormCo
     GraphQLModule
   ],
   exports: [
+    CommonModule,
     ReactiveFormsModule,
     RouterModule,
     AngularMaterialModule,

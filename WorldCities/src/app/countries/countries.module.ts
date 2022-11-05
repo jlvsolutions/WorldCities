@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { SharedModule } from '@app/_shared/shared.module';
 
@@ -14,7 +13,6 @@ import { CountryEditComponent } from './country-edit/country-edit.component';
     CountryEditComponent
   ],
   imports: [
-    CommonModule,
     SharedModule
   ],
   exports: [
