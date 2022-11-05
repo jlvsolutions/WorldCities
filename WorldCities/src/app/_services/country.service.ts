@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BaseService, ApiResult, DeleteResult } from './base.service';
+import { BaseService, ApiResult } from './base.service';
 import { Observable } from 'rxjs';
 
 import { Country } from '@app/_models';
@@ -35,7 +35,6 @@ export class CountryService extends BaseService<Country, number> {
         .set("filterColumn", filterColumn)
         .set("filterQuery", filterQuery);
     }
-
     return this.http.get<ApiResult<Country>>(url, { params });
   }
 
@@ -54,9 +53,9 @@ export class CountryService extends BaseService<Country, number> {
     return this.http.post<Country>(url, item);
   }
 
-  delete(id: number): Observable<DeleteResult> {
-    var url = this.getUrl("api/Countries/" + id + "/Delete");
-    return this.http.post<DeleteResult>(url, id);
+  delete(id: number): Observable<any> {
+    var url = this.getUrl("api/Countries/" + id);
+    return this.http.delete<any>(url);
   }
 
   /**

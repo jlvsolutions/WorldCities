@@ -37,9 +37,4 @@ export interface ApiResult<T> {
   filterQuery: string;
 }
 
-export interface DeleteResult {
-  success: boolean;
-  message: string;
-}
-
 

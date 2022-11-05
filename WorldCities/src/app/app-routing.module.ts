@@ -1,21 +1,19 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { HomeComponent } from './home/home.component';
 
-import { RegisterComponent } from './auth/register.component';
-import { LoginComponent } from './auth/login.component';
 import { AuthGaurd } from './_helpers/auth.guard';
 import { AdminAuthGaurd } from './_helpers/admin-auth.guard';
 
-import { CitiesComponent } from './cities/cities.component';
-import { CityComponent } from './city/city.component';
-import { CityEditComponent } from './cities/city-edit.component';
-
-import { CountriesComponent } from './countries/countries.component';
-import { CountryEditComponent } from './countries/country-edit.component';
-
-import { UsersComponent } from './users/users.component';
-import { UserEditComponent } from './users/user-edit.component';
+import { HomeComponent } from '@app/home/home/home.component';
+import { CitiesComponent } from '@app/cities/cities/cities.component';
+import { CityComponent } from '@app/cities/city/city.component';
+import { CityEditComponent } from '@app/cities/city-edit/city-edit.component';
+import { CountriesComponent } from '@app/countries/countries/countries.component';
+import { CountryEditComponent } from '@app/countries/country-edit/country-edit.component';
+import { LoginComponent } from '@app/auth/login/login.component';
+import { RegisterComponent } from '@app/auth/register/register.component';
+import { UsersComponent } from '@app/users/users/users.component';
+import { UserEditComponent } from '@app/users/user-edit/user-edit.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },

@@ -5,15 +5,10 @@ import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 
-
-import { BaseFormComponent } from '@app/base-form.component';
-import { ShowMessageComponent } from '@app/show-message/show-message.component';
-import { AuthService } from '@app/_services/auth.service';
-import { RegisterRequest } from './register-request';
-import { RegisterResult } from './register-result';
-import { LoginRequest } from './login-request';
-import { LoginResult } from './login-result';
-import { User } from '@app/_models/user';
+import { BaseFormComponent } from '@app/_helpers/base-form.component';
+import { ShowMessageComponent } from '@app/_shared';
+import { AuthService } from '@app/_services';
+import { LoginRequest, RegisterRequest } from '@app/_models';
 
 @Component({
   selector: 'app-register',
@@ -27,7 +22,6 @@ export class RegisterComponent
 
   @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
    
-
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,

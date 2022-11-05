@@ -3,15 +3,12 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, AsyncValidatorFn, ValidatorFn, FormArray } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-
-import { environment } from '@environments/environment';
-import { User } from '@app/_models';
-import { BaseFormComponent } from '@app/base-form.component';
-import { ShowMessageComponent } from '@app/show-message/show-message.component';
-import { UserService } from '@app/_services/user.service';
-import { AuthService } from '@app/_services/auth.service';
-import { validateHorizontalPosition } from '@angular/cdk/overlay';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
+
+import { BaseFormComponent } from '@app/_helpers/base-form.component';
+import { User } from '@app/_models';
+import { ShowMessageComponent } from '@app/_shared';
+import { UserService, AuthService } from '@app/_services';
 
 @Component({
   selector: 'app-user-edit',
@@ -211,7 +208,7 @@ export class UserEditComponent
    */
   loadAllRoles() {
     console.log("loadAllRoles(): Retrieving user roles...");
-    this.userService.getRoles()
+    this.userService.getAllRoles()
       .subscribe(result => {
         console.log(`loadAllRoles(): Retrieved ${result.length} roles.`);
         console.log(`loadAllRoles(): Adding FormControls from result.  Length=${result.length}`);

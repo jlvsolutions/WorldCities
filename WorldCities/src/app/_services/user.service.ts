@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BaseService, ApiResult, DeleteResult } from './base.service';
+import { BaseService, ApiResult } from './base.service';
 import { Observable } from 'rxjs';
 
 import { User } from '@app/_models';
-import { UserResult } from '../users/user-result';
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +34,6 @@ export class UserService extends BaseService<User, string> {
         .set("filterColumn", filterColumn)
         .set("filterQuery", filterQuery);
     }
-
     return this.http.get<ApiResult<User>>(url, { params });
   }
 
@@ -55,13 +53,13 @@ export class UserService extends BaseService<User, string> {
     return this.http.post<User>(url, user);
   }
 
-  getRoles(): Observable<string[]> {
-    var url = this.getUrl("api/Users/Roles");
-    return this.http.get<string[]>(url);
-  }
-
   delete(id: string): Observable<any> {
     var url = this.getUrl("api/Users/" + id);
     return this.http.delete<any>(url);
+  }
+
+  getAllRoles(): Observable<string[]> {
+    var url = this.getUrl("api/Users/Roles");
+    return this.http.get<string[]>(url);
   }
 }

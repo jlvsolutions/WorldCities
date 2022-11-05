@@ -3,15 +3,12 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatDialog } from '@angular/material/dialog';
-
 import { Subject } from 'rxjs';
 import { debounceTime, distinct, distinctUntilChanged } from 'rxjs/operators';
 
+import { ShowMessageComponent } from '@app/_shared';
 import { User } from '@app/_models';
-import { UserService } from '@app/_services/user.service';
-import { AuthService } from '@app/_services/auth.service';
-import { ShowMessageComponent } from '@app/show-message/show-message.component';
+import { UserService, AuthService } from '@app/_services';
 
 @Component({
   selector: 'app-users',

@@ -2,11 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
 
-import { BaseFormComponent } from '@app/base-form.component';
-import { ShowMessageComponent } from '@app/show-message/show-message.component';
-import { AuthService } from '@app/_services/auth.service';
-import { LoginRequest } from './login-request';
-import { LoginResult } from './login-result';
+import { BaseFormComponent } from '@app/_helpers/base-form.component';
+import { ShowMessageComponent } from '@app/_shared';
+import { AuthService } from '@app/_services';
+import { LoginRequest } from '@app/_models';
 
 @Component({
   selector: 'app-login',

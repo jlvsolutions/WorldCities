@@ -23,18 +23,6 @@
                  { 'pattern' : 'requires 2 letters' })">
           {{error}}
         </mat-error>
-
-        <!-- before code optimization.  kept for reference.
-        <mat-error *ngIf="this.form.controls['iso2'].errors?.['required']">
-          ISO 3166-1 ALPHA-2 Country code is required.
-        </mat-error>
-        <mat-error *ngIf="this.form.controls['iso2'].errors?.['pattern']">
-          ISO2 3166-1 ALPHA-2 Country code requires 2 letters.
-        </mat-error>
-        <mat-error *ngIf="this.form.controls['iso2'].errors?.['isDupeField']">
-          This code already exists: please choose another.
-        </mat-error>
-        -->
       </mat-form-field>
 
       <!-- ISO3 -->  <!-- TODO:  Should forced upper case be implemented? -->

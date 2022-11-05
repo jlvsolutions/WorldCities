@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BaseService, ApiResult, DeleteResult } from './base.service';
+import { BaseService, ApiResult } from './base.service';
 import { Observable, map, combineLatest } from 'rxjs';
 
-import { City } from '@app/_models';
-import { Country } from '@app/_models/country';
-// GraphQL
-import { Apollo, gql } from 'apollo-angular';
+import { City, Country } from '@app/_models';
+import { Apollo, gql } from 'apollo-angular'; // GraphQL
 
 @Injectable({
   providedIn: 'root'
@@ -170,9 +168,9 @@ export class CityService extends BaseService<City, number> {
     return this.http.post<City>(url, item);
   }
 
-  delete(id: number): Observable<DeleteResult> {
-    var url = this.getUrl("api/Cities/" + id + "/Delete");
-    return this.http.post<DeleteResult>(url, id);
+  delete(id: number): Observable<any> {
+    var url = this.getUrl("api/Cities/" + id);
+    return this.http.delete<any>(url);
   }
 
   getCountries(
@@ -194,7 +192,6 @@ export class CityService extends BaseService<City, number> {
         .set("filterColumn", filterColumn)
         .set("filterQuery", filterQuery);
     }
-
     return this.http.get<ApiResult<Country>>(url, { params });
   }
 

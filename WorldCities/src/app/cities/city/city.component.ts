@@ -1,8 +1,8 @@
-import { AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { City } from '@app/_models';
-import { WCMapComponent } from '@app/wcmap/wcmap.component';
+import { WCMapComponent } from '@app/_shared';
 import { CityService } from '@app/_services';
 
 @Component({

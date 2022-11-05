@@ -1,5 +1,10 @@
 import { User } from '@app/_models/user';
 
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
 export interface LoginResult {
   /** Indicates whether the login request was successful. */
   success: boolean;

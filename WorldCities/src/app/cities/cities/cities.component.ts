@@ -3,14 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-
 import { Subject, takeUntil } from 'rxjs';
 import { debounceTime, distinct, distinctUntilChanged } from 'rxjs/operators';
 
 import { City } from '@app/_models';
-import { CityService } from '../_services/city.service';
-import { AuthService } from '../_services/auth.service';
-import { AuthGaurd } from '../_helpers/auth.guard';
+import { CityService, AuthService } from '@app/_services';
 
 @Component({
   selector: 'app-cities',

@@ -4,9 +4,9 @@ import { FormGroup, FormBuilder, Validators, AbstractControl, AsyncValidatorFn, 
 import { Observable } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
+import { BaseFormComponent } from '@app/_helpers/base-form.component';
 import { Country } from '@app/_models';
-import { BaseFormComponent } from '@app/base-form.component';
-import { CountryService } from '@app/_services/country.service';
+import { CountryService } from '@app/_services';
 
 @Component({
   selector: 'app-country-edit',

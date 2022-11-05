@@ -118,7 +118,7 @@ namespace WorldCitiesAPI.Controllers
         // DELETE: api/Countries/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> DeleteCountry(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (_context.Countries == null)
             {

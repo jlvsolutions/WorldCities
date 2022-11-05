@@ -1,15 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, take, takeUntil } from 'rxjs';
-import { AuthService } from '@app/_services/auth.service';
-import { LoginResult } from '@app/auth/login-result';
+import { AuthService } from '@app/_services';
 
 @Component({
   selector: 'app-nav-menu',
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.scss']
 })
-
 export class NavMenuComponent implements OnInit, OnDestroy {
 
   private destroySubject = new Subject();
@@ -33,7 +31,7 @@ export class NavMenuComponent implements OnInit, OnDestroy {
   onLogout(): void {
     console.log("Logging out...");
     this.authService.logout();
-    //this.router.navigate(["/"]);
+    this.router.navigate(["/"]);
   }
 
   ngOnInit(): void {

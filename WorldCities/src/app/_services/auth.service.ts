@@ -4,12 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, BehaviorSubject, tap, map } from 'rxjs';
 
 import { environment } from '@environments/environment';
-import { LoginRequest } from '@app/auth/login-request';
-import { LoginResult } from '@app/auth/login-result';
-import { User, RevokeTokenRequest } from '@app/_models';
-import { RegisterRequest } from '@app/auth/register-request';
-import { RegisterResult } from '@app/auth/register-result';
-import { DupeEmailRequest } from '@app/auth/dupe-email-request';
+import { User, LoginRequest, RegisterRequest, RevokeTokenRequest, DupeEmailRequest } from '@app/_models';
 
 @Injectable({
   providedIn: 'root'
