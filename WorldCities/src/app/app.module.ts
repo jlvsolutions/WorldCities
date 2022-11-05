@@ -50,9 +50,6 @@ import { WCReuseStrategy } from './_helpers/wcReuseStrategy';
       registrationStrategy: 'registerWhenStable:30000'
     }),
   ],
-  //exports: [
-  //  SharedModule
-  //],
   providers: [
     {
       provide: APOLLO_OPTIONS,

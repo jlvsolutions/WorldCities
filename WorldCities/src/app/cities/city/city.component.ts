@@ -33,13 +33,10 @@ export class CityComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     var idParam = this.activatedRoute.snapshot.paramMap.get('id') ?? '0';
 
+    //this.activatedRoute.queryParams.subscribe(params => { idParam = params['id']; }); // shared by all routes
+
     this.activatedRoute.params.subscribe(p => this.routeParam = +p['id']);
 
-    //var state = this.router.getCurrentNavigation()?.extras.state?.['tracingId'];
-    //var pageIndex = this.activatedRoute.snapshot.paramMap.get('pageIndex') || 123;
-    //var pageSize = this.activatedRoute.snapshot.paramMap.get('pageSize') || 456;
-    //var pageIndex2 = this.activatedRoute.snapshot.queryParamMap.get('pageIndex') || 789;
-    //var pageSize2 = this.activatedRoute.snapshot.queryParamMap.get('pageSize') || 111;
     this.id = +idParam;
     console.log(`CityComponent: OnInit() routeParam = ${this.routeParam}`);
     this.loadData(this.id);

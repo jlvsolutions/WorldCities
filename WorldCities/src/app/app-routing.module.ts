@@ -28,7 +28,9 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'users', component: UsersComponent, canActivate: [AdminAuthGaurd] },
   { path: 'user/:id', component: UserEditComponent, canActivate: [AdminAuthGaurd] },
-  { path: 'user', component: UserEditComponent, canActivate: [AdminAuthGaurd] }
+  { path: 'user', component: UserEditComponent, canActivate: [AdminAuthGaurd] },
+  { path: '**', redirectTo: '' }
+  //{ path: '**', component: HomeComponent }
 ];
 
 @NgModule({
