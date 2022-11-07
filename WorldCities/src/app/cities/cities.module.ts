@@ -8,7 +8,7 @@ import { CityEditComponent } from './city-edit/city-edit.component';
 import { CitiesRoutingModule } from './cities-routing.module';
 
 import { RouteReuseStrategy } from '@angular/router';
-import { WCReuseStrategy } from '@app/_helpers/wcReuseStrategy';
+import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
 
 @NgModule({
   declarations: [

@@ -30,7 +30,7 @@ import { appInitializer } from './_helpers/app.initializer';
 import { AuthService } from './_services';
 
 import { RouteReuseStrategy } from '@angular/router';
-import { WCReuseStrategy } from '@app/_helpers/wcReuseStrategy';
+import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
 
 @NgModule({
   declarations: [
