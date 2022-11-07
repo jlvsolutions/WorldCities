@@ -5,6 +5,7 @@ import { SharedModule } from '@app/_shared/shared.module';
 import { UsersComponent } from './users/users.component';
 import { UserEditComponent } from './user-edit/user-edit.component';
 import { UsersRoutingModule } from './users-routing.module';
+import { UserService } from '@app/_services';
 
 import { RouteReuseStrategy } from '@angular/router';
 import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
@@ -24,7 +25,8 @@ import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
     UserEditComponent
   ],
   providers: [
-    { provide: RouteReuseStrategy, useClass: WCReuseStrategy }
+    { provide: RouteReuseStrategy, useClass: WCReuseStrategy },
+    UserService
   ]
 })
 export class UsersModule { }

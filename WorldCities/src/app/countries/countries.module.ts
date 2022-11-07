@@ -5,6 +5,7 @@ import { SharedModule } from '@app/_shared/shared.module';
 import { CountriesComponent } from './countries/countries.component';
 import { CountryEditComponent } from './country-edit/country-edit.component';
 import { CountriesRoutingModule } from './countries-routing.module';
+import { CountryService } from '@app/_services';
 
 import { RouteReuseStrategy } from '@angular/router';
 import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
@@ -24,7 +25,8 @@ import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
     CountryEditComponent
   ],
   providers: [
-    { provide: RouteReuseStrategy, useClass: WCReuseStrategy }
+    { provide: RouteReuseStrategy, useClass: WCReuseStrategy },
+    CountryService
   ]
 })
 export class CountriesModule { }

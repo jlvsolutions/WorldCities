@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BaseService, ApiResult } from './base.service';
 import { Observable } from 'rxjs';
@@ -6,14 +6,14 @@ import { Observable } from 'rxjs';
 import { Country } from '@app/_models';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class CountryService extends BaseService<Country, number> {
+@Injectable()
+export class CountryService extends BaseService<Country, number> implements OnDestroy {
 
   constructor(http: HttpClient) {
-    super(http)
+    super(http);
+    console.log('CountryService instance created.');
   }
+  ngOnDestroy() { console.log('CountryService instance destroyed.'); }
 
   getData(
     pageIndex: number,

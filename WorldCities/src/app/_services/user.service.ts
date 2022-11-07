@@ -1,18 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BaseService, ApiResult } from './base.service';
 import { Observable } from 'rxjs';
 
 import { User } from '@app/_models';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class UserService extends BaseService<User, string> {
+@Injectable()
+export class UserService extends BaseService<User, string> implements OnDestroy {
 
   constructor(http: HttpClient) {
     super(http);
+    console.log('UserService instance created.');
   }
+  ngOnDestroy() { console.log('UserService instance destroyed.'); }
 
   getData(
     pageIndex: number,

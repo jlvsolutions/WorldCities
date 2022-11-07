@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BaseService, ApiResult } from './base.service';
 import { Observable, map, combineLatest } from 'rxjs';
@@ -6,16 +6,16 @@ import { Observable, map, combineLatest } from 'rxjs';
 import { City, Country } from '@app/_models';
 import { Apollo, gql } from 'apollo-angular'; // GraphQL
 
-@Injectable({
-  providedIn: 'root'
-})
-export class CityService extends BaseService<City, number> {
+@Injectable()
+export class CityService extends BaseService<City, number> implements OnDestroy {
 
   constructor(
     http: HttpClient,
     private apollo: Apollo) {
     super(http);
+    console.log('CityService instance created.');
   }
+  ngOnDestroy() { console.log('CityService instance destroyed.'); }
 
   /**
    * RESTful Implementation.
