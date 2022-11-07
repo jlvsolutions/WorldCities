@@ -38,12 +38,17 @@ export class CityComponent implements OnInit, OnDestroy {
     this.activatedRoute.params.subscribe(p => this.routeParam = +p['id']);
 
     this.id = +idParam;
-    console.log(`CityComponent: OnInit() routeParam = ${this.routeParam}`);
+    console.log(`CityComponent:  OnInit() routeParam = ${this.routeParam}`);
+    if (this.id === 0 || Number.isNaN(this.id)) {
+      console.error('CityComponent:  City Id is not a valid number.');
+      this.router.navigate(['/cities']);
+
+    }
     this.loadData(this.id);
   }
 
   loadData(id: number) {
-    if (id === 0)
+    if (id === 0 || Number.isNaN(id))
       return;
     console.log('loadData retrieving city id = ', id);
 

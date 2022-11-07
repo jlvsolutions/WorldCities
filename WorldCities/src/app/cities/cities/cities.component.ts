@@ -39,6 +39,7 @@ export class CitiesComponent implements OnInit, OnDestroy {
     private cityService: CityService,
     private authService: AuthService) {
 
+    console.log('CitiesComponent instance created.');
     this.authService.user
       .pipe(takeUntil(this.destroySubject))
       .subscribe(user => {
@@ -51,7 +52,7 @@ export class CitiesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log("CitiesComponent: OnInit()");
+    console.log('"CitiesComponent: OnInit()');
     this.filterQuery = '';
     this.isLoggedIn = this.authService.isAuthenticated();
     this.clearSearch();
@@ -107,7 +108,7 @@ export class CitiesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log("CitiesComponent: OnDestroy()");
+    console.log('CitiesComponent instance destroyed.');
     this.destroySubject.next(true);
     this.destroySubject.complete();
   }

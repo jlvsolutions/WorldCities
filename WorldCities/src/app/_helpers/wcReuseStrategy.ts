@@ -16,6 +16,7 @@ export class WCReuseStrategy extends RouteReuseStrategy {
   shouldAttach(route: ActivatedRouteSnapshot): boolean {
     return this.savedHandles.has(this.getRouteKey(route));
   }
+
   retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
     return this.savedHandles.get(this.getRouteKey(route)) ?? null;
   }

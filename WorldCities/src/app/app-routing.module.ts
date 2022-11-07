@@ -1,13 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { AuthGaurd } from './_helpers/auth.guard';
-import { AdminAuthGaurd } from './_helpers/admin-auth.guard';
-
-import { HomeComponent } from '@app/home/home/home.component';
+import { AuthGaurd } from '@app/_helpers/auth.guard';
+import { AdminAuthGaurd } from '@app/_helpers/admin-auth.guard';
 import { CitiesComponent } from '@app/cities/cities/cities.component';
-import { CityComponent } from '@app/cities/city/city.component';
-import { CityEditComponent } from '@app/cities/city-edit/city-edit.component';
+import { HomeComponent } from '@app/home/home/home.component';
 import { CountriesComponent } from '@app/countries/countries/countries.component';
 import { CountryEditComponent } from '@app/countries/country-edit/country-edit.component';
 import { LoginComponent } from '@app/auth/login/login.component';
@@ -17,10 +14,8 @@ import { UserEditComponent } from '@app/users/user-edit/user-edit.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
-  { path: 'cities', component: CitiesComponent, data: { saveComponent: true } },
-  { path: 'city/:id', component: CityComponent },
-  { path: 'cityedit/:id', component: CityEditComponent, canActivate: [AuthGaurd] },
-  { path: 'cityedit', component: CityEditComponent, canActivate: [AuthGaurd] },
+  { path: 'cities', loadChildren: () => import('@app/cities/cities.module').then(m => m.CitiesModule) },
+  //{ path: 'cities', component: CitiesComponent, data: { saveComponent: true } },
   { path: 'countries', component: CountriesComponent },
   { path: 'country/:id', component: CountryEditComponent, canActivate: [AuthGaurd] },
   { path: 'country', component: CountryEditComponent, canActivate: [AuthGaurd] },
@@ -30,7 +25,6 @@ const routes: Routes = [
   { path: 'user/:id', component: UserEditComponent, canActivate: [AdminAuthGaurd] },
   { path: 'user', component: UserEditComponent, canActivate: [AdminAuthGaurd] },
   { path: '**', redirectTo: '' }
-  //{ path: '**', component: HomeComponent }
 ];
 
 @NgModule({

@@ -33,6 +33,7 @@ export class CountriesComponent implements OnInit, OnDestroy {
   filterTextChanged: Subject<string> = new Subject<string>();
 
   constructor(private countryService: CountryService, private authService: AuthService) {
+    console.log('CountriesComponent instance created.');
   }
 
   ngOnInit() {
@@ -41,7 +42,7 @@ export class CountriesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log('countries.component OnDestroy()');
+    console.log('CountriesComponent instance destroyed.');
   }
 
   // Debounce filter text changes

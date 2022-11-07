@@ -3,6 +3,7 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTr
 import { Observable } from 'rxjs';
 import { AuthService } from '@app/_services';
 
+/** Ensures user is registered and logged in. */
 @Injectable({
   providedIn: 'root'
 })
@@ -16,7 +17,7 @@ export class AuthGaurd implements CanActivate {
     Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
     const user = this.authService.userValue;
-
+    console.log(`AuthGaurd user ${user}`);
     if (user)
       // Logged in
       return true;

@@ -30,7 +30,7 @@ import { appInitializer } from './_helpers/app.initializer';
 import { AuthService } from './_services';
 
 import { RouteReuseStrategy } from '@angular/router';
-import { WCReuseStrategy } from './_helpers/wcReuseStrategy';
+import { WCReuseStrategy } from '@app/_helpers/wcReuseStrategy';
 
 @NgModule({
   declarations: [
@@ -86,7 +86,7 @@ import { WCReuseStrategy } from './_helpers/wcReuseStrategy';
     { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [AuthService] },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     //{ provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    { provide: RouteReuseStrategy, useClass: WCReuseStrategy }
+    //{ provide: RouteReuseStrategy, useClass: WCReuseStrategy }
   ],
   bootstrap: [AppComponent]
 })

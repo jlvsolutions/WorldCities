@@ -3,6 +3,7 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTr
 import { Observable } from 'rxjs';
 import { AuthService } from '@app/_services';
 
+/** Ensures user is registered as an administrator and logged in. */
 @Injectable({
   providedIn: 'root'
 })
