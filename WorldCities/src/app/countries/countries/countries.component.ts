@@ -2,13 +2,11 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-
 import { Subject, takeUntil } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { Country } from '@app/_models';
-import { CountryService } from '@app/_services';
-import { AuthService } from '@app/_services';
+import { CountryService, AuthService } from '@app/_services';
 
 @Component({
   selector: 'app-countries',

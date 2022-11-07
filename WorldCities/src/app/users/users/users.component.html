@@ -4,7 +4,7 @@
 
 <p *ngIf="!users"><em>Loading...</em></p>
 
-<button mat-flat-button color="primary" class="btn-add" *ngIf="users" [routerLink]="['/user']">
+<button mat-flat-button color="primary" class="btn-add" *ngIf="users" [routerLink]="['edit']">
   Add a new User
 </button>
 
@@ -41,7 +41,7 @@
   <ng-container matColumnDef="edit">
     <th mat-header-cell *matHeaderCellDef>Edit</th>
     <td mat-cell *matCellDef="let user">
-      <button mat-flat-button color="primary" class="btn-edit" [routerLink]="['/user', user.id]">Edit</button>
+      <button mat-flat-button color="primary" class="btn-edit" [routerLink]="['edit', user.id]">Edit</button>
     </td>
   </ng-container>
 

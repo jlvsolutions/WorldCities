@@ -4,7 +4,10 @@ import { SharedModule } from '@app/_shared/shared.module';
 
 import { UsersComponent } from './users/users.component';
 import { UserEditComponent } from './user-edit/user-edit.component';
+import { UsersRoutingModule } from './users-routing.module';
 
+import { RouteReuseStrategy } from '@angular/router';
+import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
 
 
 @NgModule({
@@ -13,11 +16,15 @@ import { UserEditComponent } from './user-edit/user-edit.component';
     UserEditComponent
   ],
   imports: [
-    SharedModule
+    SharedModule,
+    UsersRoutingModule
   ],
   exports: [
     UsersComponent,
     UserEditComponent
+  ],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: WCReuseStrategy }
   ]
 })
 export class UsersModule { }

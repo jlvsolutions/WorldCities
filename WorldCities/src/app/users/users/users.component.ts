@@ -69,7 +69,7 @@ export class UsersComponent implements OnInit {
         this.show.setMessages(true, `User Deleted: ${user.name}, ${user.email}` );
 
         // Reload the users data.
-        this.ngOnInit();
+        this.ngOnInit(); // This causes 
       }, error => {
         console.error(error);
         switch (error.status) {
