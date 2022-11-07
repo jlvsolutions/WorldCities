@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -34,8 +33,6 @@ export class CitiesComponent implements OnInit, OnDestroy {
   filterTextChanged: Subject<string> = new Subject<string>();
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
     private cityService: CityService,
     private authService: AuthService) {
 

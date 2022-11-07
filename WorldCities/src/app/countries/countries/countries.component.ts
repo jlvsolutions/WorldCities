@@ -3,7 +3,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { Country } from '@app/_models';
@@ -26,14 +26,27 @@ export class CountriesComponent implements OnInit, OnDestroy {
   defaultFilterColumn: string = "name";
   filterQuery?: string;
   isLoggedIn: boolean = false;
+  private destroySubject = new Subject();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   filterTextChanged: Subject<string> = new Subject<string>();
 
-  constructor(private countryService: CountryService, private authService: AuthService) {
+  constructor(
+    private countryService: CountryService,
+    private authService: AuthService) {
+
     console.log('CountriesComponent instance created.');
+    this.authService.user
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(user => {
+        if (user)
+          console.log(`CountriesComponent:  user = ${user.name}, ${user.email}`);
+        else
+          console.log('CountriesComponent:  No user logged in.');
+        this.isLoggedIn = authService.isAuthenticated();
+      })
   }
 
   ngOnInit() {

@@ -8,7 +8,6 @@ import { CityComponent } from './city/city.component';
 import { CityEditComponent } from './city-edit/city-edit.component';
 
 const routes: Routes = [
-  //{ path: '', redirectTo: 'cities', pathMatch: 'full' },
   { path: '', data: { title: 'List Cities', saveComponent: true }, component: CitiesComponent, pathMatch: 'full'},
   { path: 'edit/:id', data: { title: 'Edit City' }, component: CityEditComponent, canActivate: [AuthGaurd] },
   { path: 'edit', data: { title: 'Add City' }, component: CityEditComponent, canActivate: [AuthGaurd] },
