@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 
 import { AuthGaurd } from '@app/_helpers/auth.guard';
 import { AdminAuthGaurd } from '@app/_helpers/admin-auth.guard';
@@ -12,21 +12,21 @@ import { UsersComponent } from '@app/users/users/users.component';
 import { UserEditComponent } from '@app/users/user-edit/user-edit.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, pathMatch: 'full' },
-  { path: 'cities', loadChildren: () => import('@app/cities/cities.module').then(m => m.CitiesModule) },
-  { path: 'countries', component: CountriesComponent },
+  { path: '', data: { title: 'Home' }, component: HomeComponent, pathMatch: 'full' },
+  { path: 'cities', data: { title: 'Cities' }, loadChildren: () => import('@app/cities/cities.module').then(m => m.CitiesModule) },
+  { path: 'countries', data: { title: 'Countries' }, component: CountriesComponent },
   { path: 'country/:id', component: CountryEditComponent, canActivate: [AuthGaurd] },
   { path: 'country', component: CountryEditComponent, canActivate: [AuthGaurd] },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'users', component: UsersComponent, canActivate: [AdminAuthGaurd] },
+  { path: 'login', data: { title: 'Login' }, component: LoginComponent },
+  { path: 'register', data: { title: 'Register' }, component: RegisterComponent },
+  { path: 'users', data: { title: 'Users' }, component: UsersComponent, canActivate: [AdminAuthGaurd] },
   { path: 'user/:id', component: UserEditComponent, canActivate: [AdminAuthGaurd] },
   { path: 'user', component: UserEditComponent, canActivate: [AdminAuthGaurd] },
   { path: '**', redirectTo: '' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

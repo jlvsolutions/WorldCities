@@ -9,10 +9,10 @@ import { CityEditComponent } from './city-edit/city-edit.component';
 
 const routes: Routes = [
   //{ path: '', redirectTo: 'cities', pathMatch: 'full' },
-  { path: '', component: CitiesComponent, pathMatch: 'full', data: { saveComponent: true } },
-  { path: 'edit/:id', component: CityEditComponent, canActivate: [AuthGaurd] },
-  { path: 'edit', component: CityEditComponent, canActivate: [AuthGaurd] },
-  { path: ':id', component: CityComponent },
+  { path: '', data: { title: 'List Cities', saveComponent: true }, component: CitiesComponent, pathMatch: 'full'},
+  { path: 'edit/:id', data: { title: 'Edit City' }, component: CityEditComponent, canActivate: [AuthGaurd] },
+  { path: 'edit', data: { title: 'Add City' }, component: CityEditComponent, canActivate: [AuthGaurd] },
+  { path: ':id', data: { title: 'Display City' }, component: CityComponent },
 ];
 
 @NgModule({
