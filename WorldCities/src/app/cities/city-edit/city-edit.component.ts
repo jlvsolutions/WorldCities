@@ -44,6 +44,7 @@ export class CityEditComponent
     private cityService: CityService) {
 
     super();  // call the base class constructor
+    console.log('CityEditComponent instace created.');
   }
 
   ngOnInit(): void {

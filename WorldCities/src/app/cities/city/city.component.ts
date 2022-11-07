@@ -42,7 +42,6 @@ export class CityComponent implements OnInit, OnDestroy {
     if (this.id === 0 || Number.isNaN(this.id)) {
       console.error('CityComponent:  City Id is not a valid number.');
       this.router.navigate(['/cities']);
-
     }
     this.loadData(this.id);
   }
