@@ -15,5 +15,7 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
     super(authService, countryService);
     console.log('CountriesComponent instance created.');
     this.displayedColumns = ['id', 'name', 'iso2', 'iso3', 'totCities'];
+    this.defaultSortColumn = 'name';
+    this.defaultFilterColumn = 'name';
   }
 }

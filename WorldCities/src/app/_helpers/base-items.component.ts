@@ -16,10 +16,10 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, OnDestroy
 
   public defaultPageIndex: number = 0;
   public defaultPageSize: number = 15;
-  public defaultSortColumn: string = "name";
+  public defaultSortColumn: string = '';
   public defaultSortOrder: "asc" | "desc" = "asc";
 
-  public defaultFilterColumn: string = "name";
+  public defaultFilterColumn: string = '';
   public filterQuery?: string | null = '';
 
   public isLoggedIn: boolean = false;

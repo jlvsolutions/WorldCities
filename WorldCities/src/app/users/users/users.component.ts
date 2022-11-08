@@ -21,6 +21,8 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
   constructor(authService: AuthService, userService: UserService) {
     super(authService, userService);
     this.displayedColumns = ['delete', 'edit', 'name', 'email', 'roles', 'emailConfirmed', 'lockoutEnabled'];
+    this.defaultSortColumn = 'name';
+    this.defaultFilterColumn = 'name';
   }
 
   /**

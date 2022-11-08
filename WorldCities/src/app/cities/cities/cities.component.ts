@@ -15,5 +15,7 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
     super(authService, cityService);
     console.log('CitiesComponent instance created.');
     this.displayedColumns = ['id', 'name', 'lat', 'lon', 'population', 'countryName'];
+    this.defaultSortColumn = 'name';
+    this.defaultFilterColumn = 'name';
   }
 }
