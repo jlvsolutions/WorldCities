@@ -2,23 +2,25 @@
 
 <p>Here's a list of Users.  For use by administrators only.</p>
 
-<p *ngIf="!users"><em>Loading...</em></p>
+<p *ngIf="!items"><em>Loading...</em></p>
 
-<button mat-flat-button color="primary" class="btn-add" *ngIf="users" [routerLink]="['edit']">
+<button mat-flat-button color="primary" class="btn-add" *ngIf="items" [routerLink]="['edit']">
   Add a new User
 </button>
 
 <!-- the hidden is not working... hmm.. added the *ngIf="cities" -->
-<mat-form-field [hidden]="!users" *ngIf="users">
+<mat-form-field [hidden]="!items" *ngIf="items">
   <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
-         placeholder="Filter by name (or part of it)...">
+         placeholder="Filter by name (or part of it)..."
+         [value]="filterQuery ?? ''">
+  <mat-icon matSuffix (click)="clearSearch()">clear_text</mat-icon>
 </mat-form-field>
 
 <app-show-message></app-show-message>
 
-<table mat-table [dataSource]="users"
+<table mat-table [dataSource]="items"
        class="mat-elevation-z8"
-       [hidden]="!users"
+       [hidden]="!items"
        matSort (matSortChange)="loadData()"
        [matSortActive]="defaultSortColumn"
        [matSortDirection]="defaultSortOrder">
@@ -82,7 +84,7 @@
 
 <!-- Pagination directive -->
 <!-- hidden it's working, again... see above'-->
-<mat-paginator [hidden]="!users"
+<mat-paginator [hidden]="!items"
                (page)="getData($event)"
                [pageSize]="10"
                [pageSizeOptions]="[10, 15, 20, 50]"

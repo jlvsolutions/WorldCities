@@ -2,21 +2,23 @@
 
 <p>Here's a list of countries:  Feel free to play with it.</p>
 
-<p *ngIf="!countries"><em>Loading...</em></p>
+<p *ngIf="!items"><em>Loading...</em></p>
 
-<button mat-flat-button color="primary" class="btn-add" *ngIf="countries && isLoggedIn" [routerLink]="['edit']">
+<button mat-flat-button color="primary" class="btn-add" *ngIf="items && isLoggedIn" [routerLink]="['edit']">
   Add a new Country
 </button>
 
 <!-- the hidden is not working... hmm.. added the *ngIf-->
-<mat-form-field [hidden]="!countries" *ngIf="countries">
+<mat-form-field [hidden]="!items" *ngIf="items">
   <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
-         placeholder="Filter by name (or part of it)..."> <!--  not a />. hmm -->
+         placeholder="Filter by name (or part of it)..."
+         [value]="filterQuery ?? ''">
+  <mat-icon matSuffix (click)="clearSearch()">clear_text</mat-icon>
 </mat-form-field>
 
-<table mat-table [dataSource]="countries"
+<table mat-table [dataSource]="items"
        class="mat-elevation-z8"
-       [hidden]="!countries"
+       [hidden]="!items"
        matSort (matSortChange)="loadData()"
        [matSortActive]="defaultSortColumn"
        [matSortDirection]="defaultSortOrder">
@@ -58,7 +60,7 @@
 </table>
 
 <!-- Pagination directive -->
-<mat-paginator [hidden]="!countries"
+<mat-paginator [hidden]="!items"
                (page)="getData($event)"
                [pageSize]="10"
                [pageSizeOptions]="[10, 15, 20, 50]"
