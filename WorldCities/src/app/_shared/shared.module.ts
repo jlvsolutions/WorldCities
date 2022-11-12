@@ -4,14 +4,18 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { AngularMaterialModule, GraphQLModule } from '@app/_shared';
-import { ShowMessageComponent, WCMapComponent, UserFormComponent, PasswordFormComponent  } from '@app/_shared';
+import {
+  ShowMessageComponent, WCMapComponent,
+  UserFormComponent, PasswordFormComponent, FilterQueryComponent
+} from '@app/_shared';
 
 @NgModule({
   declarations: [
     ShowMessageComponent,
     WCMapComponent,
     UserFormComponent,
-    PasswordFormComponent
+    PasswordFormComponent,
+    FilterQueryComponent
   ],
   imports: [
     CommonModule,
@@ -28,7 +32,8 @@ import { ShowMessageComponent, WCMapComponent, UserFormComponent, PasswordFormCo
     ShowMessageComponent,
     WCMapComponent,
     UserFormComponent,
-    PasswordFormComponent
+    PasswordFormComponent,
+    FilterQueryComponent
   ]
 })
 export class SharedModule { }

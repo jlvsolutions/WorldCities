@@ -9,19 +9,15 @@
 
 <p *ngIf="!items"><em>Loading...</em></p>
 
-
 <div class="mat-elevation-z15 rounded-padding">
-  <div class="filter" *ngIf="items">
-    <mat-form-field [hidden]="!items">
-      <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
-             placeholder="Filter by name (or part of it)..."
-             [value]="filterQuery ?? ''">
-      <mat-icon matSuffix (click)="clearSearch()">clear_text</mat-icon>
-    </mat-form-field>
-    <div>
-      <button mat-flat-button class="filter-btn" color="primary" (click)="clearSearch()">Clear Search</button>
-    </div>
+
+  <div class="filter">
+    <app-filter-query placeholder="Filter by city name (or part of it)..."
+                      (search)="loadData($event)"  [hidden]="!items">
+    </app-filter-query>
   </div>
+
+  <app-show-message></app-show-message>
 
   <table mat-table [dataSource]="items"
          class="mat-elevation-z8"
@@ -40,7 +36,7 @@
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
       <td mat-cell *matCellDef="let city">
-        <a [routerLink]="[city.id]">{{city.name}}</a>
+        <a [title]="'View map of ' + city.name" [routerLink]="[city.id]">{{city.name}}</a>
       </td>
     </ng-container>
 
@@ -60,7 +56,7 @@
     <ng-container matColumnDef="countryName">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Country</th>
       <td mat-cell *matCellDef="let city">
-        <a [routerLink]="['/country', city.countryId]">{{city.countryName}}</a>
+        <a [routerLink]="['/countries/edit', city.countryId]">{{city.countryName}}</a>
       </td>
     </ng-container>
 
@@ -70,8 +66,8 @@
       <td mat-cell *matCellDef="let city">{{city.population | number: '1.0-0'}}</td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>"
+    <tr mat-header-row *matHeaderRowDef="modelColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: modelColumns;"></tr>"
   </table>
 
   <!-- Pagination directive -->

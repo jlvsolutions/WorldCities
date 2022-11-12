@@ -22,25 +22,18 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
     }
 `]
 })
-export class ShowMessageComponent implements OnInit, OnDestroy {
+export class ShowMessageComponent {
 
-  message?: string;
-  errMessage?: string;
-
+  message: string = '';
+  errMessage: string = '';
 
   constructor() { }
 
-  ngOnInit(): void {
-    this.clearMessages();
-  }
-  ngOnDestroy(): void {
-    this.clearMessages();
-  }
 
   /** Clears all messages. */
   clearMessages() {
-    this.message = undefined;
-    this.errMessage = undefined;
+    this.message = '';
+    this.errMessage = '';
   }
   /**
    * Shows the given message.
@@ -49,10 +42,14 @@ export class ShowMessageComponent implements OnInit, OnDestroy {
    */
   setMessages(success: boolean, message: string) {
     this.clearMessages();
-    if (success)
+    if (success) {
       this.message = message;
-    else
+      this.errMessage = '';
+    }
+    else {
+      this.message = '';
       this.errMessage = message;
+    }
   }
 
 

@@ -57,13 +57,13 @@ namespace WorldCitiesAPI.Data.Models
             if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterQuery) && IsValidProperty(filterColumn))
             {
                 // Perform filtering...
-                source = source.Where(
-                    string.Format("{0}.StartsWith(@0)", filterColumn),
-                    filterQuery);
+                if (GetPropertyType(filterColumn) == typeof(string))
+                    source = source.Where(string.Format("{0}.StartsWith(@0)", filterColumn), filterQuery);
+                else
+                    source = source.Where(string.Format("{0}.ToString().StartsWith(@0)", filterColumn), filterQuery);
             }
 
             // Get the Count...
-
             var count = await source.CountAsync();
 
             if (!string.IsNullOrEmpty(sortColumn) && IsValidProperty(sortColumn))
@@ -108,6 +108,20 @@ namespace WorldCitiesAPI.Data.Models
                 throw new NotSupportedException($"ERROR: Property '{propertyName}' does not exist.");
 
             return prop != null;
+        }
+
+        public static Type? GetPropertyType(string propertyName, bool throwExceptionIfNotFound = true)
+        {
+            var prop = typeof(T).GetProperty(
+                propertyName,
+                BindingFlags.IgnoreCase |
+                BindingFlags.Public |
+                BindingFlags.Instance);
+
+            if (prop == null && throwExceptionIfNotFound)
+                throw new NotSupportedException($"ERROR: Property '{propertyName}' does not exist.");
+            
+            return prop?.PropertyType;
         }
         #endregion
 

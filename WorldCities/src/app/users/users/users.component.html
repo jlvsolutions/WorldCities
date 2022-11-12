@@ -1,20 +1,19 @@
 <h1>Users</h1>
 
-<p>Here's a list of Users.  For use by administrators only.</p>
+<p>
+  Here's a list of Users.  For use by administrators only.
+  <button mat-flat-button color="primary" class="btn-add" *ngIf="items" [routerLink]="['edit']">
+    Add a new User
+  </button>
+</p>
 
 <p *ngIf="!items"><em>Loading...</em></p>
 
-<button mat-flat-button color="primary" class="btn-add" *ngIf="items" [routerLink]="['edit']">
-  Add a new User
-</button>
-
-<!-- the hidden is not working... hmm.. added the *ngIf="cities" -->
-<mat-form-field [hidden]="!items" *ngIf="items">
-  <input matInput #filter (keyup)="onFilterTextChanged(filter.value)"
-         placeholder="Filter by name (or part of it)..."
-         [value]="filterQuery ?? ''">
-  <mat-icon matSuffix (click)="clearSearch()">clear_text</mat-icon>
-</mat-form-field>
+<div class="filter">
+  <app-filter-query placeholder="Filter by user name (or part of it)..."
+                    (search)="loadData($event)" [hidden]="!items">
+  </app-filter-query>
+</div>
 
 <app-show-message></app-show-message>
 
@@ -35,7 +34,7 @@
   <ng-container matColumnDef="delete">
     <th mat-header-cell *matHeaderCellDef>Delete</th>
     <td mat-cell *matCellDef="let user">
-      <button mat-flat-button color="primary" (click)="onDeleteClicked(user)" class="btn-delete">Delete</button>
+      <button mat-flat-button color="primary" (click)="onDeleteClicked(user.id)" class="btn-delete">Delete</button>
     </td>
   </ng-container>
 
@@ -78,8 +77,8 @@
   </ng-container>
 
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>"
+  <tr mat-header-row *matHeaderRowDef="modelColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: modelColumns;"></tr>"
 </table>
 
 <!-- Pagination directive -->
