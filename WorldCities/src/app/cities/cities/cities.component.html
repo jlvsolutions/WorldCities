@@ -11,8 +11,8 @@
 
 <div class="mat-elevation-z15 rounded-padding">
 
-  <div class="filter">
-    <app-filter-query placeholder="Filter by city name (or part of it)..."
+  <div class="cities-filter">
+    <app-filter-query class="jabba" placeholder="Filter by city name (or part of it)..."
                       (search)="loadData($event)"  [hidden]="!items">
     </app-filter-query>
   </div>

@@ -9,7 +9,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   template: `
   <div class="filter-query">
     <form [formGroup]="form">
-      <mat-form-field>
+      <mat-form-field class="filter-query-form-field">
         <input matInput formControlName="query" #filter (keyup)="onKeyUp(filter.value)"
                placeholder={{placeholder}}
                [value]="default">
@@ -20,10 +20,10 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   </div>
 `,
   styles: [`
-    .filter-query {
-        width:  100%;
+    .filter-query-form-field {
+      width: 100%;
     }
-  `]
+`]
 })
 export class FilterQueryComponent implements OnInit {
 
