@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, AsyncValidatorFn, ValidatorFn, FormArray } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
@@ -16,7 +16,7 @@ import { UserService, AuthService } from '@app/_services';
   styleUrls: ['./user-edit.component.scss']
 })
 export class UserEditComponent
-  extends BaseFormComponent implements OnInit {
+  extends BaseFormComponent implements OnInit, AfterViewInit {
 
   /** The view title */
   title?: string;
@@ -42,11 +42,11 @@ export class UserEditComponent
   roles: string[] = [];
 
   setPasswordChecked?: boolean = false;
-  setPasswordCheckboxHidden?: string; // shows if undefined.  hides if empty string or 'hidden'
+  /** Shows if undefined.  Hides if empty string or 'hidden'. */
+  setPasswordCheckboxHidden?: string;
 
   /** One method of unsubscribing to prevent memory leaks. */
   private destroySubject = new Subject();
-
 
   constructor(
     private fb: FormBuilder,
@@ -68,10 +68,61 @@ export class UserEditComponent
       password: [{ value: '', disabled: true }],
       roles: ['', Validators.required]
     });
-    console.log("Ctor():  Calling loadData()...")
-    this.loadData();
-    console.log("Ctor():  Calling loadData() returned.")
 
+    this.loadData();
+  }
+
+  ngAfterViewInit(): void {
+    console.log('AfterViewInit()');
+  }
+
+  loadData() {
+
+    console.log("loadData()")
+    this.id = this.activatedRoute.snapshot.paramMap.get('id');
+
+    if (this.id) {
+      // EDIT Mode
+      this.setPasswordCheckboxHidden = "false";
+      console.log("Loading user data for edit");
+
+      // Get the user data
+      this.userService.get(this.id)
+
+        .subscribe(result => {
+          this.user = result;
+          this.origEmail = this.user.email;
+          this.title = "Edit - " + this.user.name;
+          console.log("Loaded data for user: " + this.user.email);
+
+          // Update the form with the user values.
+          this.form.patchValue(this.user);
+          this.origEmail = this.user.email;
+
+        }, error => console.error(error));
+    }
+    else {
+      // ADD Mode
+      this.title = "Create a new user";
+      this.setPasswordCheckboxHidden = "hidden";
+      console.log("Preparing to add a new user.");
+
+      // TODO:  Add logic to prep the form controls, i.e. setPasswordChecked and password.
+      this.setPasswordChecked = true;
+      this.form.controls['setPassword'].setValue(true);
+      this.form.controls['setPassword'].disable();
+      this.form.controls['password'].enable();
+      // Set the default User Role
+      this.user = <User>{
+        id: '', name: '', email: '', emailConfirmed: true,
+        lockoutEnabled: false, newPassword: '', roles: ['RegisteredUser'],
+        jwtToken: ''
+      };
+      this.form.patchValue(this.user);
+
+    }
+
+    this.loadAllRoles();
   }
 
   onSetPasswordCbChanged(event: MatCheckboxChange) {
@@ -151,57 +202,6 @@ export class UserEditComponent
     }
   }
 
-
-  loadData() {
-
-    console.log("loadData()")
-    // Retrieve the ID from the 'id' parameter.
-    this.id = this.activatedRoute.snapshot.paramMap.get('id');
-    if (this.id) {
-      // EDIT Mode
-      this.setPasswordCheckboxHidden = "false";
-      console.log("Loading user data for edit");
-
-      // Get the user data
-      this.userService.get(this.id)
-
-        .subscribe(result => {
-          this.user = result;
-          this.origEmail = this.user.email;
-          this.title = "Edit - " + this.user.name;
-          console.log("Loaded data for user: " + this.user.email);
-
-          // Update the form with the user values.
-          this.form.patchValue(this.user);
-          this.origEmail = this.user.email;
-
-        }, error => console.error(error));
-    }
-    else {
-      // ADD Mode
-      this.title = "Create a new user";
-      this.setPasswordCheckboxHidden = "hidden";
-      console.log("Preparing to add a new user.");
-
-      // TODO:  Add logic to prep the form controls, i.e. setPasswordChecked and password.
-      this.setPasswordChecked = true;
-      this.form.controls['setPassword'].setValue(true);
-      this.form.controls['setPassword'].disable();
-      this.form.controls['password'].enable();
-      // Set the default User Role
-      this.user = <User>{
-        id: '', name: '', email: '', emailConfirmed: true,
-        lockoutEnabled: false, newPassword: '', roles: ['RegisteredUser'],
-        jwtToken: ''
-      };
-      this.form.patchValue(this.user);
-
-    }
-
-    // Load the roles that can be associated with a user.
-    this.loadAllRoles();
-  }
-
   /**
    * Loads all current user roles from the database
    * via http request
@@ -210,14 +210,11 @@ export class UserEditComponent
     console.log("loadAllRoles(): Retrieving user roles...");
     this.userService.getAllRoles()
       .subscribe(result => {
-        console.log(`loadAllRoles(): Retrieved ${result.length} roles.`);
         console.log(`loadAllRoles(): Adding FormControls from result.  Length=${result.length}`);
 
         result.forEach(element => {
           var cbName = element + "checkBox";
-          //console.log(`loadAllRoles(): result.forEach: ${cbName}`);
-          this.form.addControl(`${cbName}`, new FormControl(cbName));
-          this.form.controls[cbName].setValue(this.user?.roles.includes(element));
+          this.form.addControl(cbName, new FormControl(this.user?.roles.includes(element)));
         });
 
         console.log('loadAllRoles(): Setting this.roles to result.');
