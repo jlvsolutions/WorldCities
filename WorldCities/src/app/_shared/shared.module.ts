@@ -5,8 +5,9 @@ import { RouterModule } from '@angular/router';
 
 import { AngularMaterialModule, GraphQLModule } from '@app/_shared';
 import {
-  ShowMessageComponent, WCMapComponent,
-  UserFormComponent, PasswordFormComponent, FilterQueryComponent
+  ShowMessageComponent, WCMapComponent, ItemsTableComponent,
+  UserFormComponent, PasswordFormComponent, FilterQueryComponent,
+  SpaceAfterCommaPipe
 } from '@app/_shared';
 
 @NgModule({
@@ -15,7 +16,9 @@ import {
     WCMapComponent,
     UserFormComponent,
     PasswordFormComponent,
-    FilterQueryComponent
+    FilterQueryComponent,
+    ItemsTableComponent,
+    SpaceAfterCommaPipe
   ],
   imports: [
     CommonModule,
@@ -33,7 +36,9 @@ import {
     WCMapComponent,
     UserFormComponent,
     PasswordFormComponent,
-    FilterQueryComponent
+    FilterQueryComponent,
+    ItemsTableComponent,
+    SpaceAfterCommaPipe
   ]
 })
 export class SharedModule { }

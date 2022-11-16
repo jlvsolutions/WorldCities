@@ -30,13 +30,13 @@ export class AuthService {
     return this.userSubject.value;
   }
 
-  /** Returns whether the user has the administrator role. */
-  public isAdministrator(): boolean {
+  /** Returns whether the user has the administrator role. */  // TODO:  Consider making this a getter.
+  public isAdministrator(): boolean { 
     return (this.userValue !== null) && this.userValue.roles.includes(this._adminRoleName);
   }
 
-  /** Determines authentication status. */
-  public isAuthenticated(): boolean {
+  /** Determines authentication status. */  // TODO:  Consider making this a getter.
+  public isAuthenticated(): boolean { 
     return (this.userValue !== null) && (this.userValue.jwtToken !== null);
   }
 

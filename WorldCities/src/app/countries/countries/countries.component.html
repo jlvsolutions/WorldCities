@@ -10,9 +10,7 @@
 <p *ngIf="!items"><em>Loading...</em></p>
 
 <div class="filter">
-  <app-filter-query placeholder="Filter by country name (or part of it)..."
-                    (search)="loadData($event)" [hidden]="!items">
-  </app-filter-query>
+  <app-filter-query (search)="loadData($event)" [hidden]="!items"></app-filter-query>
 </div>
 
 <table mat-table [dataSource]="items"
@@ -51,11 +49,11 @@
   <!-- TotCities Column -->
   <ng-container matColumnDef="totCities">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Tot. Cities</th>
-    <td mat-cell *matCellDef="let country"> {{country.totCities}} </td>
+    <td mat-cell *matCellDef="let country"> {{country.totCities | number:'1.0-0'}} </td>
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="modelColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: modelColumns;"></tr>
+  <tr mat-row *matRowDef="let row; columns: modelColumns;" [routerLink]="row.id"></tr>
 </table>
 
 <!-- Pagination directive -->

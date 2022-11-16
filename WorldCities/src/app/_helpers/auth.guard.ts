@@ -15,7 +15,6 @@ export class AuthGaurd implements CanActivate {
   // Extend the canActivate interface
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): 
     Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-
     const user = this.authService.userValue;
     console.log(`AuthGaurd user ${user}`);
     if (user)

@@ -1,0 +1,52 @@
+<mat-table [dataSource]="source.data"
+           class="mat-elevation-z8"
+           [hidden]="!source"
+           matSort (matSortChange)="sortChange.emit($event)"
+           [matSortActive]="source.defaultSortColumn"
+           [matSortDirection]="source.defaultSortOrder">
+
+  <ng-container *ngFor="let col of source.schema; let i = index" [matColumnDef]="col.key">
+    <ng-container *ngIf="col.type === 'button' else sortedHeaderTemplate">
+      <mat-header-cell *matHeaderCellDef>{{col.label}}</mat-header-cell>
+    </ng-container>
+    <ng-template #sortedHeaderTemplate>
+      <mat-header-cell *matHeaderCellDef mat-sort-header>{{col.label}}</mat-header-cell>
+    </ng-template>
+
+    <mat-cell *matCellDef="let item">
+      <div [ngSwitch]="col.type">
+
+        <ng-container *ngSwitchCase="'button'">
+          <ng-container *ngIf="col.authorized">
+            <button mat-flat-button color="primary"
+                    [title]="col.toolTip + item[col.itemName]"
+                    (click)="$event.stopPropagation(); onButClick(col.key, item[col.param])">
+              {{col.label}}
+            </button>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'link'">
+          <ng-container *ngIf="col.authorized else noLinkTemplate">
+            <a [title]="col.toolTip + item[col.itemName]" [routerLink]="col.link + item[col.linkId]">
+              {{col.pipeToNumber ? (item[col.key] | number:'1.0-0') : item[col.key]}}
+            </a>
+          </ng-container>
+          <ng-template #noLinkTemplate>
+            {{col.pipeToNumber ? (item[col.key] | number:'1.0-0') : item[col.key]}}
+          </ng-template>
+        </ng-container>
+
+        <ng-container *ngSwitchDefault>
+          {{col.pipeToNumber ? (item[col.key] | number:'1.0-0') : item[col.key]}}
+        </ng-container>
+
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="source.modelColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: source.modelColumns;"
+           [title]="rowToolTip + row.name"
+           [routerLink]="row.id"></mat-row>"
+</mat-table>

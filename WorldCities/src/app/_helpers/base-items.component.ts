@@ -1,18 +1,19 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort, SortDirection } from '@angular/material/sort';
 import { Subject, takeUntil } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
+import { ItemsViewSource } from '@app/_models';
 import { ShowMessageComponent, FilterQueryComponent } from '@app/_shared';
-
 import { BaseService, AuthService } from '@app/_services';
 
+/** Base class for displaying a collection of items. */
 @Component({
   template: ``
 })
 export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterViewInit, OnDestroy {
+  public viewSource = new ItemsViewSource<TDto>();
   public modelColumns: string[] = [];
   public displayColumns: string[] = [];
   public items!: MatTableDataSource<TDto>;
@@ -20,31 +21,31 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   public defaultPageIndex: number = 0;
   public defaultPageSize: number = 15;
   public defaultSortColumn: string = '';
-  public defaultSortOrder: "asc" | "desc" = "asc";
-
+  public defaultSortOrder: '' | 'asc' | 'desc' = 'asc';
   public defaultFilterColumn: string = '';
   public filterQuery: string = '';
 
   public isLoggedIn: boolean = false;
+  public isAdministrator: boolean = false;
+ 
   private destroySubject = new Subject();
 
+  protected sort!: Sort; 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(FilterQueryComponent) filter!: FilterQueryComponent;
-
-  filterTextChanged: Subject<string> = new Subject<string>();
-
   @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
 
   constructor(protected authService: AuthService, protected service: BaseService<TDto, Tid>) {
     this.authService.user
       .pipe(takeUntil(this.destroySubject))
       .subscribe(user => {
-        if (user)
-          console.log(`BaseItemsComponent:  user = ${user.name}, ${user.email}`);
+        this.isLoggedIn = authService.isAuthenticated();
+        this.isAdministrator = authService.isAdministrator();
+        this.setSchema();
+        if (this.isLoggedIn)
+          console.log(`BaseItemsComponent:  user = ${user.name}, ${user.email} logged in. Administrator: ${this.isAdministrator}`);
         else
           console.log('BaseItemsComponent:  No user logged in.');
-        this.isLoggedIn = authService.isAuthenticated();
       })
   }
 
@@ -63,6 +64,17 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.destroySubject.complete();
   }
 
+  sortChange(sort: Sort) {
+    console.log(`BaseItemsComponent:  sortChanged col=${sort.active}, dir=${sort.direction}`);
+    this.sort = sort;
+    this.filter.filterText = '';
+    this.loadData();
+  }
+
+  setSchema() {
+    console.log('BaseItemsComponent setSchema called.');
+  }
+
   loadData(query?: string) {
     let pageEvent = new PageEvent();
     pageEvent.pageIndex = this.defaultPageIndex;
@@ -77,7 +89,9 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     const filterColumn = (this.sort) ? this.sort.active : this.defaultSortColumn;
     const filterQuery = (this.filter) ? this.filter.filterText : this.filterQuery;
 
-    this.filter.placeholder = `Filter by ${this.displayColumns[this.modelColumns.indexOf(sortColumn)]} (or part of it)...`;
+    this.filter.placeholder = `Filter by ${this.viewSource.displayColumns[
+      this.viewSource.modelColumns.indexOf(sortColumn)]} (or part of it)...`;
+
     console.log(`BaseItemsComponent getData: filterQuery = ${filterQuery}, sortColumn = ${sortColumn}`);
     this.service.getData(
       event.pageIndex,
@@ -91,37 +105,18 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         this.paginator.pageIndex = result.pageIndex;
         this.paginator.pageSize = result.pageSize;
         this.items = new MatTableDataSource<TDto>(result.data);
+        this.viewSource.data = result.data; // Latest factoring.....
       }, error => console.error(error));
   }
 
-  /** Debounce filter text changes 
-  onFilterTextChanged(filterText: string) {
-    if (this.filterTextChanged.observers.length === 0) {
-      this.filterTextChanged
-        .pipe(debounceTime(500), distinctUntilChanged())
-        .subscribe(query => {
-          this.loadData(query);
-        })
-    }
-    this.filterTextChanged.next(filterText);
-  }
-  */
-  /** Clears the filter query and reloads the data */
-  clearSearch() {
-    console.log(`clear search value ${this.filterQuery}`);
-    this.filterQuery = '';
-    this.loadData();
-  }
-
   /**
-   * Invoked when the user clicks on a delete button.
-   * Shows a delete confirmation dialog.
+   * Invoked when the user clicks on a delete button.  Shows a delete confirmation dialog.
    * @param id The id of the item to delete.
    */
   onDeleteClicked(id: Tid): void {
     this.show.clearMessages();
 
-    if (!confirm(`Are you sure you want to delete?`))
+    if (!confirm(`Are you sure you want to delete ${this.nameOfItem(id)}?`))
       return;
 
     this.service.delete(id)
@@ -144,5 +139,9 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
             break;
         };
       });
+  }
+
+  protected nameOfItem(id: any): string {
+    return `${id}`;
   }
 }

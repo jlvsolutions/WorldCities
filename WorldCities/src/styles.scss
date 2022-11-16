@@ -60,7 +60,30 @@ form {
     color: cornflowerblue;
   }
 }
+/*
+table.mat-table {
+  width: 100%;
+}
+    */
 
+mat-table {
+  border: 0px;
+  border-spacing: 0px;
+  border-collapse: collapse;
+
+  mat-row {
+    height: 35px;
+
+    &:nth-child(even) {
+      background-color: #f4f4f4;
+    }
+  }
+
+  mat-row:hover {
+      background-color: skyblue;
+      cursor: pointer;
+  }
+}
 table {
   border: 0px;
   border-spacing: 0px;
@@ -96,10 +119,5 @@ table {
 .pointer {
   cursor: pointer;
 }
-/*
-.filter-query {
-    width: 50%;
-}
-    */
 
 

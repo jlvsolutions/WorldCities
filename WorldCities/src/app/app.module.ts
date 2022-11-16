@@ -34,7 +34,7 @@ import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
 
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent
   ],
   imports: [
     BrowserModule,

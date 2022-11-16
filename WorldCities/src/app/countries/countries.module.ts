@@ -9,12 +9,14 @@ import { CountryService } from '@app/_services';
 
 import { RouteReuseStrategy } from '@angular/router';
 import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
+import { CountryComponent } from './country/country.component';
 
 
 @NgModule({
   declarations: [
     CountriesComponent,
-    CountryEditComponent
+    CountryEditComponent,
+    CountryComponent
   ],
   imports: [
     SharedModule,

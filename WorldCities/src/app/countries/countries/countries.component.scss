@@ -1,7 +1,10 @@
 table.mat-table {
     width: 100%;
 }
-
+tr.mat-row:hover {
+    background-color: skyblue;
+    cursor: pointer;
+}
 .mat-form-field {
     font-size: 14px;
     width: 100%;

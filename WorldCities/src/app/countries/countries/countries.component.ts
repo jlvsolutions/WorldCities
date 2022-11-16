@@ -3,8 +3,15 @@ import { Component } from '@angular/core';
 import { BaseItemsComponent } from '@app/_helpers/base-items.component';
 import { Country } from '@app/_models';
 import { CountryService, AuthService } from '@app/_services';
-import { ShowMessageComponent } from '../../_shared';
 
+const SCHEMA = [
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: 'Name' },
+  { key: 'lat', label: 'Latitude' },
+  { key: 'lon', label: 'Longitude' },
+  { key: 'population', label: 'Population', type: 'number' },
+  { key: 'countryName', label: 'Country', link: '/countries/', linkId: 'countryId' },
+];
 @Component({
   selector: 'app-countries',
   templateUrl: './countries.component.html',

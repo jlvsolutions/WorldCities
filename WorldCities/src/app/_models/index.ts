@@ -5,4 +5,4 @@ export * from './login';
 export * from './register';
 export * from './revokeToken-request';
 export * from './user';
-
+export * from './items-view';
