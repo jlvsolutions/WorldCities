@@ -200,6 +200,7 @@ namespace WorldCitiesAPI.Controllers
                 _logger.LogError(ex, "GetUsers:  " + ex.Message);
                 return BadRequest(ex.Message);
             }
+            // Middleware to handle other exception types.
         }
 
         // GET: api/Users/5
