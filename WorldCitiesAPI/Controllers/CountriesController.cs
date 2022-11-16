@@ -19,10 +19,12 @@ namespace WorldCitiesAPI.Controllers
     public class CountriesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<CountriesController> _logger;
 
-        public CountriesController(ApplicationDbContext context)
+        public CountriesController(ApplicationDbContext context, ILogger<CountriesController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/Countries
@@ -35,6 +37,8 @@ namespace WorldCitiesAPI.Controllers
             string? filterColumn = null,
             string? filterQuery = null)
         {
+            try
+            {
             return await ApiResult<CountryDTO>.CreateAsync(
                     _context.Countries.AsNoTracking()
                     .Select(c => new CountryDTO()
@@ -51,6 +55,13 @@ namespace WorldCitiesAPI.Controllers
                     sortOrder,
                     filterColumn,
                     filterQuery);
+            }
+            catch (NotSupportedException ex)
+            {
+                _logger.LogError(ex, "GetCountries:  " + ex.Message);
+                return BadRequest(ex.Message);
+            }
+            // Middleware to handle other exception types.
         }
 
         // GET: api/Countries/5

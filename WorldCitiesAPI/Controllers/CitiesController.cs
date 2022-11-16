@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldCitiesAPI.Data;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using WorldCitiesAPI.Data.Entities;
 using WorldCitiesAPI.Data.Models.Cities;
@@ -41,24 +40,33 @@ namespace WorldCitiesAPI.Controllers
         {
             _logger.LogInformation("Entering GetCities. PageIndex: {pageIndex}, SortOrder: {sortOrder}", pageIndex, sortOrder);
 
-            return await ApiResult<CityDTO>.CreateAsync(
-                        _context.Cities.AsNoTracking()
-                        .Select(c => new CityDTO()
-                        {
-                            Id = c.Id,
-                            Name = c.Name,
-                            Lat = c.Lat,
-                            Lon = c.Lon,
-                            Population = c.Population,
-                            CountryId = c.Country!.Id,
-                            CountryName = c.Country!.Name
-                        }),
-                        pageIndex,
-                        pageSize,
-                        sortColumn,
-                        sortOrder,
-                        filterColumn,
-                        filterQuery);
+            try
+            {
+                return await ApiResult<CityDTO>.CreateAsync(
+                            _context.Cities.AsNoTracking()
+                            .Select(c => new CityDTO()
+                            {
+                                Id = c.Id,
+                                Name = c.Name,
+                                Lat = c.Lat,
+                                Lon = c.Lon,
+                                Population = c.Population,
+                                CountryId = c.Country!.Id,
+                                CountryName = c.Country!.Name
+                            }),
+                            pageIndex,
+                            pageSize,
+                            sortColumn,
+                            sortOrder,
+                            filterColumn,
+                            filterQuery);
+            }
+            catch (NotSupportedException ex)
+            {
+                _logger.LogError(ex, "GetCities:  " + ex.Message);
+                return BadRequest(ex.Message);
+            }
+            // Middleware to handle other exception types.
         }
 
         // GET: api/Cities/5

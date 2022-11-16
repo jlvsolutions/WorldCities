@@ -166,7 +166,7 @@ namespace WorldCitiesAPI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrator")]
-        public async Task<ApiResult<UserDTO>> GetAll(
+        public async Task<ActionResult<ApiResult<UserDTO>>> GetUsers(
             int pageIndex = 0,
             int pageSize = 10,
             string? sortColumn = null,
@@ -176,22 +176,30 @@ namespace WorldCitiesAPI.Controllers
         {
             _logger.LogDebug("Received GetAll users request. PageIndex: {pageIndex}, SortOrder: {sortOrder}", pageIndex, sortOrder);
 
-            var allUsers = _userService.GetAll();
+            try
+            {
+                var allUsers = _userService.GetAll();
 
-            var apiResult = await ApiResult<UserDTO>.CreateAsync(
-                allUsers,
-                pageIndex,
-                pageSize,
-                sortColumn,
-                sortOrder,
-                filterColumn,
-                filterQuery);
+                var apiResult = await ApiResult<UserDTO>.CreateAsync(
+                    allUsers,
+                    pageIndex,
+                    pageSize,
+                    sortColumn,
+                    sortOrder,
+                    filterColumn,
+                    filterQuery);
 
-            foreach (UserDTO user in apiResult.Data)
-                if (!string.IsNullOrEmpty(user.Id))
-                    user.Roles = await _userService.GetRoles(user.Id);
+                foreach (UserDTO user in apiResult.Data)
+                    if (!string.IsNullOrEmpty(user.Id))
+                        user.Roles = await _userService.GetRoles(user.Id);
 
-            return apiResult;
+                return apiResult;
+            }
+            catch (NotSupportedException ex)
+            {
+                _logger.LogError(ex, "GetUsers:  " + ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/Users/5

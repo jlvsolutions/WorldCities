@@ -6,6 +6,7 @@
            [matSortDirection]="source.defaultSortOrder">
 
   <ng-container *ngFor="let col of source.schema; let i = index" [matColumnDef]="col.key">
+
     <ng-container *ngIf="col.type === 'button' else sortedHeaderTemplate">
       <mat-header-cell *matHeaderCellDef>{{col.label}}</mat-header-cell>
     </ng-container>

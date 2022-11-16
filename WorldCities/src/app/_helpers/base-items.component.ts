@@ -106,7 +106,10 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         this.paginator.pageSize = result.pageSize;
         this.items = new MatTableDataSource<TDto>(result.data);
         this.viewSource.data = result.data; // Latest factoring.....
-      }, error => console.error(error));
+      }, error => {
+        console.error(error);
+        this.show.setMessages(false, error.error);
+      });
   }
 
   /**
