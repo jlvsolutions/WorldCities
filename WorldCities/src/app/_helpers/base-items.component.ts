@@ -4,8 +4,8 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
 import { Subject, takeUntil } from 'rxjs';
 
-import { ItemsViewSource } from '@app/_models';
-import { IShowMessage, FilterQueryComponent } from '@app/_shared';
+import { IItemsViewSource, ItemsViewSource } from '@app/_shared';
+import { IShowMessage, FilterQueryComponent, ItemsTableComponent } from '@app/_shared';
 import { BaseService, AuthService } from '@app/_services';
 
 /** Base class for displaying a collection of items. */
@@ -13,10 +13,8 @@ import { BaseService, AuthService } from '@app/_services';
   template: ``
 })
 export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterViewInit, OnDestroy {
-  public viewSource = new ItemsViewSource<TDto>();
-  public modelColumns: string[] = [];
-  public displayColumns: string[] = [];
-  public items!: MatTableDataSource<TDto>;
+
+  public viewSource: IItemsViewSource<TDto> = new ItemsViewSource<TDto>();
 
   public defaultPageIndex: number = 0;
   public defaultPageSize: number = 15;
@@ -27,7 +25,6 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   public isLoggedIn: boolean = false;
   public isAdministrator: boolean = false;
- 
   private destroySubject = new Subject();
 
   protected sort!: Sort; 
@@ -36,6 +33,10 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   @ViewChild('showMessage') showMsg!: IShowMessage;
 
   constructor(protected authService: AuthService, protected service: BaseService<TDto, Tid>) {
+    console.log('BaseItemsComponent derived instance created.');
+
+    this.setSchema();  // derived class defines the schema/metadata for it's data model.
+
     this.authService.user
       .pipe(takeUntil(this.destroySubject))
       .subscribe(user => {
@@ -48,6 +49,14 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
           console.log('BaseItemsComponent:  No user logged in.');
       })
   }
+
+  /** Used to define the schema/metadata for the derived class' model */
+  abstract setSchema(): void;
+  /**
+   *  Used to provide a descriptive name for the model item with the given id. 
+   * @param id
+   */
+  abstract nameOfItem(id: Tid): string;
 
   ngOnInit() {
     console.log('BaseItemsComponent:  OnInit().');
@@ -70,8 +79,6 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.filter.filterText = '';
     this.loadData();
   }
-
-  setSchema() {}
 
   loadData(query?: string) {
     let pageEvent = new PageEvent();
@@ -102,7 +109,6 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         this.paginator.length = result.totalCount;
         this.paginator.pageIndex = result.pageIndex;
         this.paginator.pageSize = result.pageSize;
-        this.items = new MatTableDataSource<TDto>(result.data);
         this.viewSource.data = result.data; // Latest factoring.....
       }, error => {
         console.error(error);
@@ -140,9 +146,5 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
             break;
         };
       });
-  }
-
-  protected nameOfItem(id: any): string {
-    return `${id}`;
   }
 }

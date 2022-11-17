@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { IViewSource } from '@app/_models';
+import { IItemsViewSource } from '@app/_shared';
 import { Sort } from '@angular/material/sort';
 
 /**  Displays a mat-table using the provided IItemsView interface */
@@ -13,8 +13,9 @@ export class ItemsTableComponent implements OnInit {
   constructor() { }
 
   /** The data used to dynamically create and populate the table. */
-  @Input() source!: IViewSource;
+  @Input() source!: IItemsViewSource<any>;
 
+  /** The tooltip to display for each item row */
   @Input() rowToolTip!: string;
 
   /** An event that fires when there is a change to the sorting column or sorting order. */
@@ -27,7 +28,6 @@ export class ItemsTableComponent implements OnInit {
   }
 
   onButClick(key: string, id: any) {
-    console.log(`ItemsTableComponent:  onButtonClicked(${key}, ${id})`);
     this.butClick.emit({ key: key, id: id });
   }
 

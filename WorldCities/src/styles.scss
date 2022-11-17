@@ -65,11 +65,15 @@ table.mat-table {
   width: 100%;
 }
     */
+.btn-right {
+  float: right;
+}
 
 mat-table {
   border: 0px;
   border-spacing: 0px;
   border-collapse: collapse;
+  width: 100%;
 
   mat-row {
     height: 35px;
@@ -77,6 +81,15 @@ mat-table {
     &:nth-child(even) {
       background-color: #f4f4f4;
     }
+  }
+
+  mat-cell {
+      button.mat-flat-button {
+          line-height: 25px;
+          padding: 0px 0px;
+          font-size: 12px;
+          //font-weight: 400;
+      }
   }
 
   mat-row:hover {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { BaseItemsComponent } from '@app/_helpers/base-items.component';
@@ -19,16 +19,15 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
     cityService: CityService) {
     super(authService, cityService);
 
-    this.setSchema();
     this.defaultSortColumn = 'name';
     this.defaultFilterColumn = 'name';
     this.sort = { direction: this.defaultSortOrder, active: 'name' };
   }
 
-  override setSchema(): void {
-    console.log('CitiesComponent setting schema.');
+  setSchema(): void {
+    console.log(`CitiesComponent:  Setting schema. isLoggedIn:  ${this.isLoggedIn}, isAdministrator:  ${this.isAdministrator}`);
     this.viewSource.schema = [
-      { key: 'id', label: 'ID' },
+      { key: 'id', label: 'ID', description: 'The database ID of the city/town.' },
       {
         key: 'delete', label: 'Delete', type: 'button', param: 'id',
         toolTip: 'Delete ', itemName: 'name', authorized: this.isAdministrator
@@ -37,16 +36,24 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
         key: 'edit', label: 'Edit', type: 'button', param: 'id',
         toolTip: 'Edit ', itemName: 'name', authorized: this.isLoggedIn
       },
-      { key: 'name', label: 'Name' },
-      { key: 'lat', label: 'Latitude' },
-      { key: 'lon', label: 'Longitude' },
-      { key: 'population', label: 'Population', pipeToNumber: true },
+      { key: 'name', label: 'Name', description: 'The name of the city/town in Unicode.' },
+      { key: 'lat', label: 'Latitude', description: 'The latitude of the city/town.' },
+      { key: 'lon', label: 'Longitude', description: 'The longitude of the city/town.' },
+      {
+        key: 'population', label: 'Population', pipeToNumber: true,
+        description: 'Estimate of the city\'s urban population.  If unavailable, the municiple population.'
+      },
       {
         key: 'countryName', label: 'Country', type: 'link', link: '/countries/', linkId: 'countryId',
+        description: 'The name of the city/town\'s country.',
         toolTip: 'View details and map of ', itemName: 'countryName',
         authorized: true
       },
     ].filter(s => !(s.type === 'button' && !s.authorized));
+  }
+
+  nameOfItem(id: number): string {
+    return this.viewSource.data.find((item: { id: number; }) => item.id == id)?.name ?? '';
   }
 
   onItemButClick(event: any) {
@@ -59,12 +66,7 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
         this.router.navigate(['edit', event.id], { relativeTo: this.activatedRoute });
         break;
       default:
-        console.error('Invalid ')
-
+        console.error(`Invalid button click event: ${event.key} ${event.id}.`);
     }
-  }
-
-  override nameOfItem(id: any): string {
-    return this.viewSource.data.find(item => item.id == id)?.name!;
   }
 }
