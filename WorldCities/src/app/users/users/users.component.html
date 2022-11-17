@@ -15,7 +15,7 @@
   </app-filter-query>
 </div>
 
-<app-show-message></app-show-message>
+<app-show-message #showMessage></app-show-message>
 
 <table mat-table [dataSource]="items"
        class="mat-elevation-z8"
@@ -34,7 +34,7 @@
   <ng-container matColumnDef="delete">
     <th mat-header-cell *matHeaderCellDef>Delete</th>
     <td mat-cell *matCellDef="let user">
-      <button mat-flat-button color="primary" (click)="onDeleteClicked(user.id)" class="btn-delete">Delete</button>
+      <button mat-flat-button color="primary" (click)="deleteItem(user.id)" class="btn-delete">Delete</button>
     </td>
   </ng-container>
 

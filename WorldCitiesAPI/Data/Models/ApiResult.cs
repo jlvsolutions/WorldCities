@@ -105,7 +105,7 @@ namespace WorldCitiesAPI.Data.Models
                 BindingFlags.Instance);
 
             if (prop == null && throwExceptionIfNotFound)
-                throw new NotSupportedException($"ERROR: Property '{propertyName}' does not exist.");
+                throw new NotSupportedException($"Property '{propertyName}' does not exist.");
 
             return prop != null;
         }
@@ -119,7 +119,7 @@ namespace WorldCitiesAPI.Data.Models
                 BindingFlags.Instance);
 
             if (prop == null && throwExceptionIfNotFound)
-                throw new NotSupportedException($"ERROR: Property '{propertyName}' does not exist.");
+                throw new NotSupportedException($"Property '{propertyName}' does not exist.");
             
             return prop?.PropertyType;
         }

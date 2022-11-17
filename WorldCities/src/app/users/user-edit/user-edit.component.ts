@@ -7,7 +7,7 @@ import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 
 import { BaseFormComponent } from '@app/_helpers/base-form.component';
 import { User } from '@app/_models';
-import { ShowMessageComponent } from '@app/_shared';
+import { IShowMessage } from '@app/_shared';
 import { UserService, AuthService } from '@app/_services';
 
 @Component({
@@ -22,7 +22,7 @@ export class UserEditComponent
   title?: string;
   showPassword: boolean = false;
 
-  @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
+  @ViewChild('showMessage') showMsg!: IShowMessage;
 
   /** The user object to edit or create */
   user?: User;
@@ -158,7 +158,7 @@ export class UserEditComponent
     var user = (this.id) ? this.user : <User>{};
 
     console.log(`user-edit onSubmit: User Name: ${this.user?.name}, Email: ${this.user?.email}`);
-    this.show.setMessages(true, "Updating...");
+    this.showMsg.message = "Updating...";
 
     if (user) {
       user.name = this.form.controls['name'].value;
@@ -178,13 +178,13 @@ export class UserEditComponent
           .subscribe(result => {
 
             console.log("User " + user!.name + " has been updated.");
-            this.show.setMessages(true, `User Name: ${result.name}, Email: ${user?.email} has been updated.`);
+            this.showMsg.message = `User Name: ${result.name}, Email: ${user?.email} has been updated.`;
 
             // go back to users view
             this.router.navigate(['/users']);
           }, error => {
             console.error(error);
-            this.show.setMessages(false, `Status code: ${error.status}, Message: ${error.statusText}`);
+            this.showMsg.errMessage = `Status code: ${error.status}, Message: ${error.statusText}`;
           });
       }
       else {

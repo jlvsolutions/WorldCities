@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { IShowMessage } from '../ishow-message';
 
 /** Shows messages to users as informative or as an error. */
 @Component({
@@ -7,10 +8,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
     <div class="showMessage">
       <p>
         <mat-error *ngIf="errMessage">
-          {{errMessage}}
+          {{_errMsg}}
         </mat-error>
         <mat-label class="showMessageLabel" *ngIf="message">
-          {{message}}
+          {{_msg}}
         </mat-label>
       </p>
     </div>
@@ -22,35 +23,25 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
     }
 `]
 })
-export class ShowMessageComponent {
+export class ShowMessageComponent implements IShowMessage {
 
-  message: string = '';
-  errMessage: string = '';
+  _msg: string = '';
+  _errMsg: string = '';
 
   constructor() { }
 
-
-  /** Clears all messages. */
-  clearMessages() {
-    this.message = '';
-    this.errMessage = '';
-  }
-  /**
-   * Shows the given message.
-   * @param success If True, message will be shown as informative. False shows message as an error.
-   * @param message Message to be shown.
-   */
-  setMessages(success: boolean, message: string) {
-    this.clearMessages();
-    if (success) {
-      this.message = message;
-      this.errMessage = '';
-    }
-    else {
-      this.message = '';
-      this.errMessage = message;
-    }
+  set message(value: string) {
+    this._errMsg = '';
+    this._msg = value;
   }
 
+  set errMessage(value: string) {
+    this._msg = '';
+    this._errMsg = value;
+  }
 
+  clear() {
+    this._msg = '';
+    this._errMsg = '';
+  }
 }

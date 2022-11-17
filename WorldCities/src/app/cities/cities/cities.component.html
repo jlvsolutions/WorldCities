@@ -9,7 +9,7 @@
 
 <p *ngIf="!viewSource.data"><em>Loading...</em></p>
 
-<app-show-message></app-show-message>
+<app-show-message #showMessage></app-show-message>
 
 <app-filter-query (search)="loadData($event)"
                   [hidden]="!viewSource.data">

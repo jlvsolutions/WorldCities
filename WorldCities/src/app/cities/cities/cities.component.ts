@@ -53,7 +53,7 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
     console.log(`CitiesComponent:  onItemButClick(${event.key}, ${event.id})`);
     switch (event.key) {
       case 'delete':
-        this.onDeleteClicked(+event.id);
+        this.deleteItem(+event.id);
         break;
       case 'edit':
         this.router.navigate(['edit', event.id], { relativeTo: this.activatedRoute });
@@ -63,7 +63,6 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
 
     }
   }
-
 
   override nameOfItem(id: any): string {
     return this.viewSource.data.find(item => item.id == id)?.name!;

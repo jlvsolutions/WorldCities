@@ -4,7 +4,7 @@
   <p *ngIf="this.id && !user"><em>Loading...</em></p>
   <div class="shadow">
 
-    <app-show-message></app-show-message>
+    <app-show-message #showMessage></app-show-message>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 

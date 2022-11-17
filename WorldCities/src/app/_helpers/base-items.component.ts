@@ -5,7 +5,7 @@ import { MatSort, Sort, SortDirection } from '@angular/material/sort';
 import { Subject, takeUntil } from 'rxjs';
 
 import { ItemsViewSource } from '@app/_models';
-import { ShowMessageComponent, FilterQueryComponent } from '@app/_shared';
+import { IShowMessage, FilterQueryComponent } from '@app/_shared';
 import { BaseService, AuthService } from '@app/_services';
 
 /** Base class for displaying a collection of items. */
@@ -33,7 +33,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   protected sort!: Sort; 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(FilterQueryComponent) filter!: FilterQueryComponent;
-  @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
+  @ViewChild('showMessage') showMsg!: IShowMessage;
 
   constructor(protected authService: AuthService, protected service: BaseService<TDto, Tid>) {
     this.authService.user
@@ -71,9 +71,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.loadData();
   }
 
-  setSchema() {
-    console.log('BaseItemsComponent setSchema called.');
-  }
+  setSchema() {}
 
   loadData(query?: string) {
     let pageEvent = new PageEvent();
@@ -108,7 +106,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         this.viewSource.data = result.data; // Latest factoring.....
       }, error => {
         console.error(error);
-        this.show.setMessages(false, error.error);
+        this.showMsg.errMessage = error.error;
       });
   }
 
@@ -116,8 +114,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
    * Invoked when the user clicks on a delete button.  Shows a delete confirmation dialog.
    * @param id The id of the item to delete.
    */
-  onDeleteClicked(id: Tid): void {
-    this.show.clearMessages();
+  deleteItem(id: Tid): void {   // TODO: Change to protected after implementing new items-table component  !!!!
+    this.showMsg.clear();
 
     if (!confirm(`Are you sure you want to delete ${this.nameOfItem(id)}?`))
       return;
@@ -125,7 +123,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.service.delete(id)
       .subscribe(result => {
 
-        this.show.setMessages(true, `Item Deleted.`);
+        this.showMsg.message = 'Item deleted.';
 
         // Reload the users data.
         this.ngOnInit(); // This causes 
@@ -135,10 +133,10 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
           case 400: // Bad Request
           case 404: // Not Found
           case 405: // Method Not Allowed
-            this.show.setMessages(false, error.message);
+            this.showMsg.errMessage = error.error;
             break;
           default:
-            this.show.setMessages(false, `We had a problem on our end. Please try again. Message: ${error.statusText}`);
+            this.showMsg.errMessage = `We had a problem on our end. Please try again. Message: ${error.statusText}`;
             break;
         };
       });

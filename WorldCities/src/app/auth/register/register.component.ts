@@ -6,7 +6,7 @@ import { map, takeUntil } from 'rxjs/operators';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 
 import { BaseFormComponent } from '@app/_helpers/base-form.component';
-import { ShowMessageComponent } from '@app/_shared';
+import { IShowMessage } from '@app/_shared';
 import { AuthService } from '@app/_services';
 import { LoginRequest, RegisterRequest } from '@app/_models';
 
@@ -20,7 +20,7 @@ export class RegisterComponent
 
   showPassword: boolean = false;
 
-  @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
+  @ViewChild('showMessage') showMsg!: IShowMessage;
    
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -45,7 +45,7 @@ export class RegisterComponent
 
   onSubmit() {
     console.log(`Sending registration request. Login checkbox is ${this.form.controls["login"].value}.`);
-    this.show.setMessages(true, "Submitting registration...")
+    this.showMsg.message = "Submitting registration...";
     var registerRequest = <RegisterRequest>{
       name: this.form.controls['name'].value,
       email: this.form.controls['email'].value,
@@ -57,14 +57,14 @@ export class RegisterComponent
       .subscribe(registerResultMsg => {
 
         console.log(`Register result: Success: ${registerResultMsg.message}`);
-        this.show.setMessages(true, registerResultMsg.message);
+        this.showMsg.message = registerResultMsg.message;
 
         if (!this.doLogin())
           this.router.navigate(["/"]);
 
         // Perform Login Request as well.
         console.log("Sending login request...");
-        this.show.setMessages(true, "Welecome " + registerRequest.name + "!  Logging in...")
+        this.showMsg.message = "Welecome " + registerRequest.name + "!  Logging in...";
 
         var loginRequest = <LoginRequest>{
           email: this.form.controls['email'].value,
@@ -73,18 +73,17 @@ export class RegisterComponent
 
         this.authService.login(loginRequest)
           .subscribe(user => {
-            this.show.setMessages(true, 'Login successful');
             console.log(`Login result: Success: ${user.email}`);
+            this.showMsg.message = 'Login successful';
             this.router.navigate(["/"]);
           }, error => {
-            this.show.setMessages(false, 'We had a problem on our end.  Please try again.')
-            console.error(error);
+            this.showMsg.errMessage = 'We had a problem on our end.  Please try again.';
             this.router.navigate(["login"]); // User story: Give another change.
           });
 
       }, error => {
         console.error(error);
-        this.show.setMessages(false, 'We had a problem on our end.  Please try again.')
+        this.showMsg.errMessage = 'We had a problem on our end.  Please try again.';
       });
 
   }

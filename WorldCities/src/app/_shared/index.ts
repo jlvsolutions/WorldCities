@@ -7,3 +7,4 @@ export * from './graphql.module';
 export * from './filter-query/filter-query.component';
 export * from './items-table/items-table.component';
 export * from './space-after-comma.pipe';
+export * from './ishow-message';

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
 
 import { BaseFormComponent } from '@app/_helpers/base-form.component';
-import { ShowMessageComponent } from '@app/_shared';
+import { IShowMessage } from '@app/_shared';
 import { AuthService } from '@app/_services';
 import { LoginRequest } from '@app/_models';
 
@@ -19,7 +19,7 @@ export class LoginComponent
 
   returnUrl: string = '/';
   wasRedirected: boolean = false;
-  @ViewChild(ShowMessageComponent) show!: ShowMessageComponent;
+  @ViewChild('showMessage') showMsg!: IShowMessage;
 
 
   constructor(
@@ -40,7 +40,7 @@ export class LoginComponent
 
   onSubmit() {
     console.log("Logging in...");
-    this.show.clearMessages();
+    this.showMsg.clear();
     var loginRequest = <LoginRequest>{};
     loginRequest.email = this.form.controls['email'].value;
     loginRequest.password = this.form.controls['password'].value;
@@ -53,9 +53,9 @@ export class LoginComponent
       }, error => {
         console.log('LoginComponent: error logging in.');
         if (error.status === 401)
-          this.show.setMessages(false, error.error);
+          this.showMsg.errMessage = error.error;
         else
-          this.show.setMessages(false, 'We had a problem on our end.  Please try again.');
+          this.showMsg.errMessage = 'We had a problem on our end.  Please try again.';
       });
   }
 
