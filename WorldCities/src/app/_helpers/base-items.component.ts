@@ -130,8 +130,14 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         this.paginator.pageSize = result.pageSize;
         this.viewSource.data = result.data; // Latest factoring.....
       }, error => {
+        switch (error.status) {
+          case 400:
+            this.showMsg.errMessage = 'That feature is not supported: ' + error.statusText;
+            break;
+          default:
+            this.showMsg.errMessage = 'Oops!  We had a problem on our end with that request.';
+        }
         console.error(error);
-        this.showMsg.errMessage = error.error;
       });
   }
 

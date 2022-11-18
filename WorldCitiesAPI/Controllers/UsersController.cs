@@ -197,7 +197,12 @@ namespace WorldCitiesAPI.Controllers
             }
             catch (NotSupportedException ex)
             {
-                _logger.LogError(ex, "GetUsers:  " + ex.Message);
+                _logger.LogError(ex, "GetCities:  " + ex.Message);
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "GetCities:  " + ex.Message);
                 return BadRequest(ex.Message);
             }
             // Middleware to handle other exception types.

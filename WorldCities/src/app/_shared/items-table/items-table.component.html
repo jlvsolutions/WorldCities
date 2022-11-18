@@ -7,7 +7,7 @@
 
   <ng-container *ngFor="let col of source.schema; let i = index" [matColumnDef]="col.key">
 
-    <ng-container *ngIf="col.type === 'button' else sortedHeaderTemplate">
+    <ng-container *ngIf="col.type === 'button' else sortedHeaderTemplate"> <!-- Don't sort on button columns-->
       <mat-header-cell *matHeaderCellDef [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
     </ng-container>
     <ng-template #sortedHeaderTemplate>
@@ -18,7 +18,7 @@
       <div [ngSwitch]="col.type">
 
         <ng-container *ngSwitchCase="'button'">
-          <ng-container *ngIf="col.authorized">
+          <ng-container *ngIf="col.authorized"> <!-- May not be needed.  Currently unauthorized button columns are filtered out -->
             <button mat-flat-button color="primary"
                     [title]="col.toolTip + item[col.itemName]"
                     (click)="$event.stopPropagation(); onButClick(col.key, item[col.param])">
@@ -28,7 +28,7 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'link'">
-          <ng-container *ngIf="col.authorized else noLinkTemplate">
+          <ng-container *ngIf="col.authorized else noLinkTemplate"> <!-- Link available if authorized -->
             <a [title]="col.toolTip + item[col.itemName]" [routerLink]="col.link + item[col.linkId]">
               {{col.pipeToNumber ? (item[col.key] | number:'1.0-0') : (col.join ? (item[col.key] | join:col.join) : item[col.key])}}
             </a>

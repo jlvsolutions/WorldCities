@@ -39,11 +39,11 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
       { key: 'email', label: 'Email', description: 'The unique login email of the user.' },
       { key: 'name', label: 'Name', description: 'The friendly display name of the user.' },
       {
-        key: 'emailConfirmed', label: 'Email Confirmed', type: 'boolean', authorized: this.isAdministrator,
+        key: 'emailConfirmed', label: 'Email Confirmed', type: 'boolean',
         description: 'Indicates whether the email address for the user has been confirmed.'
       },
       {
-        key: 'lockoutEnabled', label: 'Lockout Enabled', type: 'boolean', authorized: false,  // false for testing...
+        key: 'lockoutEnabled', label: 'Lockout Enabled', type: 'boolean',
         description: 'Indicates whether lockout has been enabled.'
       },
       { key: 'roles', label: 'Roles', description: 'The roles the user belongs to.', join: ', ' }

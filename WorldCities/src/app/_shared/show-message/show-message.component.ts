@@ -7,10 +7,10 @@ import { IShowMessage } from '../ishow-message';
   template: `
     <div class="showMessage">
       <p>
-        <mat-error *ngIf="errMessage">
+        <mat-error *ngIf="_errMsg">
           {{_errMsg}}
         </mat-error>
-        <mat-label class="showMessageLabel" *ngIf="message">
+        <mat-label class="showMessageLabel" *ngIf="_msg">
           {{_msg}}
         </mat-label>
       </p>

@@ -61,6 +61,11 @@ namespace WorldCitiesAPI.Controllers
                 _logger.LogError(ex, "GetCountries:  " + ex.Message);
                 return BadRequest(ex.Message);
             }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "GetCities:  " + ex.Message);
+                return BadRequest(ex.Message);
+            }
             // Middleware to handle other exception types.
         }
 
