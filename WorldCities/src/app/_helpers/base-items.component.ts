@@ -64,6 +64,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
    * spaceAfterComma: boolean,  (Optional) Used to add a space after commas.
    * join: string,  (Optional) For when the model column is an array.  Takes the separator as a value.
    * hidden: boolean,  (Optional) Hides the column by filtering it out.
+   * noSort: boolean,  (Optional) Prevents sorting on the column.
    * */
   abstract defineSchema(): any[];
   private setSchema(): void {
