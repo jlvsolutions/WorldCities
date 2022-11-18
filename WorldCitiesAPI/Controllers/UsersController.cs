@@ -203,7 +203,7 @@ namespace WorldCitiesAPI.Controllers
             catch (InvalidOperationException ex)
             {
                 _logger.LogError(ex, "GetCities:  " + ex.Message);
-                return BadRequest(ex.Message);
+                return BadRequest("An invalid operation was attempted.");
             }
             // Middleware to handle other exception types.
         }
