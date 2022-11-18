@@ -30,16 +30,16 @@
         <ng-container *ngSwitchCase="'link'">
           <ng-container *ngIf="col.authorized else noLinkTemplate">
             <a [title]="col.toolTip + item[col.itemName]" [routerLink]="col.link + item[col.linkId]">
-              {{col.pipeToNumber ? (item[col.key] | number:'1.0-0') : (col.spaceAfterComma ? (item[col.key] | spaceAfterComma) : item[col.key])}}
+              {{col.pipeToNumber ? (item[col.key] | number:'1.0-0') : (col.join ? (item[col.key] | join:col.join) : item[col.key])}}
             </a>
           </ng-container>
           <ng-template #noLinkTemplate>
-            {{col.pipeToNumber ? (item[col.key] | number:'1.0-0') : (col.spaceAfterComma ? (item[col.key] | spaceAfterComma) : item[col.key])}}
+            {{col.pipeToNumber ? (item[col.key] | number:'1.0-0') : (col.join ? (item[col.key] | join:col.join) : item[col.key])}}
           </ng-template>
         </ng-container>
 
         <ng-container *ngSwitchDefault>
-          {{col.pipeToNumber ? (item[col.key] | number:'1.0-0') : (col.spaceAfterComma ? (item[col.key] | spaceAfterComma) : item[col.key])}}
+          {{col.pipeToNumber ? (item[col.key] | number:'1.0-0') : (col.join ? (item[col.key] | join:col.join) : item[col.key])}}
         </ng-container>
 
       </div>

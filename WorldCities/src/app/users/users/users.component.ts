@@ -46,7 +46,7 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
         key: 'lockoutEnabled', label: 'Lockout Enabled', type: 'boolean', authorized: false,  // false for testing...
         description: 'Indicates whether lockout has been enabled.'
       },
-      { key: 'roles', label: 'Roles', description: 'The roles the user belongs to.', spaceAfterComma: true }
+      { key: 'roles', label: 'Roles', description: 'The roles the user belongs to.', join: ', ' }
      ];
   }
 

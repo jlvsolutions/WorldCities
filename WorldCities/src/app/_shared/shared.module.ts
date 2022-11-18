@@ -7,7 +7,7 @@ import { AngularMaterialModule, GraphQLModule } from '@app/_shared';
 import {
   ShowMessageComponent, WCMapComponent, ItemsTableComponent,
   UserFormComponent, PasswordFormComponent, FilterQueryComponent,
-  SpaceAfterCommaPipe
+  SpaceAfterCommaPipe, JoinPipe
 } from '@app/_shared';
 
 @NgModule({
@@ -18,7 +18,8 @@ import {
     PasswordFormComponent,
     FilterQueryComponent,
     ItemsTableComponent,
-    SpaceAfterCommaPipe
+    SpaceAfterCommaPipe,
+    JoinPipe
   ],
   imports: [
     CommonModule,
@@ -38,7 +39,8 @@ import {
     PasswordFormComponent,
     FilterQueryComponent,
     ItemsTableComponent,
-    SpaceAfterCommaPipe
+    SpaceAfterCommaPipe,
+    JoinPipe
   ]
 })
 export class SharedModule { }

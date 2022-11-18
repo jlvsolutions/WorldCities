@@ -10,3 +10,4 @@ export * from './space-after-comma.pipe';
 export * from './ishow-message';
 export * from './iitems-view-source';
 export * from './ifilter-query';
+export * from './join.pipe';

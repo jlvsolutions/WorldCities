@@ -62,6 +62,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
    * authorized: boolean,  (Optional) Used to make 'button' type columns show, and with the 'link' type to enable the link.
    * pipeToNumber: boolean,  (Optional) Used for numeric columns to format with commas.
    * spaceAfterComma: boolean,  (Optional) Used to add a space after commas.
+   * join: string,  (Optional) For when the model column is an array.  Takes the separator as a value.
    * hidden: boolean,  (Optional) Hides the column by filtering it out.
    * */
   abstract defineSchema(): any[];
