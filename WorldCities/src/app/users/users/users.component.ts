@@ -20,13 +20,13 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
     super(authService, userService);
 
     this.defaultSortColumn = 'name';
-    this.defaultFilterColumn = 'name';
+    this.defaultFilterColumn = 'email';
     this.sort = { direction: this.defaultSortOrder, active: 'email' };
   }
 
-  setSchema(): void {
+  defineSchema(): any[] {
     console.log(`CitiesComponent:  Setting schema. isLoggedIn:  ${this.isLoggedIn}, isAdministrator:  ${this.isAdministrator}`);
-    this.viewSource.schema = [
+    return [
       { key: 'id', label: 'ID', description: 'The database ID of the user.', hidden: true },
       {
         key: 'delete', label: 'Delete', type: 'button', param: 'id',
@@ -47,7 +47,7 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
         description: 'Indicates whether lockout has been enabled.'
       },
       { key: 'roles', label: 'Roles', description: 'The roles the user belongs to.', spaceAfterComma: true }
-     ].filter(s => (!(s.type === 'button' && !s.authorized)) && !s.hidden);
+     ];
   }
 
   nameOfItem(id: string): string {

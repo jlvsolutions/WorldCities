@@ -24,9 +24,9 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
     this.sort = { direction: this.defaultSortOrder, active: 'name' };
   }
 
-  setSchema() {
+  defineSchema(): any[] {
     console.log(`CountriesComponent:  Setting schema. isLoggedIn:  ${this.isLoggedIn}, isAdministrator:  ${this.isAdministrator}`);
-    this.viewSource.schema = [
+    return [
       { key: 'id', label: 'ID', description: 'The database ID of the country.' },
       {
         key: 'delete', label: 'Delete', type: 'button', param: 'id',
@@ -40,7 +40,7 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
       { key: 'iso2', label: 'ISO2', description: 'The alpha-2 iso code of the country.'},
       { key: 'iso3', label: 'ISO3', description: 'The alpha-3 iso code of the country.' },
       { key: 'totCities', label: 'Total Cities', description: 'The total number of cities in the country.'}
-    ].filter(s => !(s.type === 'button' && !s.authorized));
+    ];
   }
 
   nameOfItem(id: number): string {

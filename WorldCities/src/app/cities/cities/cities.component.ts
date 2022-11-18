@@ -24,9 +24,9 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
     this.sort = { direction: this.defaultSortOrder, active: 'name' };
   }
 
-  setSchema(): void {
+  defineSchema(): any[] {
     console.log(`CitiesComponent:  Setting schema. isLoggedIn:  ${this.isLoggedIn}, isAdministrator:  ${this.isAdministrator}`);
-    this.viewSource.schema = [
+    return [
       { key: 'id', label: 'ID', description: 'The database ID of the city/town.' },
       {
         key: 'delete', label: 'Delete', type: 'button', param: 'id',
@@ -49,7 +49,7 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
         toolTip: 'View details and map of ', itemName: 'countryName',
         authorized: true
       },
-    ].filter(s => !(s.type === 'button' && !s.authorized));
+    ];
   }
 
   nameOfItem(id: number): string {
