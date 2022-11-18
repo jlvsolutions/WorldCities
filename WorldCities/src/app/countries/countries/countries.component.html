@@ -2,7 +2,7 @@
 
 <p>
   Here's a list of countries in the world.
-  <button mat-flat-button color="primary" class="btn-add" *ngIf="viewSource.data && isLoggedIn" [routerLink]="['edit']">
+  <button mat-flat-button color="primary" class="btn-right" *ngIf="viewSource.data && isLoggedIn" [routerLink]="['edit']">
     Add a new Country
   </button>
 </p>
@@ -11,7 +11,8 @@
 
 <app-show-message #showMessage></app-show-message>
 
-<app-filter-query (search)="loadData($event)"
+<app-filter-query #filterQuery
+                  (search)="loadData($event)"
                   [hidden]="!viewSource.data">
 </app-filter-query>
 

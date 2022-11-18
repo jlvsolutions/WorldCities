@@ -11,7 +11,8 @@
 
 <app-show-message #showMessage></app-show-message>
 
-<app-filter-query (search)="loadData($event)"
+<app-filter-query #filterQuery
+                  (search)="loadData($event)"
                   [hidden]="!viewSource.data">
 </app-filter-query>
 

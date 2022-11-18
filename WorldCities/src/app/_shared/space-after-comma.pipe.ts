@@ -6,8 +6,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class SpaceAfterCommaPipe implements PipeTransform {
 
   transform(value: string): string {
-    var re = /,/;
-    return value.replace(re, ', ');
+    var re = /,/g;
+    return value.toString().replace(re, ', ');
   }
 
 }

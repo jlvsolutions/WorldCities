@@ -36,8 +36,8 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
         key: 'edit', label: 'Edit', type: 'button', param: 'id',
         toolTip: 'Edit ', itemName: 'name', authorized: this.isAdministrator
       },
-      { key: 'name', label: 'Name', description: 'The friendly display name of the user.' },
       { key: 'email', label: 'Email', description: 'The unique login email of the user.' },
+      { key: 'name', label: 'Name', description: 'The friendly display name of the user.' },
       {
         key: 'emailConfirmed', label: 'Email Confirmed', type: 'boolean', authorized: this.isAdministrator,
         description: 'Indicates whether the email address for the user has been confirmed.'
@@ -46,7 +46,7 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
         key: 'lockoutEnabled', label: 'Lockout Enabled', type: 'boolean', authorized: false,  // false for testing...
         description: 'Indicates whether lockout has been enabled.'
       },
-      { key: 'roles', label: 'Roles', description: 'The roles the user belongs to.' }
+      { key: 'roles', label: 'Roles', description: 'The roles the user belongs to.', spaceAfterComma: true }
      ].filter(s => (!(s.type === 'button' && !s.authorized)) && !s.hidden);
   }
 

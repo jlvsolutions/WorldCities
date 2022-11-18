@@ -1,11 +1,9 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
 import { Subject, takeUntil } from 'rxjs';
 
-import { IItemsViewSource, ItemsViewSource } from '@app/_shared';
-import { IShowMessage, FilterQueryComponent, ItemsTableComponent } from '@app/_shared';
+import { IFilterQuery, IShowMessage, IItemsViewSource, ItemsViewSource } from '@app/_shared';
 import { BaseService, AuthService } from '@app/_services';
 
 /** Base class for displaying a collection of items. */
@@ -29,7 +27,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   protected sort!: Sort; 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(FilterQueryComponent) filter!: FilterQueryComponent;
+  @ViewChild('filterQuery') filter!: IFilterQuery;
   @ViewChild('showMessage') showMsg!: IShowMessage;
 
   constructor(protected authService: AuthService, protected service: BaseService<TDto, Tid>) {

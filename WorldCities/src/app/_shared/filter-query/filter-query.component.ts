@@ -3,6 +3,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
+import { IFilterQuery } from '@app/_shared';
+
 /** Provides a debounced query filter */
 @Component({
   selector: 'app-filter-query',
@@ -13,7 +15,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
         <input matInput formControlName="query" #filter (keyup)="onKeyUp(filter.value)"
                placeholder={{placeholder}}
                [value]="filterText">
-        <mat-icon matSuffix (click)="filter.value=''; onKeyUp('')">clear_text</mat-icon>
+        <mat-icon matSuffix class="filter-icon" (click)="filter.value=''; onKeyUp('')">clear_text</mat-icon>
         <mat-error *ngIf="form.controls['query'].errors?.['pattern']">Invalid characters entered.</mat-error>
       </mat-form-field>
     </form>
@@ -23,9 +25,12 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     .filter-query-form-field {
       width: 100%;
     }
+    .filter-icon {
+      cursor: pointer;
+    }
 `]
 })
-export class FilterQueryComponent implements OnInit {
+export class FilterQueryComponent implements OnInit, IFilterQuery {
 
   @Input() filterText: string = '';
   @Input() placeholder: string = 'Enter filter text...';
