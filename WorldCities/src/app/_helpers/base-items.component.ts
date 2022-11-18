@@ -51,18 +51,18 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   /** Used to define the schema/metadata for the derived class' model.
    * Available properties are:
    *
-   * Key:  Identifies data model's property name.  If 'type' is 'button', the key is used to identify the button.
-   * label:  Display friendly string for use in the column header.
-   * type:  (Optional) Can be 'button', 'link', or (future) 'boolean'.
-   * description:  (Optional) Used for displaying tooltip in the column header.
-   * toolTip:  (Optional) Used to give tooltips for 'button' and 'link' types.
-   * itemName:  (Optional) Used for 'button' and 'link' tooltips.
-   * link:  (Optional) Used with 'link' types.  Provides the route.
-   * linkId:  (Optional) Used with 'link' types to augment the route given in 'link'.
-   * authorized:  (Optional) Used with 'button' type to filter out the the column, and with 'link' type to disable the link.
-   * pipeToNumber:  (Optional) Used for numeric columns to format with commas.
-   * spaceAfterComma:  (Optional) Used to add a space after commas.
-   * hidden:  (Optional) Hides the column by filtering it out.
+   * Key: string,  Identifies data model's property name.  If 'type' is 'button', the key is used to identify the button.
+   * label: string,  Display friendly string for use in the column header.
+   * type: string,  (Optional) Can be 'button', 'link', or (future) 'boolean'.
+   * description: string,  (Optional) Used for displaying tooltip in the column header.
+   * toolTip: string,  (Optional) Used to give tooltips for 'button' and 'link' types.
+   * itemName: string,  (Optional) Used for 'button' and 'link' tooltips.
+   * link: string,  (Optional) Used with 'link' types.  Provides the route.
+   * linkId: string,  (Optional) Used with 'link' types to augment the route given in 'link'.
+   * authorized: boolean,  (Optional) Used to make 'button' type columns show, and with the 'link' type to enable the link.
+   * pipeToNumber: boolean,  (Optional) Used for numeric columns to format with commas.
+   * spaceAfterComma: boolean,  (Optional) Used to add a space after commas.
+   * hidden: boolean,  (Optional) Hides the column by filtering it out.
    * */
   abstract defineSchema(): any[];
   private setSchema(): void {
