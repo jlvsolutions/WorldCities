@@ -20,9 +20,9 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
     super(router, activatedRoute, authService, cityService);
     console.log('CitiesComponent instance created.');
 
-    this.defaultSortColumn = 'name';
-    this.defaultFilterColumn = 'name';
-    this.sort = { direction: this.defaultSortOrder, active: 'name' };
+    this.defaultSortColumn = 'lat';
+    this.defaultFilterColumn = 'lat';
+    this.sort = { active: 'name', direction: 'asc' };
   }
 
   defineSchema(): any[] {
@@ -52,7 +52,7 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
       },
     ];
   }
-
+  
   nameOfItem(id: number): string {
     return this.viewSource.data.find((item: { id: number; }) => item.id == id)?.name ?? '';
   }

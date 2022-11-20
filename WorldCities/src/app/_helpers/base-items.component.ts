@@ -15,13 +15,16 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   public viewSource: IItemsViewSource<TDto> = new ItemsViewSource<TDto>();
 
+  // pagination
   public defaultPageIndex: number = 0;
   public defaultPageSize: number = 15;
+  // sorting
   public defaultSortColumn: string = '';
   public defaultSortOrder: '' | 'asc' | 'desc' = 'asc';
+  // filtering
   public defaultFilterColumn: string = '';
   public filterQuery: string = '';
-
+  // authorization
   public isLoggedIn: boolean = false;
   public isAdministrator: boolean = false;
   private destroySubject = new Subject();
@@ -57,7 +60,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         }
         */
       });
-
+    /*
     this.router.events      // listen for routing events.
       .pipe(takeUntil(this.destroySubject))
       .subscribe(event => {
@@ -66,6 +69,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         if (event instanceof NavigationEnd) // Note:  happens for all navigations since this component not destroyed.
           this?.showMsg?.clear();
       })
+    */
   }
 
   /** Used to define the schema/metadata for the derived class' model.
@@ -150,7 +154,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         this.paginator.length = result.totalCount;
         this.paginator.pageIndex = result.pageIndex;
         this.paginator.pageSize = result.pageSize;
-        this.viewSource.data = result.data; // Latest factoring.....
+        this.viewSource.data = result.data;
       }, error => {
         switch (error.status) {
           case 400:
