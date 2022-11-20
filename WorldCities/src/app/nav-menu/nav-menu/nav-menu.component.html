@@ -33,7 +33,7 @@
       Join
     </a>
 
-    <a *ngIf="!isLoggedIn" mat-flat-button color="primary" [routerLink]="['/login']">
+    <a *ngIf="!isLoggedIn" mat-flat-button color="primary" (click)="onLogin()">
       Login
     </a>
     <a *ngIf="isLoggedIn" mat-flat-button color="primary" (click)="onLogout()">

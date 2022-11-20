@@ -48,10 +48,10 @@ export class LoginComponent
     this.authService.login(loginRequest)
       .subscribe(result => {
 
-        console.log('Logged in.');
+        console.log('Successfully logged in.');
         this.router.navigateByUrl(this.returnUrl);
       }, error => {
-        console.log('LoginComponent: error logging in.');
+        console.log('LoginComponent: Failed logging in.');
         if (error.status === 401)
           this.showMsg.errMessage = error.error;
         else

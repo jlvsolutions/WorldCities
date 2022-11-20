@@ -27,7 +27,6 @@ import { CountryComponent } from './country/country.component';
     CountryEditComponent
   ],
   providers: [
-    { provide: RouteReuseStrategy, useClass: WCReuseStrategy },
     CountryService
   ]
 })

@@ -13,11 +13,12 @@ import { CityService, AuthService } from '@app/_services';
 export class CitiesComponent extends BaseItemsComponent<City, number> {
 
   constructor(
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
+    router: Router,
+    activatedRoute: ActivatedRoute,
     authService: AuthService,
     cityService: CityService) {
-    super(authService, cityService);
+    super(router, activatedRoute, authService, cityService);
+    console.log('CitiesComponent instance created.');
 
     this.defaultSortColumn = 'name';
     this.defaultFilterColumn = 'name';

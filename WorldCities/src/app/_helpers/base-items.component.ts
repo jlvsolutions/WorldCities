@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router, ActivatedRoute, NavigationStart, NavigationEnd } from '@angular/router';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
 import { Subject, takeUntil } from 'rxjs';
@@ -30,21 +31,40 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   @ViewChild('filterQuery') filter!: IFilterQuery;
   @ViewChild('showMessage') showMsg!: IShowMessage;
 
-  constructor(protected authService: AuthService, protected service: BaseService<TDto, Tid>) {
+  constructor(
+    protected router: Router,
+    protected activatedRoute: ActivatedRoute,
+    protected authService: AuthService,
+    protected service: BaseService<TDto, Tid>) {
     console.log('BaseItemsComponent derived instance created.');
 
-    this.setSchema();  // derived class defines the schema/metadata for it's data model.
+    this.setSchema();       // derived class defines the schema/metadata for it's data model.
 
-    this.authService.user
+    this.authService.user   // listen for authorization changes.
       .pipe(takeUntil(this.destroySubject))
       .subscribe(user => {
         this.isLoggedIn = authService.isAuthenticated();
         this.isAdministrator = authService.isAdministrator();
         this.setSchema();
-        if (this.isLoggedIn)
+        /*
+        if (this.isLoggedIn) {
           console.log(`BaseItemsComponent:  user = ${user.name}, ${user.email} logged in. Administrator: ${this.isAdministrator}`);
-        else
+          this.showMsg.message = "Welcome, " + user.name + "!";
+        }
+        else {
           console.log('BaseItemsComponent:  No user logged in.');
+          this.showMsg.message = "You are now logged out.";
+        }
+        */
+      });
+
+    this.router.events      // listen for routing events.
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(event => {
+        //if (event instanceof NavigationStart)
+        //  this.showMsg.clear();
+        if (event instanceof NavigationEnd) // Note:  happens for all navigations since this component not destroyed.
+          this?.showMsg?.clear();
       })
   }
 
@@ -94,9 +114,13 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   }
 
   sortChange(sort: Sort) {
-    console.log(`BaseItemsComponent:  sortChanged col=${sort.active}, dir=${sort.direction}`);
+    console.log(`BaseItemsComponent:  sortChange col=${sort.active}, dir=${sort.direction}`);
+    if (sort.active !== this.sort.active) {
+      this.filter.filterText = '';
+      this.filter.placeholder = `Filter by ${this.viewSource.displayColumns[
+        this.viewSource.modelColumns.indexOf(sort.active)]} (or part of it)...`;
+    }
     this.sort = sort;
-    this.filter.filterText = '';
     this.loadData();
   }
 
@@ -113,9 +137,6 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     const sortOrder = (this.sort) ? this.sort.direction : this.defaultSortOrder;
     const filterColumn = (this.sort) ? this.sort.active : this.defaultSortColumn;
     const filterQuery = (this.filter) ? this.filter.filterText : this.filterQuery;
-
-    this.filter.placeholder = `Filter by ${this.viewSource.displayColumns[
-      this.viewSource.modelColumns.indexOf(sortColumn)]} (or part of it)...`;
 
     console.log(`BaseItemsComponent getData: filterQuery = ${filterQuery}, sortColumn = ${sortColumn}`);
     this.service.getData(

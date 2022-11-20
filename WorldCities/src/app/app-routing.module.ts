@@ -10,9 +10,9 @@ import { UserEditComponent } from '@app/users/user-edit/user-edit.component';
 
 const routes: Routes = [
   { path: '', data: { title: 'Home' }, component: HomeComponent, pathMatch: 'full' },
-  { path: 'cities', loadChildren: () => import('@app/cities/cities.module').then(m => m.CitiesModule) },
-  { path: 'countries', loadChildren: () => import('@app/countries/countries.module').then(m => m.CountriesModule) },
-  { path: 'users', loadChildren: () => import('@app/users/users.module').then(m => m.UsersModule), canActivate: [AdminAuthGaurd] },
+  { path: 'cities', data: { title: 'app-root-cities' }, loadChildren: () => import('@app/cities/cities.module').then(m => m.CitiesModule) },
+  { path: 'countries', data: { title: 'app-root-countries' }, loadChildren: () => import('@app/countries/countries.module').then(m => m.CountriesModule) },
+  { path: 'users', data: { title: 'app-root-users' }, loadChildren: () => import('@app/users/users.module').then(m => m.UsersModule), canActivate: [AdminAuthGaurd] },
   { path: 'login', data: { title: 'Login' }, component: LoginComponent },
   { path: 'register', data: { title: 'Register' }, component: RegisterComponent },
   { path: '**', redirectTo: '' }

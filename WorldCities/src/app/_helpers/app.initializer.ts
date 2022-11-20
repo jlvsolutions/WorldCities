@@ -9,7 +9,7 @@ export function appInitializer(authservice: AuthService) {
       .subscribe(user => {
         console.log(`appInitializer: Success for ${user.email}`); 
       }, error =>
-        console.log(`appInitializer: refreshToken error result = ${error.statusText}, ${error.error}`))
+        console.log(`appInitializer: refreshToken result = ${error.statusText}, ${error.error}`))
       .add(resolve("appInitializer resolve."));
   });
 }

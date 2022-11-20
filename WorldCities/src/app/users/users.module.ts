@@ -25,7 +25,6 @@ import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
     UserEditComponent
   ],
   providers: [
-    { provide: RouteReuseStrategy, useClass: WCReuseStrategy },
     UserService
   ]
 })

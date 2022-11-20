@@ -27,7 +27,6 @@ import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
     CityEditComponent
   ],
   providers: [
-    { provide: RouteReuseStrategy, useClass: WCReuseStrategy },
     CityService
   ]
 })

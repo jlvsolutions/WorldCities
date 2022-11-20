@@ -13,11 +13,12 @@ import { UserService, AuthService } from '@app/_services';
 export class UsersComponent extends BaseItemsComponent<User, string> {
 
   constructor(
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
+    router: Router,
+    activatedRoute: ActivatedRoute,
     authService: AuthService,
     userService: UserService) {
-    super(authService, userService);
+    super(router, activatedRoute, authService, userService);
+    console.log('UsersComponent instance created.');
 
     this.defaultSortColumn = 'name';
     this.defaultFilterColumn = 'email';

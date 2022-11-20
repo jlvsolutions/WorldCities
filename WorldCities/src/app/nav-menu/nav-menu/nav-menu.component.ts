@@ -29,9 +29,14 @@ export class NavMenuComponent implements OnInit, OnDestroy {
   }
 
   onLogout(): void {
-    console.log("Logging out...");
+    console.log("NavMenu:  Logging out...");
     this.authService.logout();
-    this.router.navigate(["/"]);
+    //this.router.navigate(["/"]);
+  }
+
+  onLogin(): void {
+    console.log("NavMenu:  Logging in...");
+    this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
   }
 
   ngOnInit(): void {

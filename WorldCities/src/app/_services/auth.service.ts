@@ -82,8 +82,10 @@ export class AuthService {
           this.startRefreshTokenTimer();
         }
       }, error => {
-        console.log('AuthService:  Refresh Token failed.');
-        console.error(error.error);
+        if (error.status === 401)
+          console.warn(`AuthService: refreshToken result = ${error.statusText}, ${error.error}`);
+        else
+          console.error(error);
       }));
   }
 
@@ -99,7 +101,8 @@ export class AuthService {
     var url = this.getUrl('api/Users/revoke-token');
     var req = <RevokeTokenRequest>{ token: null };
     this.http.post<any>(url, req, { withCredentials: true })
-      .subscribe(msg => console.log(`AuthService: Logout, ${msg}`));
+      .subscribe(msg =>
+        console.log(`AuthService: Logout, ${msg.message}`));
     this.userSubject.next(null!);
     this.stopRefreshTokenTimer();
   }
