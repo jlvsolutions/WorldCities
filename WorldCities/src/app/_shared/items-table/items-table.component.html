@@ -48,6 +48,9 @@
 
   <mat-header-row *matHeaderRowDef="source.modelColumns"></mat-header-row>
   <mat-row *matRowDef="let row; columns: source.modelColumns;"
-           [title]="rowToolTip + row.name"
-           [routerLink]="row.id"></mat-row>"
+           class="mouseOverForRow"
+           (mouseover)="onRowMouseOver($event, row)"
+           [title]="rowToolTip"
+           (click)="$event.stopPropagation(); onRowClick(row)">
+  </mat-row>
 </mat-table>

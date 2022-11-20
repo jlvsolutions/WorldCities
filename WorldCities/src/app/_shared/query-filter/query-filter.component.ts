@@ -34,7 +34,6 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
 
   @Input() filterText: string = '';
   @Input() placeholder: string = 'Enter filter text...';
-  @Input() column: string = '';
   @Output() search: EventEmitter<string> = new EventEmitter<string>();
   private filterTextChanged: Subject<string> = new Subject<string>();
   form!: FormGroup;
@@ -51,7 +50,6 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
   /** Debounce filter text changes */
   onKeyUp(searchText: string) {
     this.form.markAllAsTouched();
-    console.log(`onKeyUp:  control is errors = ${this.form.controls['query'].errors}`);
     if (this.filterTextChanged.observers.length === 0) {
       this.filterTextChanged
         .pipe(debounceTime(400), distinctUntilChanged())

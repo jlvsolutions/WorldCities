@@ -24,6 +24,12 @@ export class ItemsTableComponent implements OnInit {
   /** An event that fires when the user clicks a dynamically created button */
   @Output() butClick: EventEmitter<{ key: string, id: any }> = new EventEmitter<{ key: string, id: any }>();
 
+  /** An event that fires when the user clicks anywhere on a row */
+  @Output() rowClick: EventEmitter<any> = new EventEmitter<any>();
+
+  /** An event that fires when the mouse pointer moves over a row in the table. */
+  @Output() rowMouseOver: EventEmitter<{ event: any, row: any }> = new EventEmitter<{ event: any, row: any }>();
+
   ngOnInit(): void {
   }
 
@@ -31,4 +37,11 @@ export class ItemsTableComponent implements OnInit {
     this.butClick.emit({ key: key, id: id });
   }
 
+  onRowClick(row: any) {
+    this.rowClick.emit(row);
+  }
+
+  onRowMouseOver(event: any, row: any) {
+    this.rowMouseOver.emit({ event: event, row: row });
+  }
 }

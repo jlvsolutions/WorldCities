@@ -69,4 +69,13 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
         console.error(`Invalid button click event: ${event.key} ${event.id}.`);
     }
   }
+  onRowClick(row: any) {
+    this.router.navigate([row.id], {
+      queryParams: { returnUrl: this.router.routerState.snapshot.url },
+      relativeTo: this.activatedRoute
+    });
+  }
+  getRowToolTip(row: any) {
+    return `View additional user details for ${row.name}`;
+  }
 }

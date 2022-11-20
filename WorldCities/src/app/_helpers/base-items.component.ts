@@ -25,7 +25,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   filterColumn: string = '';
   filterQuery: string = ''
   filterPlaceholder: string = 'Enter filtering text...';
-  
+  // row
+  rowTooltip: string = 'default ';
   // authorization
   public isLoggedIn: boolean = false;
   public isAdministrator: boolean = false;
@@ -131,6 +132,11 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.destroySubject.complete();
   }
 
+  abstract getRowToolTip(row: any): string;
+  onRowMouseOver(event: any) {
+    this.rowTooltip = this.getRowToolTip(event.row);
+  }
+
   onSortChange(sort: Sort) {
     console.log(`BaseItemsComponent:  sortChange col=${sort.active}, dir=${sort.direction}`);
     if (sort.active !== this.sortColumn) {
@@ -182,7 +188,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         console.error(error);
       });
   }
-
+  /** Returns 'x - y of z' */
   itemsRetrievedText(totalCount: number, pageIndex: number, pageSize: number): string {
     const from = (pageIndex * pageSize) + 1;
     const to = (pageSize * (pageIndex + 1)) > totalCount ? totalCount : (pageSize * (pageIndex + 1));

@@ -18,9 +18,11 @@
 </app-query-filter>
 
 <app-items-table [source]="viewSource"
-                 [rowToolTip]="'View additional user details for '"
+                 [rowToolTip]="rowTooltip"
                  (sortChange)="onSortChange($event)"
                  (butClick)="onItemButClick($event)"
+                 (rowClick)="onRowClick($event)"
+                 (rowMouseOver)="onRowMouseOver($event)"
                  [hidden]="!viewSource.data">
 </app-items-table>
 
