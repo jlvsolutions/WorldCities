@@ -5,7 +5,7 @@ export * from './show-message/show-message.component';
 export * from './wcmap/wcmap.component';
 export * from './password-form/password-form.component';
 export * from './user-form/user-form.component';
-export * from './filter-query/filter-query.component';
+export * from './query-filter/query-filter.component';
 export * from './items-table/items-table.component';
 
 export * from './pipes/space-after-comma.pipe';

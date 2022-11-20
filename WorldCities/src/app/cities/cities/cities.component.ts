@@ -20,7 +20,7 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
     super(router, activatedRoute, authService, cityService);
     console.log('CitiesComponent instance created.');
 
-    this.defaultFilterColumn = 'name';
+    //this.filter.
     this.sort.active = 'name';
   }
 
@@ -55,7 +55,9 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
   nameOfItem(id: number): string {
     return this.viewSource.data.find((item: { id: number; }) => item.id == id)?.name ?? '';
   }
-
+  onMouseDown(event: any) {
+    console.log("on mouse down.");
+  }
   onItemButClick(event: any) {
     console.log(`CitiesComponent:  onItemButClick(${event.key}, ${event.id})`);
     switch (event.key) {

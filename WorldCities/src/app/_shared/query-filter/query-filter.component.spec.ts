@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FilterQueryComponent } from './filter-query.component';
+import { QueryFilterComponent } from './query-filter.component';
 
 describe('FilterQueryComponent', () => {
-  let component: FilterQueryComponent;
-  let fixture: ComponentFixture<FilterQueryComponent>;
+  let component: QueryFilterComponent;
+  let fixture: ComponentFixture<QueryFilterComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FilterQueryComponent ]
+      declarations: [ QueryFilterComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FilterQueryComponent);
+    fixture = TestBed.createComponent(QueryFilterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

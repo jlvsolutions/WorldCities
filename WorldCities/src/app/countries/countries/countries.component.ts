@@ -20,7 +20,6 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
     super(router, activatedRoute, authService, countryService);
     console.log('CountriesComponent instance created.');
 
-    this.defaultFilterColumn = 'name';
     this.sort.active = 'name';
   }
 

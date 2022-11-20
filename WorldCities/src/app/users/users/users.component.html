@@ -11,10 +11,10 @@
 
 <app-show-message #showMessage></app-show-message>
 
-<app-filter-query #filterQuery
+<app-query-filter #QueryFilter
                   (search)="loadData($event)"
                   [hidden]="!viewSource.data">
-</app-filter-query>
+</app-query-filter>
 
 <app-items-table [source]="viewSource"
                  [rowToolTip]="'View additional user details for '"

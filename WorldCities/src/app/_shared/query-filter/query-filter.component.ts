@@ -7,7 +7,7 @@ import { IQueryFilter } from '@app/_models';
 
 /** Provides a debounced query filter */
 @Component({
-  selector: 'app-filter-query',
+  selector: 'app-query-filter',
   template: `
   <div class="filter-query">
     <form [formGroup]="form">
@@ -30,7 +30,7 @@ import { IQueryFilter } from '@app/_models';
     }
 `]
 })
-export class FilterQueryComponent implements OnInit, IQueryFilter {
+export class QueryFilterComponent implements OnInit, IQueryFilter {
 
   @Input() filterText: string = '';
   @Input() placeholder: string = 'Enter filter text...';

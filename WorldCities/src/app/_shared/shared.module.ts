@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { AngularMaterialModule, GraphQLModule } from '@app/_shared';
 import {
   ShowMessageComponent, WCMapComponent, ItemsTableComponent,
-  UserFormComponent, PasswordFormComponent, FilterQueryComponent,
+  UserFormComponent, PasswordFormComponent, QueryFilterComponent,
   SpaceAfterCommaPipe, JoinPipe
 } from '@app/_shared';
 
@@ -16,7 +16,7 @@ import {
     WCMapComponent,
     UserFormComponent,
     PasswordFormComponent,
-    FilterQueryComponent,
+    QueryFilterComponent,
     ItemsTableComponent,
     SpaceAfterCommaPipe,
     JoinPipe
@@ -37,7 +37,7 @@ import {
     WCMapComponent,
     UserFormComponent,
     PasswordFormComponent,
-    FilterQueryComponent,
+    QueryFilterComponent,
     ItemsTableComponent,
     SpaceAfterCommaPipe,
     JoinPipe

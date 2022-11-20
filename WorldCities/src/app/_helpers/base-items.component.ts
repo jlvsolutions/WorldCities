@@ -29,7 +29,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   private destroySubject = new Subject();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild('filterQuery') filter!: IQueryFilter;
+  @ViewChild('queryFilter') filter!: IQueryFilter;
   @ViewChild('showMessage') showMsg!: IShowMessage;
 
   constructor(
@@ -120,10 +120,10 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     console.log(`BaseItemsComponent:  sortChange col=${sort.active}, dir=${sort.direction}`);
     if (sort.active !== this.sort.active) {
       this.filter.filterText = '';
-      this.filter.placeholder = `Filter by ${this.viewSource.displayColumns[
-        this.viewSource.modelColumns.indexOf(sort.active)]} (or part of it)...`;
     }
-    this.sort = sort;
+    this.filter.placeholder = `Filter by ${this.viewSource.displayColumns[
+      this.viewSource.modelColumns.indexOf(sort.active)]} (or part of it)...`;
+   this.sort = sort;
     this.loadData();
   }
 
@@ -152,6 +152,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         this.paginator.pageIndex = result.pageIndex;
         this.paginator.pageSize = result.pageSize;
         this.viewSource.data = result.data;
+        this.showMsg.message = `Showing items ${this.itemsRetrievedText(result.totalCount, result.pageIndex, result.pageSize)}`;
       }, error => {
         switch (error.status) {
           case 400:
@@ -162,6 +163,12 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         }
         console.error(error);
       });
+  }
+
+  itemsRetrievedText(totalCount: number, pageIndex: number, pageSize: number): string {
+    const from = (pageIndex * pageSize) + 1;
+    const to = (pageSize * (pageIndex + 1)) > totalCount ? totalCount : (pageSize * (pageIndex + 1));
+    return `${from} - ${to} of ${totalCount.toLocaleString('en-US')}`;
   }
 
   /**
