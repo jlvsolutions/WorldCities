@@ -37,6 +37,8 @@ namespace WorldCitiesAPI.Controllers
             string? filterColumn = null,
             string? filterQuery = null)
         {
+            _logger.LogInformation("Entering GetCountries. PageIndex: {pageIndex}, Filter: {filterQuery}, SortColumn: {sortColumn}, SortOrder: {sortOrder}",
+                pageIndex, filterQuery, sortColumn, sortOrder);
             try
             {
             return await ApiResult<CountryDTO>.CreateAsync(

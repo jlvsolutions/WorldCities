@@ -19,8 +19,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   public defaultPageIndex: number = 0;
   public defaultPageSize: number = 15;
   // sorting
-  public defaultSortColumn: string = '';
-  public defaultSortOrder: '' | 'asc' | 'desc' = 'asc';
+  protected sort: Sort = { active: '', direction: 'asc'}; 
   // filtering
   public defaultFilterColumn: string = '';
   public filterQuery: string = '';
@@ -29,9 +28,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   public isAdministrator: boolean = false;
   private destroySubject = new Subject();
 
-  protected sort!: Sort; 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild('filterQuery') filter!: IQuueryFilter;
+  @ViewChild('filterQuery') filter!: IQueryFilter;
   @ViewChild('showMessage') showMsg!: IShowMessage;
 
   constructor(
@@ -138,17 +136,15 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   }
 
   getData(event: PageEvent) {
-    const sortColumn = (this.sort) ? this.sort.active : this.defaultSortColumn;
-    const sortOrder = (this.sort) ? this.sort.direction : this.defaultSortOrder;
-    const filterColumn = (this.sort) ? this.sort.active : this.defaultSortColumn;
+    const filterColumn = this.sort.active;
     const filterQuery = (this.filter) ? this.filter.filterText : this.filterQuery;
 
-    console.log(`BaseItemsComponent getData: filterQuery = ${filterQuery}, sortColumn = ${sortColumn}`);
+    console.log(`BaseItemsComponent getData: filterQuery = ${filterQuery}, sortColumn = ${this.sort.active}`);
     this.service.getData(
       event.pageIndex,
       event.pageSize,
-      sortColumn,
-      sortOrder,
+      this.sort.active,
+      this.sort.direction,
       filterColumn,
       filterQuery)
       .subscribe(result => {

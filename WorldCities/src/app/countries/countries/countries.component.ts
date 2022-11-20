@@ -20,9 +20,8 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
     super(router, activatedRoute, authService, countryService);
     console.log('CountriesComponent instance created.');
 
-    this.defaultSortColumn = 'name';
     this.defaultFilterColumn = 'name';
-    this.sort = { direction: this.defaultSortOrder, active: 'name' };
+    this.sort.active = 'name';
   }
 
   defineSchema(): any[] {

@@ -38,7 +38,8 @@ namespace WorldCitiesAPI.Controllers
             string? filterColumn = null,
             string? filterQuery = null)
         {
-            _logger.LogInformation("Entering GetCities. PageIndex: {pageIndex}, SortOrder: {sortOrder}", pageIndex, sortOrder);
+            _logger.LogInformation("Entering GetCities. PageIndex: {pageIndex}, Filter: {filterQuery}, SortColumn: {sortColumn}, SortOrder: {sortOrder}", 
+                pageIndex, filterQuery, sortColumn, sortOrder);
 
             try
             {

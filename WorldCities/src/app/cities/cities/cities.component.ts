@@ -20,9 +20,8 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
     super(router, activatedRoute, authService, cityService);
     console.log('CitiesComponent instance created.');
 
-    this.defaultSortColumn = 'lat';
-    this.defaultFilterColumn = 'lat';
-    this.sort = { active: 'name', direction: 'asc' };
+    this.defaultFilterColumn = 'name';
+    this.sort.active = 'name';
   }
 
   defineSchema(): any[] {

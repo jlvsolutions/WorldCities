@@ -20,9 +20,8 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
     super(router, activatedRoute, authService, userService);
     console.log('UsersComponent instance created.');
 
-    this.defaultSortColumn = 'name';
     this.defaultFilterColumn = 'email';
-    this.sort = { direction: this.defaultSortOrder, active: 'email' };
+    this.sort.active = 'email';
   }
 
   defineSchema(): any[] {
