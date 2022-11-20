@@ -12,19 +12,20 @@
 <app-show-message #showMessage></app-show-message>
 
 <app-query-filter #QueryFilter
-                  (search)="loadData($event)"
+                  [placeholder]="filterPlaceholder"
+                  (search)="onFilterChange($event)"
                   [hidden]="!viewSource.data">
 </app-query-filter>
 
 <app-items-table [source]="viewSource"
                  [rowToolTip]="'View additional user details for '"
-                 (sortChange)="sortChange($event)"
+                 (sortChange)="onSortChange($event)"
                  (butClick)="onItemButClick($event)"
                  [hidden]="!viewSource.data">
 </app-items-table>
 
 <mat-paginator [hidden]="!viewSource.data"
-               (page)="getData($event)"
+               (page)="onPageChange($event)"
                [pageSize]="15"
                [pageSizeOptions]="[10, 15, 20, 50, 100, 500, 1000, 5000]"
                showFirstLastButtons>

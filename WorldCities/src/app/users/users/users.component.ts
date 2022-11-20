@@ -20,7 +20,6 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
     super(router, activatedRoute, authService, userService);
     console.log('UsersComponent instance created.');
 
-    this.sort.active = 'email';
   }
 
   defineSchema(): any[] {
@@ -47,6 +46,10 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
       },
       { key: 'roles', label: 'Roles', description: 'The roles the user belongs to.', join: ', ', noSort: true }
      ];
+  }
+
+  defineDefaultColumn(): string {
+    return 'email';
   }
 
   nameOfItem(id: string): string {

@@ -16,13 +16,16 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   public viewSource: IItemsViewSource<TDto> = new ItemsViewSource<TDto>();
 
   // pagination
-  public defaultPageIndex: number = 0;
-  public defaultPageSize: number = 15;
+  pageIndex: number = 0;
+  pageSize: number = 10;
   // sorting
-  protected sort: Sort = { active: '', direction: 'asc'}; 
+  sortColumn: string = '';
+  sortOrder: '' | 'desc' | 'asc' = 'asc';
   // filtering
-  public defaultFilterColumn: string = '';
-  public filterQuery: string = '';
+  filterColumn: string = '';
+  filterQuery: string = ''
+  filterPlaceholder: string = 'Enter filtering text...';
+  
   // authorization
   public isLoggedIn: boolean = false;
   public isAdministrator: boolean = false;
@@ -39,7 +42,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     protected service: BaseService<TDto, Tid>) {
     console.log('BaseItemsComponent derived instance created.');
 
-    this.setSchema();       // derived class defines the schema/metadata for it's data model.
+    this.setSchema();           // derived class defines the schema/metadata for it's data model.
 
     this.authService.user   // listen for authorization changes.
       .pipe(takeUntil(this.destroySubject))
@@ -87,7 +90,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
    * join: string,  (Optional) For when the model column is an array.  Takes the separator as a value.
    * hidden: boolean,  (Optional) Hides the column by filtering it out.
    * noSort: boolean,  (Optional) Prevents sorting on the column.
-   * */
+   */
   abstract defineSchema(): any[];
 
   private setSchema(): void {
@@ -95,19 +98,31 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       .filter(s => (!(s.type === 'button' && !s.authorized)) && !s.hidden);
   }
 
-  /**
-   *  Used to provide a descriptive name for the model item with the given id. 
-   * @param id
-   */
+  /** Used to provide a descriptive name for the model item with the given id.  */
   abstract nameOfItem(id: Tid): string;
+
+  /** Used to set the initial column for sorting and filtering. */
+  abstract defineDefaultColumn(): string;
+
+  private setDefaultColumn(): void {
+    this.sortColumn = this.defineDefaultColumn();
+    this.filterColumn = this.sortColumn;
+    this.filterPlaceholder = this.getFilterPlacehoder(this.sortColumn);
+  }
+
+  private getFilterPlacehoder(columnName: string): string {
+    return `Filter by ${this.viewSource.displayColumns[
+      this.viewSource.modelColumns.indexOf(columnName)]} (or part of it)...`;
+  }
 
   ngOnInit() {
     console.log('BaseItemsComponent:  OnInit().');
-  }
+    this.setDefaultColumn();
+    this.getData();
+ }
 
   ngAfterViewInit() {
     console.log('BaseItemsComponent:  AfterViewInit().');
-    this.loadData();
   }
 
   ngOnDestroy() {
@@ -116,38 +131,41 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.destroySubject.complete();
   }
 
-  sortChange(sort: Sort) {
+  onSortChange(sort: Sort) {
     console.log(`BaseItemsComponent:  sortChange col=${sort.active}, dir=${sort.direction}`);
-    if (sort.active !== this.sort.active) {
-      this.filter.filterText = '';
+    if (sort.active !== this.sortColumn) {
+      this.filterQuery = '';
     }
-    this.filter.placeholder = `Filter by ${this.viewSource.displayColumns[
-      this.viewSource.modelColumns.indexOf(sort.active)]} (or part of it)...`;
-   this.sort = sort;
-    this.loadData();
+    this.filterPlaceholder = this.getFilterPlacehoder(sort.active);
+    this.filterColumn = sort.active;
+    this.sortColumn = sort.active;
+    this.sortOrder = sort.direction;
+    this.getData();
   }
 
-  loadData(query?: string) {
-    let pageEvent = new PageEvent();
-    pageEvent.pageIndex = this.defaultPageIndex;
-    pageEvent.pageSize = this.defaultPageSize;
-    this.filterQuery = query ?? '';
-    this.getData(pageEvent);
+  onFilterChange(query: string) {
+    this.filterQuery = query;
+    this.pageIndex = 0;
+    this.getData();
   }
 
-  getData(event: PageEvent) {
-    const filterColumn = this.sort.active;
-    const filterQuery = (this.filter) ? this.filter.filterText : this.filterQuery;
+  onPageChange(pageEvent: PageEvent) {
+    this.pageIndex = pageEvent.pageIndex;
+    this.pageSize = pageEvent.pageSize;
+    this.getData();
+  }
 
-    console.log(`BaseItemsComponent getData: filterQuery = ${filterQuery}, sortColumn = ${this.sort.active}`);
+  getData() {
+    console.log(`BaseItemsComponent getData: filterQuery = ${this.filterQuery}, sortColumn = ${this.sortColumn}, pageIndex=${this.pageIndex}`);
     this.service.getData(
-      event.pageIndex,
-      event.pageSize,
-      this.sort.active,
-      this.sort.direction,
-      filterColumn,
-      filterQuery)
+      this.pageIndex,
+      this.pageSize,
+      this.sortColumn,
+      this.sortOrder,
+      this.filterColumn,
+      this.filterQuery)
       .subscribe(result => {
+        console.log(`BaseItemsComponent getData Result: ${result.data.length} items returned.`);
         this.paginator.length = result.totalCount;
         this.paginator.pageIndex = result.pageIndex;
         this.paginator.pageSize = result.pageSize;

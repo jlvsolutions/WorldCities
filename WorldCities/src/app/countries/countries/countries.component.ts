@@ -19,8 +19,6 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
     countryService: CountryService) {
     super(router, activatedRoute, authService, countryService);
     console.log('CountriesComponent instance created.');
-
-    this.sort.active = 'name';
   }
 
   defineSchema(): any[] {
@@ -40,6 +38,10 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
       { key: 'iso3', label: 'ISO3', description: 'The alpha-3 iso code of the country.' },
       { key: 'totCities', label: 'Total Cities', description: 'The total number of cities in the country.'}
     ];
+  }
+
+  defineDefaultColumn(): string {
+    return 'name';
   }
 
   nameOfItem(id: number): string {

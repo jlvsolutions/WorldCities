@@ -6,6 +6,8 @@ export interface IQueryFilter {
   filterText: string;
   /** Prompting text for input */
   placeholder: string;
+  /** Name of the column to apply filtering */
+  column: string;
   /** Event fired when a new query is requested.  Contains the filtering text to use. */
   search: EventEmitter<string>;
 }

@@ -22,7 +22,7 @@ export class ItemsTableComponent implements OnInit {
   @Output() sortChange: EventEmitter<Sort> = new EventEmitter<Sort>();
 
   /** An event that fires when the user clicks a dynamically created button */
-  @Output() butClick: EventEmitter<{ key: string, id: string }> = new EventEmitter<{ key: string, id: string }>();
+  @Output() butClick: EventEmitter<{ key: string, id: any }> = new EventEmitter<{ key: string, id: any }>();
 
   ngOnInit(): void {
   }

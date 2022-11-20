@@ -34,6 +34,7 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
 
   @Input() filterText: string = '';
   @Input() placeholder: string = 'Enter filter text...';
+  @Input() column: string = '';
   @Output() search: EventEmitter<string> = new EventEmitter<string>();
   private filterTextChanged: Subject<string> = new Subject<string>();
   form!: FormGroup;

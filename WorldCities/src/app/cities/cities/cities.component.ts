@@ -19,9 +19,6 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
     cityService: CityService) {
     super(router, activatedRoute, authService, cityService);
     console.log('CitiesComponent instance created.');
-
-    //this.filter.
-    this.sort.active = 'name';
   }
 
   defineSchema(): any[] {
@@ -50,6 +47,10 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
         authorized: true
       },
     ];
+  }
+
+  defineDefaultColumn(): string {
+    return 'name';
   }
   
   nameOfItem(id: number): string {
