@@ -6,8 +6,7 @@ import { map, takeUntil } from 'rxjs/operators';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 
 import { BaseFormComponent } from '@app/_helpers/base-form.component';
-import { User } from '@app/_models';
-import { IShowMessage } from '@app/_shared';
+import { User, IShowMessage } from '@app/_models';
 import { UserService, AuthService } from '@app/_services';
 
 @Component({

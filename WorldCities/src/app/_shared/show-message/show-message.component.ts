@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { IShowMessage } from '../ishow-message';
+import { IShowMessage } from '@app/_models';
 
 /** Shows messages to users as informative or as an error. */
 @Component({

@@ -6,9 +6,8 @@ import { map, takeUntil } from 'rxjs/operators';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 
 import { BaseFormComponent } from '@app/_helpers/base-form.component';
-import { IShowMessage } from '@app/_shared';
 import { AuthService } from '@app/_services';
-import { LoginRequest, RegisterRequest } from '@app/_models';
+import { LoginRequest, RegisterRequest, IShowMessage } from '@app/_models';
 
 @Component({
   selector: 'app-register',

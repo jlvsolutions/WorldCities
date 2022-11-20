@@ -1,7 +1,7 @@
 import { EventEmitter } from "@angular/core";
 
 /** Interface for components which provide input to filter queries */
-export interface IFilterQuery {
+export interface IQueryFilter {
   /** Text for filtering a query */
   filterText: string;
   /** Prompting text for input */

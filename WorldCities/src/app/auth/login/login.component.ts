@@ -3,9 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, AbstractControl, AsyncValidatorFn } from '@angular/forms';
 
 import { BaseFormComponent } from '@app/_helpers/base-form.component';
-import { IShowMessage } from '@app/_shared';
 import { AuthService } from '@app/_services';
-import { LoginRequest } from '@app/_models';
+import { LoginRequest, IShowMessage } from '@app/_models';
 
 @Component({
   selector: 'app-login',

@@ -4,7 +4,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
 import { Subject, takeUntil } from 'rxjs';
 
-import { IFilterQuery, IShowMessage, IItemsViewSource, ItemsViewSource } from '@app/_shared';
+import { IQueryFilter, IShowMessage, IItemsViewSource, ItemsViewSource } from '@app/_models';
 import { BaseService, AuthService } from '@app/_services';
 
 /** Base class for displaying a collection of items. */
@@ -31,7 +31,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   protected sort!: Sort; 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild('filterQuery') filter!: IFilterQuery;
+  @ViewChild('filterQuery') filter!: IQuueryFilter;
   @ViewChild('showMessage') showMsg!: IShowMessage;
 
   constructor(
@@ -77,7 +77,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
    *
    * Key: string,  Identifies data model's property name.  If 'type' is 'button', the key is used to identify the button.
    * label: string,  Display friendly string for use in the column header.
-   * type: string,  (Optional) Can be 'button', 'link', or (future) 'boolean'.
+   * type: string,  (Optional) Can be 'button', 'link', or (future) 'boolean'.  'link' requires authorized: true to be enabled.
    * description: string,  (Optional) Used for displaying tooltip in the column header.
    * toolTip: string,  (Optional) Used to give tooltips for 'button' and 'link' types.
    * itemName: string,  (Optional) Used for 'button' and 'link' tooltips.
@@ -91,6 +91,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
    * noSort: boolean,  (Optional) Prevents sorting on the column.
    * */
   abstract defineSchema(): any[];
+
   private setSchema(): void {
     this.viewSource.schema = this.defineSchema()
       .filter(s => (!(s.type === 'button' && !s.authorized)) && !s.hidden);

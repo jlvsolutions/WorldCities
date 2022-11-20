@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-import { IFilterQuery } from '@app/_shared';
+import { IQueryFilter } from '@app/_models';
 
 /** Provides a debounced query filter */
 @Component({
@@ -30,7 +30,7 @@ import { IFilterQuery } from '@app/_shared';
     }
 `]
 })
-export class FilterQueryComponent implements OnInit, IFilterQuery {
+export class FilterQueryComponent implements OnInit, IQueryFilter {
 
   @Input() filterText: string = '';
   @Input() placeholder: string = 'Enter filter text...';

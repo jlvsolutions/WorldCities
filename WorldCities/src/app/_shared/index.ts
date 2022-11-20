@@ -1,13 +1,12 @@
+export * from './angular-material.module';
+export * from './graphql.module';
+
 export * from './show-message/show-message.component';
 export * from './wcmap/wcmap.component';
 export * from './password-form/password-form.component';
 export * from './user-form/user-form.component';
-export * from './angular-material.module';
-export * from './graphql.module';
 export * from './filter-query/filter-query.component';
 export * from './items-table/items-table.component';
-export * from './space-after-comma.pipe';
-export * from './ishow-message';
-export * from './iitems-view-source';
-export * from './ifilter-query';
-export * from './join.pipe';
+
+export * from './pipes/space-after-comma.pipe';
+export * from './pipes/join.pipe';

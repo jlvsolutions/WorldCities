@@ -34,7 +34,7 @@ namespace WorldCitiesAPI.Data.Models
 
         #region Methods
         /// <summary>
-        /// Pages and/or IQueryable source.
+        /// Pages and/or IQueryable source.  Performs filtering, then sorting.
         /// </summary>
         /// <param name="source">An IQueryable source of generic type</param>
         /// <param name="pageIndex">Zero-based current page index (0 = first page)</param>

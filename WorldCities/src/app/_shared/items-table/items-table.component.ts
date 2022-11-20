@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { IItemsViewSource } from '@app/_shared';
+import { IItemsViewSource } from '@app/_models';
 import { Sort } from '@angular/material/sort';
 
 /**  Displays a mat-table using the provided IItemsView interface */
