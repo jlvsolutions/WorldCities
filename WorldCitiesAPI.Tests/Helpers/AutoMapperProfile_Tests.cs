@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WorldCitiesAPI.Data.Entities;
 using WorldCitiesAPI.Data.Models.Cities;
+using WorldCitiesAPI.Data.Models.Countries;
 using WorldCitiesAPI.Data.Models.Users;
 using AutoMapper;
 using WorldCitiesAPI.Helpers;
@@ -17,6 +18,7 @@ namespace WorldCitiesAPI.Tests.Helpers
         private readonly ApplicationUser _applicationUserEntity;
         private readonly UserDTO _userDTO;
         private readonly City _cityEntity;
+        private readonly Country _countryEntity;
 
         public AutoMapperProfile_Tests()
         {
@@ -57,6 +59,15 @@ namespace WorldCitiesAPI.Tests.Helpers
                 Population = 10D,
                 CountryId = 2,
                 Country = null
+            };
+
+            _countryEntity = new Country() 
+            { 
+                Id = 2, 
+                Name = "CountryName", 
+                ISO2 = "ISO2", 
+                ISO3 = "ISO3", 
+                Cities = new[] { _cityEntity }
             };
         }
 
@@ -189,6 +200,19 @@ namespace WorldCitiesAPI.Tests.Helpers
             Assert.Equal(10D, city.Population);
             Assert.Equal(2, city.CountryId);
             Assert.Null(city.CountryName);
+        }
+
+        [Fact]
+        public void CountryEntity_ShouldMapTo_CountryDTO()
+        {
+            // Act
+            var country = _mapper.Map<CountryDTO>(_countryEntity);
+
+            // Assert
+            Assert.Equal(2, country.Id);
+            Assert.Equal("CountryName", country.Name);
+            Assert.Equal("ISO2", country.ISO2);
+            Assert.Equal("ISO3", country.ISO3);
         }
     }
 }

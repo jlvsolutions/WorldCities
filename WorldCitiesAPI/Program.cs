@@ -159,4 +159,5 @@ app.MapGraphQL("/api/graphql");
 
 app.MapMethods("/api/heartbeat", new[] { "HEAD" }, () => Results.Ok());
 
+app.Logger.LogInformation("Starting the API.");
 app.Run();

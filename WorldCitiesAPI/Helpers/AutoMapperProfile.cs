@@ -4,6 +4,7 @@
     using WorldCitiesAPI.Data.Entities;
     using WorldCitiesAPI.Data.Models.Users;
     using WorldCitiesAPI.Data.Models.Cities;
+    using WorldCitiesAPI.Data.Models.Countries;
     public class AutoMapperProfile : Profile
     {
         public AutoMapperProfile()
@@ -35,6 +36,9 @@
 
             // City Entity -> CityDTO
             CreateMap<City, CityDTO>();
+
+            // Country Entity -> CountryDTO
+            CreateMap<Country, CountryDTO>();
 
             /* CreateMap<UpdateRequest, UserDTO>()
                  .ForAllMembers(x => x.Condition(
