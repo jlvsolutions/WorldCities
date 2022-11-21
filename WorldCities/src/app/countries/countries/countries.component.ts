@@ -27,11 +27,11 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
       { key: 'id', label: 'ID', description: 'The database ID of the country.' },
       {
         key: 'delete', label: 'Delete', type: 'button', param: 'id',
-        toolTip: 'Delete ', itemName: 'name', authorized: this.isAdministrator
+        toolTip: 'Delete ', itemName: 'name', hidden: !this.isAdministrator
       },
       {
         key: 'edit', label: 'Edit', type: 'button', param: 'id',
-        toolTip: 'Edit ', itemName: 'name', authorized: this.isLoggedIn
+        toolTip: 'Edit ', itemName: 'name', hidden: !this.isLoggedIn
       },
       { key: 'name', label: 'Name', description: 'The name of the country.' },
       { key: 'iso2', label: 'ISO2', description: 'The alpha-2 iso code of the country.'},

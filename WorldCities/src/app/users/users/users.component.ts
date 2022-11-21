@@ -28,11 +28,11 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
       { key: 'id', label: 'ID', description: 'The database ID of the user.', hidden: true },
       {
         key: 'delete', label: 'Delete', type: 'button', param: 'id',
-        toolTip: 'Delete ', itemName: 'name', authorized: this.isAdministrator
+        toolTip: 'Delete ', itemName: 'name', hidden: !this.isAdministrator
       },
       {
         key: 'edit', label: 'Edit', type: 'button', param: 'id',
-        toolTip: 'Edit ', itemName: 'name', authorized: this.isAdministrator
+        toolTip: 'Edit ', itemName: 'name', hidden: !this.isAdministrator
       },
       { key: 'email', label: 'Email', description: 'The unique login email of the user.' },
       { key: 'name', label: 'Name', description: 'The friendly display name of the user.' },

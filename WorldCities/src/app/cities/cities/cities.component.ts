@@ -27,11 +27,11 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
       { key: 'id', label: 'ID', description: 'The database ID of the city/town.' },
       {
         key: 'delete', label: 'Delete', type: 'button', param: 'id',
-        toolTip: 'Delete ', itemName: 'name', authorized: this.isAdministrator
+        toolTip: 'Delete ', itemName: 'name', hidden: !this.isAdministrator
       },
       {
         key: 'edit', label: 'Edit', type: 'button', param: 'id',
-        toolTip: 'Edit ', itemName: 'name', authorized: this.isLoggedIn
+        toolTip: 'Edit ', itemName: 'name', hidden: !this.isLoggedIn
       },
       { key: 'name', label: 'Name', description: 'The name of the city/town in Unicode.' },
       { key: 'lat', label: 'Latitude', description: 'The latitude of the city/town.' },
