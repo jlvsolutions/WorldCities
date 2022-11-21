@@ -85,6 +85,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
    * itemName: string,  (Optional) Used for 'button' and 'link' tooltips.
    * link: string,  (Optional) Used with 'link' types.  Provides the route.
    * linkId: string,  (Optional) Used with 'link' types to augment the route given in 'link'.
+   * authorized: boolean,  (Optional) Used to make 'button' type columns show, and with the 'link' type to enable the link.
    * param: string, (Optional) Used with type 'button' to provide identifying parameter to the click handler.
    * pipeToNumber: boolean,  (Optional) Used for numeric columns to format with commas.
    * spaceAfterComma: boolean,  (Optional) Used to add a space after commas.
