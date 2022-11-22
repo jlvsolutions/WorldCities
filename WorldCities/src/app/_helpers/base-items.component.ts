@@ -13,7 +13,8 @@ import { BaseService, AuthService } from '@app/_services';
 })
 export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterViewInit, OnDestroy {
 
-  public viewSource: IItemsViewSource<TDto> = new ItemsViewSource<TDto>();
+  title: string = '';
+  titleSuffix: string = '';
 
   // pagination
   pageIndex: number = 0;
@@ -31,6 +32,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   public isLoggedIn: boolean = false;
   public isAdministrator: boolean = false;
   private destroySubject = new Subject();
+
+  public viewSource: IItemsViewSource<TDto> = new ItemsViewSource<TDto>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('queryFilter') filter!: IQueryFilter;
@@ -64,11 +67,14 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       .subscribe(params => {
         this.filterColumn = this.sortColumn = params['filterColumn'] ?? '';
         this.filterQuery = params['filterQuery'] ?? '';
+        this.sortColumn = params['sortColumn'] ?? '';
         console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.filterColumn}, filterQuery=${this.filterQuery}`);
         if (this.filterColumn === '' && this.filterQuery === '') {
           this.setDefaults();
           console.log(`BaseItemsComponent:  Resetting to defaults: filterColumn=${this.filterColumn}, filterQuery=${this.filterQuery}`);
         }
+        else
+          this.titleSuffix = ' - ' + this.filterQuery;
         this.getData();  // gets called on first subscribe.
       });
 
@@ -100,6 +106,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   abstract getDefaultColumn(): string;
 
   private setDefaults(): void {
+    this.titleSuffix = '';
     this.filterQuery = '';
     this.filterColumn = this.sortColumn = this.getDefaultColumn();
     this.filterPlaceholder = this.getFilterPlacehoder(this.filterColumn);
@@ -158,7 +165,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         this.paginator.pageIndex = result.pageIndex;
         this.paginator.pageSize = result.pageSize;
         this.viewSource.data = result.data;
-        this.showMsg.message = `Showing items ${this.itemsRetrievedText(result.totalCount, result.pageIndex, result.pageSize)}`;
+        this.showMsg.message = `Showing results ${this.itemsRetrievedText(result.totalCount, result.pageIndex, result.pageSize)}`;
       }, error => {
         switch (error.status) {
           case 400:

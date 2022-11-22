@@ -19,6 +19,8 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
     countryService: CountryService) {
     super(router, activatedRoute, authService, countryService);
     console.log('CountriesComponent instance created.');
+
+    this.title = 'Countries';
   }
 
   getSchema(): DataMemberSchema[] {
@@ -63,7 +65,7 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
         break;
       case 'totCities':
         this.router.navigate(['cities'], {
-          queryParams: { filterColumn: 'countryName', filterQuery: event.row.name }
+          queryParams: { filterColumn: 'countryName', filterQuery: event.row.name, sortColumn: 'name' }
         });
         break;
       default:

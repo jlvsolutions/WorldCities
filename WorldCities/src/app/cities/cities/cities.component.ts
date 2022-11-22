@@ -19,6 +19,8 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
     cityService: CityService) {
     super(router, activatedRoute, authService, cityService);
     console.log('CitiesComponent instance created.');
+
+    this.title = 'Cities';
   }
 
   getSchema(): DataMemberSchema[] {

@@ -20,6 +20,7 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
     super(router, activatedRoute, authService, userService);
     console.log('UsersComponent instance created.');
 
+    this.title = 'Users';
   }
 
   getSchema(): DataMemberSchema[] {
