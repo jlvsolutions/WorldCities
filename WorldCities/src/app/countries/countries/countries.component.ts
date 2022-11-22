@@ -75,9 +75,10 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
   }
 
   onRowClick(row: Country) {
-    console.log(`ContriesComponent onRowClick: row=${row}`);
+    console.log(`ContriesComponent onRowClick: Country Name=${row.name}`);
     this.router.navigate([row.id], {
       queryParams: { returnUrl: this.router.routerState.snapshot.url },
+      relativeTo: this.activatedRoute
     });
   }
 
