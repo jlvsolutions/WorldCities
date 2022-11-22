@@ -7,6 +7,15 @@ export abstract class BaseService<TDto, TId> {
   protected constructor(protected http: HttpClient) {
   }
 
+  /**
+   * Retrieves data from the back end.  Filtering is performed first, then sorting.
+   * @param pageIndex
+   * @param pageSize
+   * @param sortColumn
+   * @param sortOrder
+   * @param filterColumn
+   * @param filterQuery
+   */
   abstract getData(
     pageIndex: number,
     pageSize: number,

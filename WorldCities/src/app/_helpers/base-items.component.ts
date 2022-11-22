@@ -44,84 +44,36 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     console.log('BaseItemsComponent derived instance created.');
 
     this.setSchema();           // derived class defines the schema/metadata for it's data model.
+    this.setDefaults();
 
     this.authService.user   // listen for authorization changes.
       .pipe(takeUntil(this.destroySubject))
       .subscribe(user => {
+        console.log(`BaseItemsComponent:  User changed user=${user?.email}`);
         this.isLoggedIn = authService.isAuthenticated();
         this.isAdministrator = authService.isAdministrator();
         this.setSchema();
-        /*
-        if (this.isLoggedIn) {
-          console.log(`BaseItemsComponent:  user = ${user.name}, ${user.email} logged in. Administrator: ${this.isAdministrator}`);
-          this.showMsg.message = "Welcome, " + user.name + "!";
-        }
-        else {
-          console.log('BaseItemsComponent:  No user logged in.');
-          this.showMsg.message = "You are now logged out.";
-        }
-        */
       });
-    /*
-    this.router.events      // listen for routing events.
-      .pipe(takeUntil(this.destroySubject))
-      .subscribe(event => {
-        //if (event instanceof NavigationStart)
-        //  this.showMsg.clear();
-        if (event instanceof NavigationEnd) // Note:  happens for all navigations since this component not destroyed.
-          this?.showMsg?.clear();
-      })
-    */
-  }
-
-  /** Used to define the schema/metadata for the derived class' model.
-   * Available properties are:
-   *
-   * Key: string,  Identifies data model's property name.  If 'type' is 'button', the key is used to identify the button.
-   * label: string,  Display friendly string for use in the column header.
-   * type: string,  (Optional) Can be 'button', 'link', or (future) 'boolean'.  'link' requires authorized: true to be enabled.
-   * description: string,  (Optional) Used for displaying tooltip in the column header.
-   * toolTip: string,  (Optional) Used to give tooltips for 'button' and 'link' types.
-   * itemName: string,  (Optional) Used for 'button' and 'link' tooltips.
-   * link: string,  (Optional) Used with 'link' types.  Provides the route.
-   * linkId: string,  (Optional) Used with 'link' types to augment the route given in 'link'.
-   * authorized: boolean,  (Optional) Used to make 'button' type columns show, and with the 'link' type to enable the link.
-   * param: string, (Optional) Used with type 'button' to provide identifying parameter to the click handler.
-   * pipeToNumber: boolean,  (Optional) Used for numeric columns to format with commas.
-   * spaceAfterComma: boolean,  (Optional) Used to add a space after commas.
-   * join: string,  (Optional) For when the model column is an array.  Takes the separator as a value.
-   * hidden: boolean,  (Optional) Hides the column by filtering it out.
-   * noSort: boolean,  (Optional) Prevents sorting on the column.
-   */
-  abstract defineSchema(): any[];
-
-  private setSchema(): void {
-    this.viewSource.schema = this.defineSchema()
-      .filter(s => !s.hidden);
-  }
-
-  /** Used to provide a descriptive name for the model item with the given id.  */
-  abstract nameOfItem(id: Tid): string;
-
-  /** Used to set the initial column for sorting and filtering. */
-  abstract defineDefaultColumn(): string;
-
-  private setDefaultColumn(): void {
-    this.sortColumn = this.defineDefaultColumn();
-    this.filterColumn = this.sortColumn;
-    this.filterPlaceholder = this.getFilterPlacehoder(this.sortColumn);
-  }
-
-  private getFilterPlacehoder(columnName: string): string {
-    return `Filter by ${this.viewSource.displayColumns[
-      this.viewSource.modelColumns.indexOf(columnName)]} (or part of it)...`;
   }
 
   ngOnInit() {
     console.log('BaseItemsComponent:  OnInit().');
-    this.setDefaultColumn();
-    this.getData();
- }
+
+    this.activatedRoute.queryParams
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(params => {
+        this.filterColumn = this.sortColumn = params['filterColumn'] ?? '';
+        this.filterQuery = params['filterQuery'] ?? '';
+        console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.filterColumn}, filterQuery=${this.filterQuery}`);
+        if (this.filterColumn === '' && this.filterQuery === '') {
+          this.setDefaults();
+          console.log(`BaseItemsComponent:  Resetting to defaults: filterColumn=${this.filterColumn}, filterQuery=${this.filterQuery}`);
+        }
+        this.getData();  // gets called on first subscribe.
+      });
+
+    //this.getData();
+  }
 
   ngAfterViewInit() {
     console.log('BaseItemsComponent:  AfterViewInit().');
@@ -133,7 +85,35 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.destroySubject.complete();
   }
 
+  /** Returns the schema/metadata for the derived class' model. */
+  abstract getSchema(): any[];
+
+  private setSchema(): void {
+    this.viewSource.schema = this.getSchema()
+      .filter(s => !s.hidden);
+  }
+
+  /** Used to provide a descriptive name for the data item from the model with given id.  */
+  abstract getNameOfItem(id: Tid): string;
+
+  /** Returns the default column for sorting and filtering. */
+  abstract getDefaultColumn(): string;
+
+  private setDefaults(): void {
+    this.filterQuery = '';
+    this.filterColumn = this.sortColumn = this.getDefaultColumn();
+    this.filterPlaceholder = this.getFilterPlacehoder(this.filterColumn);
+    this.sortOrder = 'asc';
+  }
+
+  private getFilterPlacehoder(columnName: string): string {
+    return `Filter by ${this.viewSource.displayColumns[
+      this.viewSource.modelColumns.indexOf(columnName)]} (or part of it)...`;
+  }
+
+  /** Used to provide custom row tooltips for each data items. */
   abstract getRowToolTip(row: any): string;
+
   onRowMouseOver(event: any) {
     this.rowTooltip = this.getRowToolTip(event.row);
   }
@@ -151,6 +131,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   }
 
   onFilterChange(query: string) {
+    console.log(`BaseItemsComponent onFilterChange query=${query}`);
     this.filterQuery = query;
     this.pageIndex = 0;
     this.getData();
@@ -163,7 +144,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   }
 
   getData() {
-    console.log(`BaseItemsComponent getData: filterQuery = ${this.filterQuery}, sortColumn = ${this.sortColumn}, pageIndex=${this.pageIndex}`);
+    console.log(`BaseItemsComponent getData: filterQuery=${this.filterQuery}, filterColumn=${this.filterColumn}, sortColumn=${this.sortColumn}, pageIndex=${this.pageIndex}`);
     this.service.getData(
       this.pageIndex,
       this.pageSize,
@@ -203,7 +184,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   deleteItem(id: Tid): void {   // TODO: Change to protected after implementing new items-table component  !!!!
     this.showMsg.clear();
 
-    if (!confirm(`Are you sure you want to delete ${this.nameOfItem(id)}?`))
+    if (!confirm(`Are you sure you want to delete ${this.getNameOfItem(id)}?`))
       return;
 
     this.service.delete(id)

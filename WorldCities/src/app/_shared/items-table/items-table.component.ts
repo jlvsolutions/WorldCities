@@ -21,8 +21,8 @@ export class ItemsTableComponent implements OnInit {
   /** An event that fires when there is a change to the sorting column or sorting order. */
   @Output() sortChange: EventEmitter<Sort> = new EventEmitter<Sort>();
 
-  /** An event that fires when the user clicks a dynamically created button */
-  @Output() butClick: EventEmitter<{ key: string, id: any }> = new EventEmitter<{ key: string, id: any }>();
+  /** An event that fires when the user clicks a dynamically created button or hyperlink */
+  @Output() detailClick: EventEmitter<{ key: string, row: any }> = new EventEmitter<{ key: string, row: any }>();
 
   /** An event that fires when the user clicks anywhere on a row */
   @Output() rowClick: EventEmitter<any> = new EventEmitter<any>();
@@ -33,8 +33,8 @@ export class ItemsTableComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onButClick(key: string, id: any) {
-    this.butClick.emit({ key: key, id: id });
+  onDetailClick(key: string, row: any) {
+    this.detailClick.emit({ key: key, row: row });
   }
 
   onRowClick(row: any) {

@@ -13,7 +13,7 @@ import { IQueryFilter } from '@app/_models';
     <form [formGroup]="form">
       <mat-form-field class="filter-query-form-field">
         <input matInput formControlName="query" #filter (keyup)="onKeyUp(filter.value)"
-               placeholder={{placeholder}}
+               [placeholder]="placeholder"
                [value]="filterText">
         <mat-icon matSuffix class="filter-icon" (click)="filter.value=''; onKeyUp('')">clear_text</mat-icon>
         <mat-error *ngIf="form.controls['query'].errors?.['pattern']">Invalid characters entered.</mat-error>
@@ -33,6 +33,8 @@ import { IQueryFilter } from '@app/_models';
 export class QueryFilterComponent implements OnInit, IQueryFilter {
 
   @Input() filterText: string = '';
+  @Input() filterColumn: string = '';
+  @Input() Columns: string[] = [];
   @Input() placeholder: string = 'Enter filter text...';
   @Output() search: EventEmitter<string> = new EventEmitter<string>();
   private filterTextChanged: Subject<string> = new Subject<string>();

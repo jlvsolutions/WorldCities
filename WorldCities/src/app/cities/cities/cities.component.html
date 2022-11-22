@@ -12,6 +12,7 @@
 <app-show-message #showMessage></app-show-message>
 
 <app-query-filter #queryFilter
+                  [filterText]="filterQuery"
                   [placeholder]="filterPlaceholder"
                   (search)="onFilterChange($event)"
                   [hidden]="!viewSource.data">
@@ -20,7 +21,7 @@
 <app-items-table [source]="viewSource"
                  [rowToolTip]="rowTooltip"
                  (sortChange)="onSortChange($event)"
-                 (butClick)="onItemButClick($event)"
+                 (detailClick)="onDetailClick($event)"
                  (rowClick)="onRowClick($event)"
                  (rowMouseOver)="onRowMouseOver($event)"
                  [hidden]="!viewSource.data">
