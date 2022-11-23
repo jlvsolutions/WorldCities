@@ -9,9 +9,10 @@ import { IQueryFilter } from '@app/_models';
 @Component({
   selector: 'app-query-filter',
   template: `
-  <div class="filter-query">
+  <div class="query-filter">
     <form [formGroup]="form">
-      <mat-form-field class="filter-query-form-field">
+      <mat-form-field class="query-filter-form-field">
+      
         <input matInput formControlName="query" #filter (keyup)="onKeyUp(filter.value)"
                [placeholder]="placeholder"
                [value]="filterText">
@@ -22,7 +23,7 @@ import { IQueryFilter } from '@app/_models';
   </div>
 `,
   styles: [`
-    .filter-query-form-field {
+    .query-filter-form-field {
       width: 100%;
     }
     .filter-icon {

@@ -44,46 +44,21 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     protected activatedRoute: ActivatedRoute,
     protected authService: AuthService,
     protected service: BaseService<TDto, Tid>) {
+
     console.log('BaseItemsComponent derived instance created.');
-
     this.setSchema();           // derived class defines the schema/metadata for it's data model.
-    this.setDefaults();
-
-    this.authService.user   // listen for authorization changes.
-      .pipe(takeUntil(this.destroySubject))
-      .subscribe(user => {
-        console.log(`BaseItemsComponent:  User changed user=${user?.email}`);
-        this.isLoggedIn = authService.isAuthenticated();
-        this.isAdministrator = authService.isAdministrator();
-        this.setSchema();
-      });
+    this.setDefaults();         // derived class sets some of the defaults.
   }
 
   ngOnInit() {
     console.log('BaseItemsComponent:  OnInit().');
-
-    this.activatedRoute.queryParams
-      .pipe(takeUntil(this.destroySubject))
-      .subscribe(params => {
-        this.filterColumn = this.sortColumn = params['filterColumn'] ?? '';
-        this.filterQuery = params['filterQuery'] ?? '';
-        this.sortColumn = params['sortColumn'] ?? '';
-        console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.filterColumn}, filterQuery=${this.filterQuery}`);
-        if (this.filterColumn === '' && this.filterQuery === '') {
-          this.setDefaults();
-          console.log(`BaseItemsComponent:  Resetting to defaults: filterColumn=${this.filterColumn}, filterQuery=${this.filterQuery}`);
-        }
-        else
-          this.titleSuffix = ' - ' + this.filterQuery;
-        this.getData();  // gets called on first subscribe.
-      });
-
-    //this.getData();
-  }
+    this.subscribeToAuthorizationChanges();
+    this.subscribeToQueryParams();
+ }
 
   ngAfterViewInit() {
     console.log('BaseItemsComponent:  AfterViewInit().');
-  }
+ }
 
   ngOnDestroy() {
     console.log('BaseItemsComponent derived class instance destroyed.');
@@ -139,6 +114,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   onFilterChange(query: string) {
     console.log(`BaseItemsComponent onFilterChange query=${query}`);
+    this.titleSuffix = '';
     this.filterQuery = query;
     this.pageIndex = 0;
     this.getData();
@@ -152,6 +128,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   getData() {
     console.log(`BaseItemsComponent getData: filterQuery=${this.filterQuery}, filterColumn=${this.filterColumn}, sortColumn=${this.sortColumn}, pageIndex=${this.pageIndex}`);
+    if (this.showMsg)
+      this.showMsg.spinner = "Retrieving...";
     this.service.getData(
       this.pageIndex,
       this.pageSize,
@@ -214,5 +192,35 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
             break;
         };
       });
+  }
+
+  private subscribeToQueryParams(): void {
+    this.activatedRoute.queryParams
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(params => {
+        this.filterColumn = this.sortColumn = params['filterColumn'] ?? '';
+        this.filterQuery = params['filterQuery'] ?? '';
+        this.sortColumn = params['sortColumn'] ?? '';
+        console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.filterColumn}, filterQuery=${this.filterQuery}`);
+        if (this.filterColumn === '' && this.filterQuery === '') {
+          this.setDefaults();
+          console.log(`BaseItemsComponent:  Resetting to defaults: filterColumn=${this.filterColumn}, filterQuery=${this.filterQuery}`);
+        }
+        else
+          this.titleSuffix = ' - ' + this.filterQuery;
+        this.getData();  // gets called immediatly when first subscribes.  like a behaviorsubject.
+      });
+  }
+
+  private subscribeToAuthorizationChanges(): void {
+    this.authService.user       // listen for authorization changes.
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(user => {
+        console.log(`BaseItemsComponent:  User changed user=${user?.email}`);
+        this.isLoggedIn = this.authService.isAuthenticated();
+        this.isAdministrator = this.authService.isAdministrator();
+        this.setSchema();
+      });
+
   }
 }
