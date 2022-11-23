@@ -22,7 +22,7 @@ import { IShowMessage } from '@app/_models';
   styles: [`
     .showMessageLabel {
       font-size: large;
-      color: cornflowerblue;
+      color: steelblue;
       display: flex;
       align-items: center;
       justify-content: left;
