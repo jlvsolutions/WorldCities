@@ -9,6 +9,10 @@ import {
   UserFormComponent, PasswordFormComponent, QueryFilterComponent,
   SpaceAfterCommaPipe, JoinPipe
 } from '@app/_shared';
+import { GenericTableComponent } from './GenericTable/generic-table/generic-table.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
   declarations: [
@@ -19,14 +23,18 @@ import {
     QueryFilterComponent,
     ItemsTableComponent,
     SpaceAfterCommaPipe,
-    JoinPipe
+    JoinPipe,
+    GenericTableComponent
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
     AngularMaterialModule,
-    GraphQLModule
+    GraphQLModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule
   ],
   exports: [
     CommonModule,

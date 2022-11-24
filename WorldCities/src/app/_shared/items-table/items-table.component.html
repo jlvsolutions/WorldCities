@@ -1,7 +1,8 @@
 <mat-table [dataSource]="source.data"
            class="mat-elevation-z8"
            [hidden]="!source"
-           matSort (matSortChange)="sortChange.emit($event)"
+           matSort
+           (matSortChange)="sortChange.emit($event)"
            [matSortActive]="source.defaultSortColumn"
            [matSortDirection]="source.defaultSortOrder">
 

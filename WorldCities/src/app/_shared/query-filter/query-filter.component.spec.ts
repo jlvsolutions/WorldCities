@@ -1,14 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormBuilder } from '@angular/forms';
 
 import { QueryFilterComponent } from './query-filter.component';
 
-describe('FilterQueryComponent', () => {
+describe('QueryFilterComponent', () => {
   let component: QueryFilterComponent;
   let fixture: ComponentFixture<QueryFilterComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ QueryFilterComponent ]
+      declarations: [QueryFilterComponent],
+      providers: [FormBuilder]
     })
     .compileComponents();
   });

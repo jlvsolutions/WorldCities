@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, NavigationStart, NavigationEnd } from '@angular/router';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
@@ -130,6 +130,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     console.log(`BaseItemsComponent getData: filterQuery=${this.filterQuery}, filterColumn=${this.filterColumn}, sortColumn=${this.sortColumn}, pageIndex=${this.pageIndex}`);
     if (this.showMsg)
       this.showMsg.spinner = "Retrieving...";
+
     this.service.getData(
       this.pageIndex,
       this.pageSize,
