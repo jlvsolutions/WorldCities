@@ -1,0 +1,13 @@
+<div class="showMessage">
+  <p>
+    <mat-error *ngIf="_errMsg">
+      {{_errMsg}}
+    </mat-error>
+    <mat-label class="showMessageLabel" *ngIf="_msg">
+      <ng-container *ngIf="_spinner">
+        <mat-spinner diameter="17"></mat-spinner>
+      </ng-container>
+      {{_msg}}
+    </mat-label>
+  </p>
+</div>

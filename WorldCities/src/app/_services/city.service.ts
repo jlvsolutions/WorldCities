@@ -4,20 +4,20 @@ import { BaseService, ApiResult } from './base.service';
 import { Observable, map, combineLatest } from 'rxjs';
 
 import { City, Country } from '@app/_models';
-import { Apollo, gql } from 'apollo-angular'; // GraphQL
+//import { Apollo, gql } from 'apollo-angular'; // GraphQL
 
 @Injectable()
 export class CityService extends BaseService<City, number> implements OnDestroy {
 
   constructor(
-    http: HttpClient,
-    private apollo: Apollo) {
+    http: HttpClient) {
+    //private apollo: Apollo) {
     super(http);
     console.log('CityService instance created.');
   }
   ngOnDestroy() { console.log('CityService instance destroyed.'); }
 
-  /**
+  /**  
    * RESTful Implementation.
    * @param pageIndex
    * @param pageSize

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { SharedModule } from '@app/_shared';
 
 import { UserService } from '@app/_services';
 import { UsersComponent } from './users.component';
@@ -13,7 +15,9 @@ describe('UsersComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        RouterTestingModule
+        RouterTestingModule,
+        NoopAnimationsModule,
+        SharedModule
       ],
       declarations: [ UsersComponent ],
       providers: [ UserService ]

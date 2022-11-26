@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
-import { HomeComponent } from './home/home.component';
 import { SharedModule } from '@app/_shared/shared.module';
+import { HomeComponent } from './home/home.component';
 
 
 @NgModule({
@@ -11,6 +11,7 @@ import { SharedModule } from '@app/_shared/shared.module';
     SharedModule
   ],
   exports: [
+    SharedModule,
     HomeComponent
   ]
 })

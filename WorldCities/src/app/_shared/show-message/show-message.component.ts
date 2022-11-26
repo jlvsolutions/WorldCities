@@ -4,21 +4,7 @@ import { IShowMessage } from '@app/_models';
 /** Shows messages to users as informative or as an error. */
 @Component({
   selector: 'app-show-message',
-  template: `
-    <div class="showMessage">
-      <p>
-        <mat-error *ngIf="_errMsg">
-          {{_errMsg}}
-        </mat-error>
-        <mat-label class="showMessageLabel" *ngIf="_msg">
-          <ng-container *ngIf="_spinner">
-             <mat-spinner diameter="17"></mat-spinner>
-          </ng-container>
-          {{_msg}}
-        </mat-label>
-      </p>
-    </div>
-`,
+  templateUrl: './show-message.component.html',
   styles: [`
     .showMessageLabel {
       font-size: large;
@@ -34,7 +20,6 @@ import { IShowMessage } from '@app/_models';
 `]
 })
 export class ShowMessageComponent implements IShowMessage {
-
   
   _msg: string = '';
   _errMsg: string = '';

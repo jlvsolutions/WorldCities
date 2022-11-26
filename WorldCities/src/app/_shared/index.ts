@@ -1,5 +1,6 @@
+export * from './shared.module';
 export * from './angular-material.module';
-export * from './graphql.module';
+//export * from './graphql.module';
 
 export * from './show-message/show-message.component';
 export * from './wcmap/wcmap.component';
