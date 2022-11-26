@@ -8,20 +8,7 @@ import { IQueryFilter } from '@app/_models';
 /** Provides a debounced query filter */
 @Component({
   selector: 'app-query-filter',
-  template: `
-  <div class="query-filter">
-    <form [formGroup]="form">
-      <mat-form-field class="query-filter-form-field">
-      
-        <input matInput formControlName="query" #filter (keyup)="onKeyUp(filter.value)"
-               [placeholder]="placeholder"
-               [value]="filterText">
-        <mat-icon matSuffix class="filter-icon" (click)="filter.value=''; onKeyUp('')">clear_text</mat-icon>
-        <mat-error *ngIf="form.controls['query'].errors?.['pattern']">Invalid characters entered.</mat-error>
-      </mat-form-field>
-    </form>
-  </div>
-`,
+  templateUrl: './query-filter.component.html',
   styles: [`
     .query-filter-form-field {
       width: 100%;
@@ -32,14 +19,15 @@ import { IQueryFilter } from '@app/_models';
 `]
 })
 export class QueryFilterComponent implements OnInit, IQueryFilter {
+  form!: FormGroup;
 
   @Input() filterText: string = '';
   @Input() filterColumn: string = '';
   @Input() Columns: string[] = [];
   @Input() placeholder: string = 'Enter filter text...';
-  @Output() search: EventEmitter<string> = new EventEmitter<string>();
+  @Output() filterChange: EventEmitter<string> = new EventEmitter<string>();
+
   private filterTextChanged: Subject<string> = new Subject<string>();
-  form!: FormGroup;
 
   constructor(private formBuilder: FormBuilder) {
   }
@@ -58,7 +46,7 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
         .pipe(debounceTime(400), distinctUntilChanged())
         .subscribe(query => {
           this.filterText = query;
-          this.search.emit(query);
+          this.filterChange.emit(query);
         })
     }
     this.filterTextChanged.next(searchText);

@@ -86,6 +86,9 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.filterColumn = this.sortColumn = this.getDefaultColumn();
     this.filterPlaceholder = this.getFilterPlacehoder(this.filterColumn);
     this.sortOrder = 'asc';
+    // TODO:  sanity work for deaults in viewSource.
+    this.viewSource.defaultSortColumn = this.filterColumn;
+    this.viewSource.defaultSortOrder = this.sortOrder;
   }
 
   private getFilterPlacehoder(columnName: string): string {

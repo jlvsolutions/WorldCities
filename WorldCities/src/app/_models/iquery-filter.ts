@@ -7,5 +7,5 @@ export interface IQueryFilter {
   /** Prompting text for input */
   placeholder: string;
   /** Event fired when a new query is requested.  Contains the filtering text to use. */
-  search: EventEmitter<string>;
+  filterChange: EventEmitter<string>;
 }

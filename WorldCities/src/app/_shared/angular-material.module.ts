@@ -28,7 +28,7 @@ import { MatIconHarness } from '@angular/material/icon/testing';
     MatCardModule,
     MatCheckboxModule,
     MatMenuModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ], 
   exports: [
     MatButtonModule,
@@ -44,8 +44,8 @@ import { MatIconHarness } from '@angular/material/icon/testing';
     MatMenuModule,
     MatProgressSpinnerModule,
 
-    MatInputHarness,
-    MatIconHarness,
+ //   MatInputHarness,
+  //  MatIconHarness,
     ]
 })
 export class AngularMaterialModule { }

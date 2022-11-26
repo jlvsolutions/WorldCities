@@ -30,7 +30,6 @@ describe('QueryFilterComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(QueryFilterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -38,15 +37,21 @@ describe('QueryFilterComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  /*
-  it('should work', async () => {
-    const queryInput = await loader.getHarness(MatInputHarness);
-    const clearIcon = await loader.getHarness(MatIconHarness);
-    let queryText = '';
 
-    expect(fixture.componentInstance.filterText).toBe('');
-    await queryInput.setValue('b');
-    expect(fixture.componentInstance.filterText).toBe('b');
+  it('setting filterText shows in input', async () => {
+    const queryInput = await loader.getHarness(MatInputHarness);
+    component.filterText = 'Boerne';
+    fixture.detectChanges();
+    const queryValue = await queryInput.getValue();
+    expect(queryValue).toBe('Boerne');
   });
-  */
+
+  it('typing in query should emit query text', async () => {
+    const queryInput = await loader.getHarness(MatInputHarness);
+
+    spyOn(component.filterChange, 'emit');
+    await queryInput.setValue('bulverde');
+    expect(component.filterChange.emit).toHaveBeenCalledOnceWith('bulverde');
+  });
+
 });

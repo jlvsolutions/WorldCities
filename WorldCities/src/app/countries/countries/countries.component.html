@@ -14,7 +14,7 @@
 <app-query-filter #queryFilter
                   [filterText]="filterQuery"
                   [placeholder]="filterPlaceholder"
-                  (search)="onFilterChange($event)"
+                  (filterChange)="onFilterChange($event)"
                   [hidden]="!viewSource.data">
 </app-query-filter>
 
