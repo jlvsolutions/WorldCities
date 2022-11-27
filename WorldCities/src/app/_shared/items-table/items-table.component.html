@@ -59,7 +59,7 @@
   </mat-table>
 
   <mat-paginator (page)="pageChange.emit($event)"
-                 [length]="source.totalPages"
+                 [length]="source.totalCount"
                  [pageIndex]="source.pageIndex"
                  [pageSize]="source.pageSize"
                  [pageSizeOptions]="source.pageSizeOptions"

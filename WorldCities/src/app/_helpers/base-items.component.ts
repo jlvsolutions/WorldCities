@@ -88,6 +88,9 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     // TODO:  sanity work for deaults in viewSource.
     this.viewSource.sortColumn = this.filterColumn;
     this.viewSource.sortOrder = this.sortOrder;
+    this.viewSource.pageIndex = 0;
+    this.viewSource.pageSize = 10;
+    this.viewSource.pageSizeOptions = [10, 15, 25, 50, 100, 250, 1000, 5000];
   }
 
   private getFilterPlacehoder(columnName: string): string {
@@ -142,10 +145,10 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       this.filterQuery)
       .subscribe(result => {
         console.log(`BaseItemsComponent getData Result: ${result.data.length} items returned.`);
-        this.viewSource.totalPages = result.totalCount;
+        this.viewSource.data = result.data;
         this.viewSource.pageIndex = result.pageIndex;
         this.viewSource.pageSize = result.pageSize;
-        this.viewSource.data = result.data;
+        this.viewSource.totalCount = result.totalCount;
         this.showMsg.message = `Showing results ${this.itemsRetrievedText(result.totalCount, result.pageIndex, result.pageSize)}`;
       }, error => {
         switch (error.status) {

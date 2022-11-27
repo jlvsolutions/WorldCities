@@ -5,10 +5,10 @@ export interface IItemsViewSource<TDto> {
   get displayColumns(): string[];
   sortColumn: string;
   sortOrder: '' | 'asc' | 'desc';
-  totalPages: number;
   pageIndex: number;
   pageSize: number;
   pageSizeOptions: number[];
+  totalCount: number;
   schema: DataMemberSchema[];
   data: TDto[];
 }
@@ -16,10 +16,10 @@ export interface IItemsViewSource<TDto> {
 export class ItemsViewSource<TDto> implements IItemsViewSource<TDto> {
   sortColumn: string = '';
   sortOrder: '' | 'asc' | 'desc' = 'asc';
-  totalPages: number = 0;
   pageIndex: number = 0;
   pageSize: number = 0;
   pageSizeOptions: number[] = [];
+  totalCount: number = 0;
   schema: DataMemberSchema[] = [];
   data!: TDto[];
 
