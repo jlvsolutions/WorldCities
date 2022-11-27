@@ -57,10 +57,9 @@ describe('CitiesComponent', () => {
     component = fixture.componentInstance;
 
     // configure fixture/component/children/etc.
-    component.paginator = jasmine.createSpyObj(
-      "MatPaginator", ["length", "pageIndex", "pageSize"]
-    );
-
+    //component.paginator = jasmine.createSpyObj(
+    //  "MatPaginator", ["length", "pageIndex", "pageSize"]
+    //);
 
     fixture.detectChanges();
   });
