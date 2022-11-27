@@ -35,7 +35,6 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   public viewSource: IItemsViewSource<TDto> = new ItemsViewSource<TDto>();
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('queryFilter') filter!: IQueryFilter;
   @ViewChild('showMessage') showMsg!: IShowMessage;
 
@@ -87,8 +86,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.filterPlaceholder = this.getFilterPlacehoder(this.filterColumn);
     this.sortOrder = 'asc';
     // TODO:  sanity work for deaults in viewSource.
-    this.viewSource.defaultSortColumn = this.filterColumn;
-    this.viewSource.defaultSortOrder = this.sortOrder;
+    this.viewSource.sortColumn = this.filterColumn;
+    this.viewSource.sortOrder = this.sortOrder;
   }
 
   private getFilterPlacehoder(columnName: string): string {
@@ -143,9 +142,9 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       this.filterQuery)
       .subscribe(result => {
         console.log(`BaseItemsComponent getData Result: ${result.data.length} items returned.`);
-        this.paginator.length = result.totalCount;
-        this.paginator.pageIndex = result.pageIndex;
-        this.paginator.pageSize = result.pageSize;
+        this.viewSource.totalPages = result.totalCount;
+        this.viewSource.pageIndex = result.pageIndex;
+        this.viewSource.pageSize = result.pageSize;
         this.viewSource.data = result.data;
         this.showMsg.message = `Showing results ${this.itemsRetrievedText(result.totalCount, result.pageIndex, result.pageSize)}`;
       }, error => {

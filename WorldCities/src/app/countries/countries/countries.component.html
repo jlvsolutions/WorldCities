@@ -21,17 +21,10 @@
 <app-items-table [source]="viewSource"
                  [rowToolTip]="rowTooltip"
                  (sortChange)="onSortChange($event)"
+                 (pageChange)="onPageChange($event)"
                  (detailClick)="onDetailClick($event)"
                  (rowClick)="onRowClick($event)"
                  (rowMouseOver)="onRowMouseOver($event)"
                  [hidden]="!viewSource.data">
 </app-items-table>
-
-<mat-paginator [hidden]="!viewSource.data"
-               (page)="onPageChange($event)"
-               [pageSize]="15"
-               [pageSizeOptions]="[10, 15, 20, 50, 100, 500, 1000, 5000]"
-               showFirstLastButtons>
-</mat-paginator>
-
 

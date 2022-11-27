@@ -3,16 +3,23 @@ export interface IItemsViewSource<TDto> {
   get modelColumns(): string[];
   /** Gets a string array of column labels from the schema */
   get displayColumns(): string[];
-  defaultSortColumn: string;
-  defaultSortOrder: '' | 'asc' | 'desc';
+  sortColumn: string;
+  sortOrder: '' | 'asc' | 'desc';
+  totalPages: number;
+  pageIndex: number;
+  pageSize: number;
+  pageSizeOptions: number[];
   schema: DataMemberSchema[];
   data: TDto[];
 }
 
 export class ItemsViewSource<TDto> implements IItemsViewSource<TDto> {
-  defaultSortColumn: string = '';
-  defaultSortOrder: '' | 'asc' | 'desc' = 'asc';
-
+  sortColumn: string = '';
+  sortOrder: '' | 'asc' | 'desc' = 'asc';
+  totalPages: number = 0;
+  pageIndex: number = 0;
+  pageSize: number = 0;
+  pageSizeOptions: number[] = [];
   schema: DataMemberSchema[] = [];
   data!: TDto[];
 

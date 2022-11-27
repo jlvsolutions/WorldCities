@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { IItemsViewSource } from '@app/_models';
 import { Sort } from '@angular/material/sort';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
 /**  Displays a mat-table using the provided IItemsView interface */
 @Component({
@@ -20,6 +21,9 @@ export class ItemsTableComponent implements OnInit {
 
   /** An event that fires when there is a change to the sorting column or sorting order. */
   @Output() sortChange: EventEmitter<Sort> = new EventEmitter<Sort>();
+
+  /** An event that fires when the paginator requests new page. */
+  @Output() pageChange: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
 
   /** An event that fires when the user clicks a dynamically created button or hyperlink */
   @Output() detailClick: EventEmitter<{ key: string, row: any }> = new EventEmitter<{ key: string, row: any }>();
