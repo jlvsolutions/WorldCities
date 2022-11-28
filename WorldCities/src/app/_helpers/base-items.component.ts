@@ -19,15 +19,15 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   // pagination
   pageIndex: number = 0;
   pageSize: number = 10;
-  // sorting
-  sortColumn: string = '';
-  sortOrder: '' | 'desc' | 'asc' = 'asc';
+
   // filtering
   filterColumn: string = '';
   filterQuery: string = ''
   filterPlaceholder: string = 'Enter filtering text...';
+
   // row
   rowTooltip: string = 'default ';
+
   // authorization
   public isLoggedIn: boolean = false;
   public isAdministrator: boolean = false;
@@ -81,13 +81,14 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   private setDefaults(): void {
     this.titleSuffix = '';
+
     this.filterQuery = '';
-    this.filterColumn = this.sortColumn = this.getDefaultColumn();
+    this.filterColumn = this.getDefaultColumn();
     this.filterPlaceholder = this.getFilterPlacehoder(this.filterColumn);
-    this.sortOrder = 'asc';
+
+    this.viewSource.sort = { active: this.getDefaultColumn(), direction: 'asc' };
+
     // TODO:  sanity work for deaults in viewSource.
-    this.viewSource.sortColumn = this.filterColumn;
-    this.viewSource.sortOrder = this.sortOrder;
     this.viewSource.pageIndex = 0;
     this.viewSource.pageSize = 10;
     this.viewSource.pageSizeOptions = [10, 15, 25, 50, 100, 250, 1000, 5000];
@@ -107,13 +108,12 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   onSortChange(sort: Sort) {
     console.log(`BaseItemsComponent:  sortChange col=${sort.active}, dir=${sort.direction}`);
-    if (sort.active !== this.sortColumn) {
+    if (sort.active !== this.viewSource.sort?.active) {
       this.filterQuery = '';
     }
     this.filterPlaceholder = this.getFilterPlacehoder(sort.active);
     this.filterColumn = sort.active;
-    this.sortColumn = sort.active;
-    this.sortOrder = sort.direction;
+    this.viewSource.sort = sort;
     this.getData();
   }
 
@@ -132,15 +132,15 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   }
 
   getData() {
-    console.log(`BaseItemsComponent getData: filterQuery=${this.filterQuery}, filterColumn=${this.filterColumn}, sortColumn=${this.sortColumn}, pageIndex=${this.pageIndex}`);
+    console.log(`BaseItemsComponent getData: filterQuery=${this.filterQuery}, filterColumn=${this.filterColumn}, sortColumn=${this.viewSource.sort.active}, pageIndex=${this.pageIndex}`);
     if (this.showMsg)
       this.showMsg.spinner = "Retrieving...";
 
     this.service.getData(
       this.pageIndex,
       this.pageSize,
-      this.sortColumn,
-      this.sortOrder,
+      this.viewSource.sort.active,
+      this.viewSource.sort.direction,
       this.filterColumn,
       this.filterQuery)
       .subscribe(result => {
@@ -204,9 +204,9 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.activatedRoute.queryParams
       .pipe(takeUntil(this.destroySubject))
       .subscribe(params => {
-        this.filterColumn = this.sortColumn = params['filterColumn'] ?? '';
+        this.filterColumn = this.viewSource.sort.active = params['filterColumn'] ?? '';
         this.filterQuery = params['filterQuery'] ?? '';
-        this.sortColumn = params['sortColumn'] ?? '';
+        this.viewSource.sort.active = params['sortColumn'] ?? '';
         console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.filterColumn}, filterQuery=${this.filterQuery}`);
         if (this.filterColumn === '' && this.filterQuery === '') {
           this.setDefaults();

@@ -1,21 +1,22 @@
+import { Sort } from '@angular/material/sort';
+
 export interface IItemsViewSource<TDto> {
-  /** Gets a string array of the model's property names from the schema */
-  get modelColumns(): string[];
-  /** Gets a string array of column labels from the schema */
-  get displayColumns(): string[];
-  sortColumn: string;
-  sortOrder: '' | 'asc' | 'desc';
+  sort: Sort;
   pageIndex: number;
   pageSize: number;
   pageSizeOptions: number[];
   totalCount: number;
   schema: DataMemberSchema[];
   data: TDto[];
+
+  /** Gets a string array of the model's property names from the schema */
+  get modelColumns(): string[];
+  /** Gets a string array of column labels from the schema */
+  get displayColumns(): string[];
 }
 
 export class ItemsViewSource<TDto> implements IItemsViewSource<TDto> {
-  sortColumn: string = '';
-  sortOrder: '' | 'asc' | 'desc' = 'asc';
+  sort!: Sort;
   pageIndex: number = 0;
   pageSize: number = 0;
   pageSizeOptions: number[] = [];
@@ -27,10 +28,11 @@ export class ItemsViewSource<TDto> implements IItemsViewSource<TDto> {
   get displayColumns(): string[] { return this.schema.map((col) => col.label); }
 }
 
+/**
+ * Describes the data model schema and how/if to be dispalyed.
+ * If 'type' is 'button' or 'link', the key is used to identify the button or link.
+ */
 export class DataMemberSchema {
-  /** Identifies which member of the data model this entry refers to.
-   * If 'type' is 'button' or 'link', the key is used to identify the button or link.
-   */
   key: any;
   /** Display friendly string for identifying the data model member in the column header */
   label: string = '';
@@ -52,6 +54,4 @@ export class DataMemberSchema {
   hidden?: boolean = false;
   /** Prevents sorting on the column. The button type is automatically not sortable. */
   noSort?: boolean = false;
-
-
 }

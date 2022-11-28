@@ -3,8 +3,8 @@
              class="mat-elevation-z8"
              matSort
              (matSortChange)="sortChange.emit($event)"
-             [matSortActive]="source.sortColumn"
-             [matSortDirection]="source.sortOrder">
+             [matSortActive]="source.sort.active ?? ''"
+             [matSortDirection]="source.sort.direction ?? ''">
 
     <ng-container *ngFor="let col of source.schema; let i = index" [matColumnDef]="col.key">
 
