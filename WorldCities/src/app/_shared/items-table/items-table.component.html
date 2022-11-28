@@ -59,10 +59,10 @@
   </mat-table>
 
   <mat-paginator (page)="pageChange.emit($event)"
-                 [length]="source.totalCount"
-                 [pageIndex]="source.pageIndex"
-                 [pageSize]="source.pageSize"
-                 [pageSizeOptions]="source.pageSizeOptions"
+                 [length]="source.paginator.totalCount"
+                 [pageIndex]="source.paginator.pageIndex"
+                 [pageSize]="source.paginator.pageSize"
+                 [pageSizeOptions]="source.paginator.pageSizeOptions"
                  showFirstLastButtons>
   </mat-paginator>
 

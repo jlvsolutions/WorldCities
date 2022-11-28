@@ -1,11 +1,15 @@
 import { Sort } from '@angular/material/sort';
 
-export interface IItemsViewSource<TDto> {
-  sort: Sort;
+export interface IPaginator {
   pageIndex: number;
   pageSize: number;
-  pageSizeOptions: number[];
   totalCount: number;
+  pageSizeOptions: number[];
+}
+
+export interface IItemsViewSource<TDto> {
+  sort: Sort;
+  paginator: IPaginator;
   schema: DataMemberSchema[];
   data: TDto[];
 
@@ -17,10 +21,7 @@ export interface IItemsViewSource<TDto> {
 
 export class ItemsViewSource<TDto> implements IItemsViewSource<TDto> {
   sort!: Sort;
-  pageIndex: number = 0;
-  pageSize: number = 0;
-  pageSizeOptions: number[] = [];
-  totalCount: number = 0;
+  paginator!: IPaginator;
   schema: DataMemberSchema[] = [];
   data!: TDto[];
 
