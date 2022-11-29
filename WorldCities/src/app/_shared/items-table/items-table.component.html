@@ -1,4 +1,10 @@
 <div [hidden]="!source">
+  <app-query-filter #queryFilter
+                    [filterText]="source.filter.filterQuery"
+                    [placeholder]="source.filter.placeholder"
+                    (filterChange)="filterChange.emit($event)">
+  </app-query-filter>
+
   <mat-table [dataSource]="source.data"
              class="mat-elevation-z8"
              matSort
@@ -22,7 +28,7 @@
           <ng-container *ngSwitchCase="'button'">
             <button mat-flat-button color="primary"
                     [title]="col.toolTip + item[col.itemName!]"
-                    (click)="$event.stopPropagation(); onDetailClick(col.key, item)">
+                    (click)="$event.stopPropagation(); onDetailClick(col.key, item);">
               {{col.label}}
             </button>
           </ng-container>

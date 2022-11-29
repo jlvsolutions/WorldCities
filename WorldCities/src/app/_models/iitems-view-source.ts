@@ -7,10 +7,23 @@ export interface IPaginator {
   pageSizeOptions: number[];
 }
 
+export class FilterColumn {
+  name: string = '';
+  value: string = '';
+}
+
+export interface IFilter {
+  filterQuery: string,
+  filterColumn: string,
+  placeholder: string,
+  filterColumns: FilterColumn[]
+}
+
 export interface IItemsViewSource<TDto> {
   sort: Sort;
   paginator: IPaginator;
-  schema: DataMemberSchema[];
+  filter: IFilter;
+  schema: ItemSchema[];
   data: TDto[];
 
   /** Gets a string array of the model's property names from the schema */
@@ -22,7 +35,8 @@ export interface IItemsViewSource<TDto> {
 export class ItemsViewSource<TDto> implements IItemsViewSource<TDto> {
   sort!: Sort;
   paginator!: IPaginator;
-  schema: DataMemberSchema[] = [];
+  filter!: IFilter;
+  schema: ItemSchema[] = [];
   data!: TDto[];
 
   get modelColumns(): string[] { return this.schema.map((col) => col.key); }
@@ -33,7 +47,8 @@ export class ItemsViewSource<TDto> implements IItemsViewSource<TDto> {
  * Describes the data model schema and how/if to be dispalyed.
  * If 'type' is 'button' or 'link', the key is used to identify the button or link.
  */
-export class DataMemberSchema {
+export class ItemSchema {
+  /** Actual object model's member/property name. */
   key: any;
   /** Display friendly string for identifying the data model member in the column header */
   label: string = '';

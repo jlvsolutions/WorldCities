@@ -22,8 +22,8 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
   form!: FormGroup;
 
   @Input() filterText: string = '';
-  @Input() filterColumn: string = '';
-  @Input() Columns: string[] = [];
+  @Input() filterColumn?: string;
+  @Input() Columns?: string[];
   @Input() placeholder: string = 'Enter filter text...';
   @Output() filterChange: EventEmitter<string> = new EventEmitter<string>();
 

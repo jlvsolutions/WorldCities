@@ -4,7 +4,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
 import { Subject, takeUntil } from 'rxjs';
 
-import { IQueryFilter, IShowMessage, IItemsViewSource, ItemsViewSource } from '@app/_models';
+import { IQueryFilter, IShowMessage, IItemsViewSource, ItemsViewSource, FilterColumn } from '@app/_models';
 import { BaseService, AuthService } from '@app/_services';
 
 /** Base class for displaying a collection of items. */
@@ -16,13 +16,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   title: string = '';
   titleSuffix: string = '';
 
-  // filtering
-  filterColumn: string = '';
-  filterQuery: string = ''
-  filterPlaceholder: string = 'Enter filtering text...';
-
   // row
-  rowTooltip: string = 'default ';
+  rowTooltip: string = '';
 
   // authorization
   public isLoggedIn: boolean = false;
@@ -41,8 +36,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     protected service: BaseService<TDto, Tid>) {
 
     console.log('BaseItemsComponent derived instance created.');
-    this.setSchema();           // derived class defines the schema/metadata for it's data model.
-    this.setDefaults();         // derived class sets some of the defaults.
+    this.setItemSchema();       // Called 1st. derived class defines the schema/metadata for it's data model.
+    this.setDefaults();         // Called 2nd. derived class sets some of the defaults.
   }
 
   ngOnInit() {
@@ -62,10 +57,10 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   }
 
   /** Returns the schema/metadata for the derived class' model. */
-  abstract getSchema(): any[];
+  abstract getItemSchema(): any[];
 
-  private setSchema(): void {
-    this.viewSource.schema = this.getSchema()
+  private setItemSchema(): void {
+    this.viewSource.schema = this.getItemSchema()
       .filter(s => !s.hidden);
   }
 
@@ -78,16 +73,18 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   private setDefaults(): void {
     this.titleSuffix = ''; 
 
-    this.filterQuery = '';
-    this.filterColumn = this.getDefaultColumn();
-    this.filterPlaceholder = this.getFilterPlacehoder(this.filterColumn);
-
     this.viewSource.sort = { active: this.getDefaultColumn(), direction: 'asc' };
     this.viewSource.paginator = {
       pageIndex: 0,
       pageSize: 10,
-      pageSizeOptions: [10, 15, 25, 50, 100, 250, 1000, 5000],
+      pageSizeOptions: [10, 15, 25, 50, 100, 250, 500, 1000, 5000],
       totalCount: 0
+    }
+    this.viewSource.filter = {
+      filterQuery: '',
+      filterColumn: this.getDefaultColumn(),
+      placeholder: this.getFilterPlacehoder(this.getDefaultColumn()), 
+      filterColumns: this.viewSource.schema.map(col => { return { name: col.key, value: col.label } })
     }
   }
 
@@ -106,10 +103,14 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   onSortChange(sort: Sort) {
     console.log(`BaseItemsComponent:  sortChange col=${sort.active}, dir=${sort.direction}`);
     if (sort.active !== this.viewSource.sort?.active) {
-      this.filterQuery = '';
+      this.viewSource.filter.filterQuery = '';
+      this.viewSource.paginator.pageIndex = 0;
     }
-    this.filterPlaceholder = this.getFilterPlacehoder(sort.active); // This until IQueryFilter implemented
-    this.filterColumn = sort.active;                                // This until IQueryFilter implemented
+    else if (sort.direction !== this.viewSource.sort?.direction) {
+      this.viewSource.paginator.pageIndex = 0;
+    }
+    this.viewSource.filter.placeholder = this.getFilterPlacehoder(sort.active); // This until IQueryFilter implemented
+    this.viewSource.filter.filterColumn = sort.active;                                // This until IQueryFilter implemented
     this.viewSource.sort = sort;
     this.getData();
   }
@@ -117,19 +118,19 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   onFilterChange(query: string) {
     console.log(`BaseItemsComponent onFilterChange query=${query}`);
     this.titleSuffix = '';
-    this.filterQuery = query;
+    this.viewSource.filter.filterQuery = query;
     this.viewSource.paginator.pageIndex = 0;
     this.getData();
   }
 
   onPageChange(pageEvent: PageEvent) {
     this.viewSource.paginator.pageIndex = pageEvent.pageIndex;
-    this.viewSource.paginator.pageSize;
+    this.viewSource.paginator.pageSize = pageEvent.pageSize;
     this.getData();
   }
 
   getData() {
-    console.log(`BaseItemsComponent getData: filterQuery=${this.filterQuery}, filterColumn=${this.filterColumn}, sortColumn=${this.viewSource.sort.active}, pageIndex=${this.viewSource.paginator.pageIndex}`);
+    console.log(`BaseItemsComponent getData: filterQuery=${this.viewSource.filter.filterQuery}, filterColumn=${this.viewSource.filter.filterColumn}, sortColumn=${this.viewSource.sort.active}, pageIndex=${this.viewSource.paginator.pageIndex}`);
     if (this.showMsg)
       this.showMsg.spinner = "Retrieving...";
 
@@ -138,8 +139,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       this.viewSource.paginator.pageSize,
       this.viewSource.sort.active,
       this.viewSource.sort.direction,
-      this.filterColumn,
-      this.filterQuery)
+      this.viewSource.filter.filterColumn,
+      this.viewSource.filter.filterQuery)
       .subscribe(result => {
         console.log(`BaseItemsComponent getData Result: ${result.data.length} items returned.`);
         this.viewSource.data = result.data;
@@ -201,16 +202,17 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.activatedRoute.queryParams
       .pipe(takeUntil(this.destroySubject))
       .subscribe(params => {
-        this.filterColumn = this.viewSource.sort.active = params['filterColumn'] ?? '';
-        this.filterQuery = params['filterQuery'] ?? '';
+        this.viewSource.sort.active = params['filterColumn'] ?? '';
         this.viewSource.sort.active = params['sortColumn'] ?? '';
-        console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.filterColumn}, filterQuery=${this.filterQuery}`);
-        if (this.filterColumn === '' && this.filterQuery === '') {
+        this.viewSource.filter.filterColumn = this.viewSource.sort.active = params['filterColumn'] ?? '';
+        this.viewSource.filter.filterQuery = params['filterQuery'] ?? '';
+        console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.viewSource.filter.filterColumn}, filterQuery=${this.viewSource.filter.filterQuery}`);
+        if (this.viewSource.filter.filterColumn === '' && this.viewSource.filter.filterQuery === '') {
           this.setDefaults();
-          console.log(`BaseItemsComponent:  Resetting to defaults: filterColumn=${this.filterColumn}, filterQuery=${this.filterQuery}`);
+          console.log(`BaseItemsComponent:  Resetting to defaults: filterColumn=${this.viewSource.filter.filterColumn}, filterQuery=${this.viewSource.filter.filterQuery}`);
         }
         else
-          this.titleSuffix = ' - ' + this.filterQuery;
+          this.titleSuffix = ' - ' + this.viewSource.filter.filterQuery;
         this.getData();  // gets called immediatly when first subscribes.  like a behaviorsubject.
       });
   }
@@ -222,7 +224,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         console.log(`BaseItemsComponent:  User changed user=${user?.email}`);
         this.isLoggedIn = this.authService.isAuthenticated();
         this.isAdministrator = this.authService.isAdministrator();
-        this.setSchema();
+        this.setItemSchema();
       });
 
   }

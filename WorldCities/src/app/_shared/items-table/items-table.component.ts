@@ -25,6 +25,9 @@ export class ItemsTableComponent implements OnInit {
   /** An event that fires when the paginator requests new page. */
   @Output() pageChange: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
 
+  /** An event that fires when the text of the query filter changes. */
+  @Output() filterChange: EventEmitter<string> = new EventEmitter<string>();
+
   /** An event that fires when the user clicks a dynamically created button or hyperlink */
   @Output() detailClick: EventEmitter<{ key: string, row: any }> = new EventEmitter<{ key: string, row: any }>();
 

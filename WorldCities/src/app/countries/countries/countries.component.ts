@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { BaseItemsComponent } from '@app/_helpers/base-items.component';
-import { Country, DataMemberSchema } from '@app/_models';
+import { Country, ItemSchema } from '@app/_models';
 import { CountryService, AuthService } from '@app/_services';
 
 @Component({
@@ -23,7 +23,7 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
     this.title = 'Countries';
   }
 
-  getSchema(): DataMemberSchema[] {
+  getItemSchema(): ItemSchema[] {
     console.log(`CountriesComponent:  Setting schema. isLoggedIn:  ${this.isLoggedIn}, isAdministrator:  ${this.isAdministrator}`);
     return [
       { key: 'id', label: 'ID', description: 'The database ID of the country.' },

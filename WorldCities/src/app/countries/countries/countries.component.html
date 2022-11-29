@@ -11,17 +11,11 @@
 
 <app-show-message #showMessage></app-show-message>
 
-<app-query-filter #queryFilter
-                  [filterText]="filterQuery"
-                  [placeholder]="filterPlaceholder"
-                  (filterChange)="onFilterChange($event)"
-                  [hidden]="!viewSource.data">
-</app-query-filter>
-
 <app-items-table [source]="viewSource"
                  [rowToolTip]="rowTooltip"
                  (sortChange)="onSortChange($event)"
                  (pageChange)="onPageChange($event)"
+                 (filterChange)="onFilterChange($event)"
                  (detailClick)="onDetailClick($event)"
                  (rowClick)="onRowClick($event)"
                  (rowMouseOver)="onRowMouseOver($event)"
