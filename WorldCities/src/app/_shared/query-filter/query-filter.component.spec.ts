@@ -6,6 +6,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatInputHarness } from '@angular/material/input/testing';
 import { MatIconHarness } from '@angular/material/icon/testing';
+import { FilterEvent } from '@app/_models';
 
 import { QueryFilterComponent } from './query-filter.component';
 
@@ -51,7 +52,7 @@ describe('QueryFilterComponent', () => {
 
     spyOn(component.filterChange, 'emit');
     await queryInput.setValue('bulverde');
-    expect(component.filterChange.emit).toHaveBeenCalledOnceWith('bulverde');
+    expect(component.filterChange.emit).toHaveBeenCalledOnceWith({ query: 'bulverde', column: '' });
   });
 
 });

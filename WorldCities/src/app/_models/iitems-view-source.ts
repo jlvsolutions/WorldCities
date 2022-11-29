@@ -19,6 +19,11 @@ export interface IFilter {
   filterColumns: FilterColumn[]
 }
 
+export class FilterEvent {
+  query: string = '';
+  column: string = '';
+}
+
 export interface IItemsViewSource<TDto> {
   sort: Sort;
   paginator: IPaginator;

@@ -1,11 +1,16 @@
-import { EventEmitter } from "@angular/core";
+import { EventEmitter } from '@angular/core';
+import { FilterEvent, FilterColumn } from '@app/_models';
 
 /** Interface for components which provide input to filter queries */
 export interface IQueryFilter {
-  /** Text for filtering a query */
+  /** Filtering text for query */
   filterText: string;
-  /** Prompting text for input */
+  /** Column to apply the filter on */
+  filterColumn: string;
+  /** Columns to choose from to which to apply the filtering text */
+  columns: FilterColumn[];
+  /** Prompting for filter text */
   placeholder: string;
-  /** Event fired when a new query is requested.  Contains the filtering text to use. */
-  filterChange: EventEmitter<string>;
+  /** Event fired when a new query is requested.  Contains the filtering text and column. */
+  filterChange: EventEmitter<FilterEvent>;
 }

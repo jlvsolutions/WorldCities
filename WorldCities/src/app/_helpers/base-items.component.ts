@@ -4,7 +4,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
 import { Subject, takeUntil } from 'rxjs';
 
-import { IQueryFilter, IShowMessage, IItemsViewSource, ItemsViewSource, FilterColumn } from '@app/_models';
+import { IQueryFilter, IShowMessage, IItemsViewSource, ItemsViewSource, FilterColumn, FilterEvent } from '@app/_models';
 import { BaseService, AuthService } from '@app/_services';
 
 /** Base class for displaying a collection of items. */
@@ -115,10 +115,10 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.getData();
   }
 
-  onFilterChange(query: string) {
+  onFilterChange(query: FilterEvent) {
     console.log(`BaseItemsComponent onFilterChange query=${query}`);
     this.titleSuffix = '';
-    this.viewSource.filter.filterQuery = query;
+    this.viewSource.filter.filterQuery = query.query;
     this.viewSource.paginator.pageIndex = 0;
     this.getData();
   }

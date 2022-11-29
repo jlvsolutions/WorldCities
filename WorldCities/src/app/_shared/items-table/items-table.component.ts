@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { IItemsViewSource } from '@app/_models';
+import { IItemsViewSource, FilterEvent } from '@app/_models';
 import { Sort } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
@@ -26,7 +26,7 @@ export class ItemsTableComponent implements OnInit {
   @Output() pageChange: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
 
   /** An event that fires when the text of the query filter changes. */
-  @Output() filterChange: EventEmitter<string> = new EventEmitter<string>();
+  @Output() filterChange: EventEmitter<FilterEvent> = new EventEmitter<FilterEvent>();
 
   /** An event that fires when the user clicks a dynamically created button or hyperlink */
   @Output() detailClick: EventEmitter<{ key: string, row: any }> = new EventEmitter<{ key: string, row: any }>();

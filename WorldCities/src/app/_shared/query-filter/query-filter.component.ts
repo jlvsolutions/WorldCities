@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-import { IQueryFilter } from '@app/_models';
+import { IQueryFilter, FilterEvent, FilterColumn } from '@app/_models';
 
 /** Provides a debounced query filter */
 @Component({
@@ -22,10 +22,10 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
   form!: FormGroup;
 
   @Input() filterText: string = '';
-  @Input() filterColumn?: string;
-  @Input() Columns?: string[];
+  @Input() filterColumn: string = '';
+  @Input() columns: FilterColumn[] = [];
   @Input() placeholder: string = 'Enter filter text...';
-  @Output() filterChange: EventEmitter<string> = new EventEmitter<string>();
+  @Output() filterChange: EventEmitter<FilterEvent> = new EventEmitter<FilterEvent>();
 
   private filterTextChanged: Subject<string> = new Subject<string>();
 
@@ -46,7 +46,7 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
         .pipe(debounceTime(400), distinctUntilChanged())
         .subscribe(query => {
           this.filterText = query;
-          this.filterChange.emit(query);
+          this.filterChange.emit({column: this.filterColumn, query: this.filterText});
         })
     }
     this.filterTextChanged.next(searchText);
