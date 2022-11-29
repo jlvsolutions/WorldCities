@@ -84,7 +84,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       filterQuery: '',
       filterColumn: this.getDefaultColumn(),
       placeholder: this.getFilterPlacehoder(this.getDefaultColumn()), 
-      filterColumns: this.viewSource.schema.map(col => { return { name: col.key, value: col.label } })
+      filterColumns: this.viewSource.schema.map(col => { return { col: col.key, label: col.label } })
     }
   }
 

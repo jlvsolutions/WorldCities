@@ -8,8 +8,8 @@ export interface IPaginator {
 }
 
 export class FilterColumn {
-  name: string = '';
-  value: string = '';
+  col: string = '';
+  label: string = '';
 }
 
 export interface IFilter {
