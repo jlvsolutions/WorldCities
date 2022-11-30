@@ -16,7 +16,7 @@ export interface IFilter {
   filterQuery: string,
   filterColumn: string,
   placeholder: string,
-  filterColumns: FilterColumn[]
+  columns: FilterColumn[]
 }
 
 export class FilterEvent {

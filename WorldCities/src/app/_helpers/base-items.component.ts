@@ -36,8 +36,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     protected service: BaseService<TDto, Tid>) {
 
     console.log('BaseItemsComponent derived instance created.');
-    this.setItemSchema();       // Called 1st. derived class defines the schema/metadata for it's data model.
-    this.setDefaults();         // Called 2nd. derived class sets some of the defaults.
+    this.setItemSchema();
+    this.setDefaults();
   }
 
   ngOnInit() {
@@ -80,11 +80,13 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       pageSizeOptions: [10, 15, 25, 50, 100, 250, 500, 1000, 5000],
       totalCount: 0
     }
-    this.viewSource.filter = {
+    this.viewSource.filter = { 
       filterQuery: '',
       filterColumn: this.getDefaultColumn(),
       placeholder: this.getFilterPlacehoder(this.getDefaultColumn()), 
-      filterColumns: this.viewSource.schema.map(col => { return { col: col.key, label: col.label } })
+      columns: this.viewSource.schema
+        .filter(c => c.type !== 'button' && !c.noSort)
+        .map(col => { return { col: col.key, label: col.label } })
     }
   }
 
@@ -109,16 +111,15 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     else if (sort.direction !== this.viewSource.sort?.direction) {
       this.viewSource.paginator.pageIndex = 0;
     }
-    this.viewSource.filter.placeholder = this.getFilterPlacehoder(sort.active); // This until IQueryFilter implemented
-    this.viewSource.filter.filterColumn = sort.active;                                // This until IQueryFilter implemented
     this.viewSource.sort = sort;
     this.getData();
   }
 
   onFilterChange(query: FilterEvent) {
-    console.log(`BaseItemsComponent onFilterChange query=${query}`);
+    console.log(`BaseItemsComponent onFilterChange query=${query.query}, column=${query.column}`);
     this.titleSuffix = '';
     this.viewSource.filter.filterQuery = query.query;
+    this.viewSource.filter.filterColumn = query.column;
     this.viewSource.paginator.pageIndex = 0;
     this.getData();
   }

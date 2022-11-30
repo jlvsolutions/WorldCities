@@ -1,12 +1,22 @@
-<div class="query-filter">
   <form [formGroup]="form">
-    <mat-form-field class="query-filter-form-field">
+  <div class="query-filter">
 
+    <mat-form-field class="query-input">
       <input matInput formControlName="query" #filter (keyup)="onKeyUp(filter.value)"
              [placeholder]="placeholder"
              [value]="filterText">
       <mat-icon matSuffix class="filter-icon" (click)="filter.value=''; onKeyUp('')">clear_text</mat-icon>
       <mat-error *ngIf="form.controls['query'].errors?.['pattern']">Invalid characters entered.</mat-error>
     </mat-form-field>
-  </form>
-</div>
+
+    <mat-form-field class="query-select">
+      <mat-label>Column</mat-label>
+      <mat-select formControlName="columns" [value]="filterColumn" (selectionChange)="onSelectionChange($event)">
+        <mat-option *ngFor="let col of columns" [value]="col.col">
+          {{col.label}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </div>
+</form>
