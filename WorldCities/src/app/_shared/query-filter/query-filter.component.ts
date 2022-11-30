@@ -53,6 +53,10 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
   /** Debounce filter text changes */
   onKeyUp(searchText: string) {
     this.form.markAllAsTouched();
+
+    if (!this.form.valid)
+      return;
+
     if (this.filterTextChanged.observers.length === 0) {
       this.filterTextChanged
         .pipe(debounceTime(400), distinctUntilChanged())
@@ -67,7 +71,8 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
   onSelectionChange(event: MatSelectChange) {
     this.filterColumn = event.value;
     this.setPlaceholder();
-    this.filterChange.emit({ column: this.filterColumn, query: this.filterText });
+    if (this.form.valid)
+      this.filterChange.emit({ column: this.filterColumn, query: this.filterText });
   }
 
   private setPlaceholder() {
