@@ -83,18 +83,19 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.viewSource.filter = { 
       filterQuery: '',
       filterColumn: this.getDefaultColumn(),
-      placeholder: this.getFilterPlacehoder(this.getDefaultColumn()), 
+      placeholder: this.getFilterPlacehoder(this.getDefaultColumn()), // Not really used anymore.
       columns: this.viewSource.schema
         .filter(c => c.type !== 'button' && !c.noSort)
         .map(col => { return { col: col.key, label: col.label } })
     }
   }
 
+  /** Not really used.  Placeholder logic is in the IQueryFilter it'self. */
   private getFilterPlacehoder(columnName: string): string {
     return `Filter by ${this.viewSource.displayColumns[
-      this.viewSource.modelColumns.indexOf(columnName)]} (or part of it)...`;
+      this.viewSource.modelColumns.indexOf(columnName)]} (or PART of it)...`;
   }
-
+  
   /** Used to provide custom row tooltips for each data items. */
   abstract getRowToolTip(row: any): string;
 

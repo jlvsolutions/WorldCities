@@ -1,27 +1,11 @@
 import { Sort } from '@angular/material/sort';
+import { IFilter } from '@app/_models';
 
 export interface IPaginator {
   pageIndex: number;
   pageSize: number;
   totalCount: number;
   pageSizeOptions: number[];
-}
-
-export class FilterColumn {
-  col: string = '';
-  label: string = '';
-}
-
-export interface IFilter {
-  filterQuery: string,
-  filterColumn: string,
-  placeholder: string,
-  columns: FilterColumn[]
-}
-
-export class FilterEvent {
-  query: string = '';
-  column: string = '';
 }
 
 export interface IItemsViewSource<TDto> {
