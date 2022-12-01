@@ -1,11 +1,11 @@
 <div [hidden]="!source">
-  <app-query-filter #queryFilter
+  <query-filter #queryFilter
                     [filterText]="source.filter.filterQuery"
                     [filterColumn]="source.filter.filterColumn"
                     [placeholder]="source.filter.placeholder"
                     [columns]="source.filter.columns"
                     (filterChange)="filterChange.emit($event)">
-  </app-query-filter>
+  </query-filter>
 
   <mat-table [dataSource]="source.data"
              class="mat-elevation-z8"

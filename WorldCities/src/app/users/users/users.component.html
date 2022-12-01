@@ -9,9 +9,9 @@
 
 <p *ngIf="!viewSource"><em>Loading...</em></p>
 
-<app-show-message #showMessage></app-show-message>
+<show-message #showMessage></show-message>
 
-<app-items-table [source]="viewSource"
+<items-table [source]="viewSource"
                  [rowToolTip]="rowTooltip"
                  (sortChange)="onSortChange($event)"
                  (pageChange)="onPageChange($event)"
@@ -20,4 +20,4 @@
                  (rowClick)="onRowClick($event)"
                  (rowMouseOver)="onRowMouseOver($event)"
                  [hidden]="!viewSource.data">
-</app-items-table>
+</items-table>

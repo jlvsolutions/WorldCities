@@ -5,7 +5,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
 /**  Displays a mat-table using the provided IItemsView interface */
 @Component({
-  selector: 'app-items-table',
+  selector: 'items-table',
   templateUrl: './items-table.component.html',
   styleUrls: ['./items-table.component.scss']
 })

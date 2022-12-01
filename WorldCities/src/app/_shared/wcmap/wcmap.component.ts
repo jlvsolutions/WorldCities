@@ -5,7 +5,7 @@ import { FormGroup, FormControl, Validators, AbstractControl, AsyncValidatorFn }
 import { wcMapConfig } from './wcmap.config';
 
 @Component({
-  selector: 'app-wcmap',
+  selector: 'wcmap',
   templateUrl: './wcmap.component.html',
   styleUrls: ['./wcmap.component.scss']
 })

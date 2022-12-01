@@ -8,7 +8,7 @@ import { IQueryFilter, FilterEvent, FilterColumn } from '@app/_models';
 
 /** Provides a debounced query filter */
 @Component({
-  selector: 'app-query-filter',
+  selector: 'query-filter',
   templateUrl: './query-filter.component.html',
   styleUrls: ['./query-filter.component.scss']
 

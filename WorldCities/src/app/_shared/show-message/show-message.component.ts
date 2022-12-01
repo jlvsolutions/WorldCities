@@ -3,7 +3,7 @@ import { IShowMessage } from '@app/_models';
 
 /** Shows messages to users as informative or as an error. */
 @Component({
-  selector: 'app-show-message',
+  selector: 'show-message',
   templateUrl: './show-message.component.html',
   styles: [`
     .showMessageLabel {
