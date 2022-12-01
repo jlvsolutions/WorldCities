@@ -1,7 +1,7 @@
 <div [hidden]="!source">
   <query-filter #queryFilter
-                    [filterText]="source.filter.filterQuery"
-                    [filterColumn]="source.filter.filterColumn"
+                    [query]="source.filter.query"
+                    [column]="source.filter.column"
                     [placeholder]="source.filter.placeholder"
                     [columns]="source.filter.columns"
                     (filterChange)="filterChange.emit($event)">
@@ -21,10 +21,10 @@
         <mat-header-cell class="mat-header-cell" *matHeaderCellDef [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
       </ng-container>
       <ng-template #sortedHeaderTemplate>
-        <mat-header-cell [class.filter-active]="source.filter.filterColumn === 'MaybeNot' + col.key" *matHeaderCellDef mat-sort-header [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
+        <mat-header-cell [class.filter-active]="source.filter.column === 'MaybeNot' + col.key" *matHeaderCellDef mat-sort-header [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
       </ng-template>
 
-      <mat-cell [class.filter-active]="source.filter.filterColumn === col.key" *matCellDef="let item">
+      <mat-cell [class.filter-active]="source.filter.column === col.key" *matCellDef="let item">
         <div [ngSwitch]="col.type">
 
           <ng-container *ngSwitchCase="'button'">

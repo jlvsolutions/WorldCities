@@ -4,7 +4,7 @@
     <mat-form-field class="query-input">
       <input matInput formControlName="query" #filter (keyup)="onKeyUp(filter.value)"
              [placeholder]="placeholder"
-             [value]="filterText">
+             [value]="query">
       <mat-icon matSuffix class="filter-icon" (click)="filter.value=''; onKeyUp('')">clear_text</mat-icon>
       <mat-error *ngIf="form.controls['query'].errors?.['pattern']">Invalid characters entered.</mat-error>
     </mat-form-field>
@@ -13,7 +13,7 @@
       <mat-label>Column</mat-label>
       <mat-select formControlName="columns"
                   class="query-select-background"
-                  [value]="filterColumn"
+                  [value]="column"
                   (selectionChange)="onSelectionChange($event)">
       <mat-option *ngFor="let col of columns" [value]="col.col">
         {{col.label}}

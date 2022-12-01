@@ -1,6 +1,7 @@
 import { Sort } from '@angular/material/sort';
 import { IFilter } from '@app/_models';
 
+/** Interface for components that provide pagination functionality */
 export interface IPaginator {
   pageIndex: number;
   pageSize: number;

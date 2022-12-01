@@ -16,8 +16,8 @@ import { IQueryFilter, FilterEvent, FilterColumn } from '@app/_models';
 export class QueryFilterComponent implements OnInit, IQueryFilter {
   form!: FormGroup;
 
-  @Input() filterText: string = '';
-  @Input() filterColumn: string = '';
+  @Input() query: string = '';
+  @Input() column: string = '';
   @Input() columns: FilterColumn[] = [];
   @Input() placeholder: string = '';
   @Output() filterChange: EventEmitter<FilterEvent> = new EventEmitter<FilterEvent>();
@@ -29,8 +29,8 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      query: [this.filterText, Validators.pattern(/^[a-zA-Z0-9.-\s~`']+$/)],
-      columns: [this.filterColumn]
+      query: [this.query, Validators.pattern(/^[a-zA-Z0-9.-\s~`']+$/)],
+      columns: [this.column]
     });
     this.setPlaceholder();
   }
@@ -46,23 +46,23 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
       this.filterTextChanged
         .pipe(debounceTime(400), distinctUntilChanged())
         .subscribe(query => {
-          this.filterText = query;
-          this.filterChange.emit({column: this.filterColumn, query: this.filterText});
+          this.query = query;
+          this.filterChange.emit({column: this.column, query: this.query});
         })
     }
     this.filterTextChanged.next(searchText);
   }
 
   onSelectionChange(event: MatSelectChange) {
-    this.filterColumn = event.value;
+    this.column = event.value;
     this.setPlaceholder();
     if (this.form.valid)
-      this.filterChange.emit({ column: this.filterColumn, query: this.filterText });
+      this.filterChange.emit({ column: this.column, query: this.query });
   }
 
   private setPlaceholder() {
-    if (this.filterColumn) {
-      let by = this.columns.find(c => c.col === this.filterColumn)?.label;
+    if (this.column) {
+      let by = this.columns.find(c => c.col === this.column)?.label;
       this.placeholder = `Filter by ${by} (or part of it...)`;
     }
     else

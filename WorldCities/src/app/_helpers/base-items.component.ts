@@ -81,8 +81,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       totalCount: 0
     }
     this.viewSource.filter = { 
-      filterQuery: '',
-      filterColumn: this.getDefaultColumn(),
+      query: '',
+      column: this.getDefaultColumn(),
       placeholder: this.getFilterPlacehoder(this.getDefaultColumn()), // Not really used anymore.
       columns: this.viewSource.schema
         .filter(c => c.type !== 'button' && !c.noSort)
@@ -106,7 +106,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   onSortChange(sort: Sort) {
     console.log(`BaseItemsComponent:  sortChange col=${sort.active}, dir=${sort.direction}`);
     if (sort.active !== this.viewSource.sort?.active) {
-      this.viewSource.filter.filterQuery = '';
+      this.viewSource.filter.query = '';
       this.viewSource.paginator.pageIndex = 0;
     }
     else if (sort.direction !== this.viewSource.sort?.direction) {
@@ -119,8 +119,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   onFilterChange(query: FilterEvent) {
     console.log(`BaseItemsComponent onFilterChange query=${query.query}, column=${query.column}`);
     this.titleSuffix = '';
-    this.viewSource.filter.filterQuery = query.query;
-    this.viewSource.filter.filterColumn = query.column;
+    this.viewSource.filter.query = query.query;
+    this.viewSource.filter.column = query.column;
     this.viewSource.paginator.pageIndex = 0;
     this.getData();
   }
@@ -132,7 +132,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   }
 
   getData() {
-    console.log(`BaseItemsComponent getData: filterQuery=${this.viewSource.filter.filterQuery}, filterColumn=${this.viewSource.filter.filterColumn}, sortColumn=${this.viewSource.sort.active}, pageIndex=${this.viewSource.paginator.pageIndex}`);
+    console.log(`BaseItemsComponent getData: filterQuery=${this.viewSource.filter.query}, filterColumn=${this.viewSource.filter.column}, sortColumn=${this.viewSource.sort.active}, pageIndex=${this.viewSource.paginator.pageIndex}`);
     if (this.showMsg)
       this.showMsg.spinner = "Retrieving...";
 
@@ -141,8 +141,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       this.viewSource.paginator.pageSize,
       this.viewSource.sort.active,
       this.viewSource.sort.direction,
-      this.viewSource.filter.filterColumn,
-      this.viewSource.filter.filterQuery)
+      this.viewSource.filter.column,
+      this.viewSource.filter.query)
       .subscribe(result => {
         console.log(`BaseItemsComponent getData Result: ${result.data.length} items returned.`);
         this.viewSource.data = result.data;
@@ -206,8 +206,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       .subscribe(params => {
         console.log('BaseItemsComponent:  New query parms');
         this.viewSource.sort.active = params['sortColumn'] ?? '';
-        this.viewSource.filter.filterColumn = params['filterColumn'] ?? '';
-        this.viewSource.filter.filterQuery = params['filterQuery'] ?? '';
+        this.viewSource.filter.column = params['filterColumn'] ?? '';
+        this.viewSource.filter.query = params['filterQuery'] ?? '';
         this.getData();  // gets called immediatly when first subscribes.  like a behaviorsubject.
       });
   }

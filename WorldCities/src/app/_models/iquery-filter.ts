@@ -1,11 +1,11 @@
 import { EventEmitter } from '@angular/core';
 
-/** Interface for components which provide input to filter queries */
+/** Interface for components which provide input to filter queries. */
 export interface IQueryFilter {
   /** Filtering text for query */
-  filterText: string;
+  query: string;
   /** Column to apply the filter on */
-  filterColumn: string;
+  column: string;
   /** Columns to choose from to which to apply the filtering text */
   columns: FilterColumn[];
   /** Prompting for filter text */
@@ -19,14 +19,18 @@ export class FilterColumn {
   label: string = '';
 }
 
+
 export interface IFilter {
-  filterQuery: string,
-  filterColumn: string,
+  query: string,
+  column: string,
   placeholder: string,
   columns: FilterColumn[]
 }
 
+/** The curernt filter state. */
 export class FilterEvent {
+  /** The filtering text. */
   query: string = '';
+  /** The name of the column being filtered. */
   column: string = '';
 }
