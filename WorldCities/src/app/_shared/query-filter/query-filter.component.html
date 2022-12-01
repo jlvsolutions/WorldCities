@@ -11,10 +11,13 @@
 
     <mat-form-field class="query-select">
       <mat-label>Column</mat-label>
-      <mat-select formControlName="columns" [value]="filterColumn" (selectionChange)="onSelectionChange($event)">
-        <mat-option *ngFor="let col of columns" [value]="col.col">
-          {{col.label}}
-        </mat-option>
+      <mat-select formControlName="columns"
+                  class="query-select-background"
+                  [value]="filterColumn"
+                  (selectionChange)="onSelectionChange($event)">
+      <mat-option *ngFor="let col of columns" [value]="col.col">
+        {{col.label}}
+      </mat-option>
       </mat-select>
     </mat-form-field>
 

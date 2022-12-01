@@ -10,23 +10,8 @@ import { IQueryFilter, FilterEvent, FilterColumn } from '@app/_models';
 @Component({
   selector: 'app-query-filter',
   templateUrl: './query-filter.component.html',
-  styles: [`
-    .query-filter {
-      display: flex;
-      flex-basis: 100%;
-      align-items: center;
-    }
-    .query-input {
-      flex-basis: 80%;
-    }
-    .query-select {
-      margin-left: 10px;
-      flex-basis: 20%;
-     }
-    .filter-icon {
-      cursor: pointer;
-    }
-`]
+  styleUrls: ['./query-filter.component.scss']
+
 })
 export class QueryFilterComponent implements OnInit, IQueryFilter {
   form!: FormGroup;

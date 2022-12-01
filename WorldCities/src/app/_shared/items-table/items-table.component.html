@@ -21,10 +21,10 @@
         <mat-header-cell class="mat-header-cell" *matHeaderCellDef [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
       </ng-container>
       <ng-template #sortedHeaderTemplate>
-        <mat-header-cell *matHeaderCellDef mat-sort-header [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
+        <mat-header-cell [class.filter-active]="source.filter.filterColumn === 'MaybeNot' + col.key" *matHeaderCellDef mat-sort-header [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
       </ng-template>
 
-      <mat-cell *matCellDef="let item">
+      <mat-cell [class.filter-active]="source.filter.filterColumn === col.key" *matCellDef="let item">
         <div [ngSwitch]="col.type">
 
           <ng-container *ngSwitchCase="'button'">

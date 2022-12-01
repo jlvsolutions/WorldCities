@@ -1,0 +1,25 @@
+@import '../../../_globals.scss';
+
+
+.query-filter {
+  display: flex;
+  flex-basis: 100%;
+  align-items: center;
+}
+
+.query-input {
+  flex-basis: 80%;
+}
+
+.query-select {
+  margin-left: 10px;
+  flex-basis: 20%;
+}
+
+.filter-icon {
+  cursor: pointer;
+}
+
+.query-select-background {
+  background-color: $filterHighlight;
+}

@@ -39,7 +39,6 @@ describe('QueryFilterComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it ('setting ')
   it('setting filterText shows in input', async () => {
     const queryInput = await loader.getHarness(MatInputHarness);
     component.filterText = 'Boerne';
