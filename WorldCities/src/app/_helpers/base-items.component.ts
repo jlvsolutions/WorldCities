@@ -204,17 +204,10 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.activatedRoute.queryParams
       .pipe(takeUntil(this.destroySubject))
       .subscribe(params => {
-        this.viewSource.sort.active = params['filterColumn'] ?? '';
+        console.log('BaseItemsComponent:  New query parms');
         this.viewSource.sort.active = params['sortColumn'] ?? '';
-        this.viewSource.filter.filterColumn = this.viewSource.sort.active = params['filterColumn'] ?? '';
+        this.viewSource.filter.filterColumn = params['filterColumn'] ?? '';
         this.viewSource.filter.filterQuery = params['filterQuery'] ?? '';
-        console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.viewSource.filter.filterColumn}, filterQuery=${this.viewSource.filter.filterQuery}`);
-        if (this.viewSource.filter.filterColumn === '' && this.viewSource.filter.filterQuery === '') {
-          this.setDefaults();
-          console.log(`BaseItemsComponent:  Resetting to defaults: filterColumn=${this.viewSource.filter.filterColumn}, filterQuery=${this.viewSource.filter.filterQuery}`);
-        }
-        else
-          this.titleSuffix = ' - ' + this.viewSource.filter.filterQuery;
         this.getData();  // gets called immediatly when first subscribes.  like a behaviorsubject.
       });
   }
@@ -223,7 +216,6 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.authService.user       // listen for authorization changes.
       .pipe(takeUntil(this.destroySubject))
       .subscribe(user => {
-        console.log(`BaseItemsComponent:  User changed user=${user?.email}`);
         this.isLoggedIn = this.authService.isAuthenticated();
         this.isAdministrator = this.authService.isAdministrator();
         this.setItemSchema();
