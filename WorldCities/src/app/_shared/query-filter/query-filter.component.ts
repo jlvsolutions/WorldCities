@@ -44,7 +44,7 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
 
     if (this.filterTextChanged.observers.length === 0) {
       this.filterTextChanged
-        .pipe(debounceTime(400), distinctUntilChanged())
+        .pipe(debounceTime(200), distinctUntilChanged())
         .subscribe(query => {
           this.query = query;
           this.filterChange.emit({column: this.column, query: this.query});

@@ -1,5 +1,5 @@
 import { Sort } from '@angular/material/sort';
-import { IFilter } from '@app/_models';
+import { IQueryFilter } from '@app/_models';
 
 /** Interface for components that provide pagination functionality */
 export interface IPaginator {
@@ -12,7 +12,7 @@ export interface IPaginator {
 export interface IItemsViewSource<TDto> {
   sort: Sort;
   paginator: IPaginator;
-  filter: IFilter;
+  filter: IQueryFilter;
   schema: ItemSchema[];
   data: TDto[];
 
@@ -25,7 +25,7 @@ export interface IItemsViewSource<TDto> {
 export class ItemsViewSource<TDto> implements IItemsViewSource<TDto> {
   sort!: Sort;
   paginator!: IPaginator;
-  filter!: IFilter;
+  filter!: IQueryFilter;
   schema: ItemSchema[] = [];
   data!: TDto[];
 

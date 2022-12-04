@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, EventEmitter, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, NavigationStart, NavigationEnd } from '@angular/router';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
@@ -26,7 +26,6 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   public viewSource: IItemsViewSource<TDto> = new ItemsViewSource<TDto>();
 
-  @ViewChild('queryFilter') filter!: IQueryFilter;
   @ViewChild('showMessage') showMsg!: IShowMessage;
 
   constructor(
@@ -43,7 +42,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   ngOnInit() {
     console.log('BaseItemsComponent:  OnInit().');
     this.subscribeToAuthorizationChanges();
-    this.subscribeToQueryParams();
+    this.subscribeToQueryParams();  // This causes a call to getData
  }
 
   ngAfterViewInit() {
@@ -83,10 +82,10 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     this.viewSource.filter = { 
       query: '',
       column: this.getDefaultColumn(),
-      placeholder: this.getFilterPlacehoder(this.getDefaultColumn()), // Not really used anymore.
       columns: this.viewSource.schema
         .filter(c => c.type !== 'button' && !c.noSort)
-        .map(col => { return { col: col.key, label: col.label } })
+        .map(col => { return { col: col.key, label: col.label } }),
+      placeholder: '',//this.getFilterPlacehoder(this.getDefaultColumn()), // Not really used anymore.
     }
   }
 
@@ -208,6 +207,15 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         this.viewSource.sort.active = params['sortColumn'] ?? '';
         this.viewSource.filter.column = params['filterColumn'] ?? '';
         this.viewSource.filter.query = params['filterQuery'] ?? '';
+
+        console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.viewSource.filter.column}, filterQuery=${this.viewSource.filter.query}`);
+        if (this.viewSource.filter.column === '' && this.viewSource.filter.query === '') {
+          this.setDefaults();
+          console.log(`BaseItemsComponent:  Resetting to defaults: filterColumn=${this.viewSource.filter.column}, filterQuery=${this.viewSource.filter.query}`);
+        }
+        else
+          this.titleSuffix = ' - ' + this.viewSource.filter.query;
+
         this.getData();  // gets called immediatly when first subscribes.  like a behaviorsubject.
       });
   }

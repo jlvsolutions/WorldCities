@@ -1,6 +1,6 @@
 import { EventEmitter } from '@angular/core';
 
-/** Interface for components which provide input to filter queries. */
+/** Interface for components which provide parameters for filtering queries. */
 export interface IQueryFilter {
   /** Filtering text for query */
   query: string;
@@ -10,21 +10,13 @@ export interface IQueryFilter {
   columns: FilterColumn[];
   /** Prompting for filter text */
   placeholder: string;
-  /** Event fired when a new query is requested.  Contains the filtering text and column. */
-  filterChange: EventEmitter<FilterEvent>;
+  /** Event fired when the filter state has changed. */
+  //filterChange: EventEmitter<FilterEvent>;
 }
 
 export class FilterColumn {
   col: string = '';
   label: string = '';
-}
-
-
-export interface IFilter {
-  query: string,
-  column: string,
-  placeholder: string,
-  columns: FilterColumn[]
 }
 
 /** The curernt filter state. */

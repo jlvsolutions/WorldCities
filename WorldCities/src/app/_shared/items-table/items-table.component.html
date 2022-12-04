@@ -10,6 +10,7 @@
   <mat-table [dataSource]="source.data"
              class="mat-elevation-z8"
              matSort
+             matSortDisableClear
              (matSortChange)="sortChange.emit($event)"
              [matSortActive]="source.sort.active ?? ''"
              [matSortDirection]="source.sort.direction ?? ''">
@@ -18,13 +19,22 @@
 
       <ng-container *ngIf="((col.type === 'button') || (col.noSort)) else sortedHeaderTemplate">
         <!-- Don't sort on button columns -->
-        <mat-header-cell class="mat-header-cell" *matHeaderCellDef [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef
+                         class="mat-header-cell"
+                         [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
       </ng-container>
       <ng-template #sortedHeaderTemplate>
-        <mat-header-cell [class.filter-active]="source.filter.column === 'MaybeNot' + col.key" *matHeaderCellDef mat-sort-header [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef
+                         mat-sort-header
+                         [class.filter-active]="source.filter.query !== '' &&
+                                                source.filter.column === 'RemoveMeIfYouWantHeaderAlsoTinted' + col.key"
+                         [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
       </ng-template>
 
-      <mat-cell [class.filter-active]="source.filter.column === col.key" *matCellDef="let item">
+      <mat-cell *matCellDef="let item"
+                [class.filter-active]="source.filter.query !== '' &&
+                                       source.filter.column === col.key">
+
         <div [ngSwitch]="col.type">
 
           <ng-container *ngSwitchCase="'button'">
@@ -59,6 +69,7 @@
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="source.modelColumns"></mat-header-row>
+
     <mat-row *matRowDef="let row; columns: source.modelColumns;"
              (mouseover)="onRowMouseOver($event, row)"
              [title]="rowToolTip"

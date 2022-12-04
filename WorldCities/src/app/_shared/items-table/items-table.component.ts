@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { IItemsViewSource, FilterEvent } from '@app/_models';
+import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { IItemsViewSource, IQueryFilter, FilterEvent } from '@app/_models';
 import { Sort } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
@@ -9,7 +9,9 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
   templateUrl: './items-table.component.html',
   styleUrls: ['./items-table.component.scss']
 })
-export class ItemsTableComponent implements OnInit {
+export class ItemsTableComponent implements AfterViewInit  {
+
+  @ViewChild('queryFilter') filter!: IQueryFilter;
 
   constructor() { }
 
@@ -37,7 +39,8 @@ export class ItemsTableComponent implements OnInit {
   /** An event that fires when the mouse pointer moves over a row in the table. */
   @Output() rowMouseOver: EventEmitter<{ event: any, row: any }> = new EventEmitter<{ event: any, row: any }>();
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
+    this.filter = this.source.filter;
   }
 
   onDetailClick(key: string, row: any) {
