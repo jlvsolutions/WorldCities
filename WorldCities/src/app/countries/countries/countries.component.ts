@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { BaseItemsComponent } from '@app/_helpers/base-items.component';
-import { Country, ItemSchema } from '@app/_models';
+import { Country, DetailEvent, ItemSchema } from '@app/_models';
 import { CountryService, AuthService } from '@app/_services';
 
 @Component({
@@ -54,22 +54,22 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
     return this.viewSource.data.find((item: { id: number }) => item.id == id)?.name ?? '';
   }
 
-  onDetailClick(event: any) {
-    console.log(`CountriesComponent:  onDetailClick(${event.key}, ${event.id})`);
-    switch (event.key) {
+  onDetailClick(detail: DetailEvent) {
+    console.log(`CountriesComponent:  onDetailClick(${detail.key}, ${detail.row.id})`);
+    switch (detail.key) {
       case 'delete':
-        this.deleteItem(event.row.id);
+        this.deleteItem(detail.row.id);
         break;
       case 'edit':
-        this.router.navigate(['edit', event.row.id], { relativeTo: this.activatedRoute });
+        this.router.navigate(['edit', detail.row.id], { relativeTo: this.activatedRoute });
         break;
       case 'totCities':
         this.router.navigate(['cities'], {
-          queryParams: { filterColumn: 'countryName', filterQuery: event.row.name, sortColumn: 'name' }
+          queryParams: { filterColumn: 'countryName', filterQuery: detail.row.name, sortColumn: 'name' }
         });
         break;
       default:
-        console.error(`Invalid button click event: ${event.key} ${event.row.id}.`);
+        console.error(`Invalid button click event: ${detail.key} ${detail.row.id}.`);
         break;
     }
   }

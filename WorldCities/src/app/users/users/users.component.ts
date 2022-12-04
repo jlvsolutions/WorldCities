@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { BaseItemsComponent } from '@app/_helpers/base-items.component';
-import { User, ItemSchema } from '@app/_models';
+import { User, ItemSchema, DetailEvent } from '@app/_models';
 import { UserService, AuthService } from '@app/_services';
 
 @Component({
@@ -57,17 +57,17 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
     return this.viewSource.data.find((item: { id: string; }) => item.id == id)?.name ?? '';
   }
 
-  onDetailClick(event: any) {
-    console.log(`UsersComponent:  onDetailClick(${event.key}, ${event.id})`);
-    switch (event.key) {
+  onDetailClick(detail: DetailEvent) {
+    console.log(`UsersComponent:  onDetailClick(${detail.key}, ${detail.row.id})`);
+    switch (detail.key) {
       case 'delete':
-        this.deleteItem(event.row.id);
+        this.deleteItem(detail.row.id);
         break;
       case 'edit':
-        this.router.navigate(['edit', event.row.id], { relativeTo: this.activatedRoute });
+        this.router.navigate(['edit', detail.row.id], { relativeTo: this.activatedRoute });
         break;
       default:
-        console.error(`Invalid button click event: ${event.key} ${event.row.id}.`);
+        console.error(`Invalid button click event: ${detail.key} ${detail.row.id}.`);
         break;
     }
   }

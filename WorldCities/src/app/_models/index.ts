@@ -9,3 +9,4 @@ export * from './user';
 export * from './ishow-message';
 export * from './iitems-view-source';
 export * from './iquery-filter';
+export * from './detail-event';

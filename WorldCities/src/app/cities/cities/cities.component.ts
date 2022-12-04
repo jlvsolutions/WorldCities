@@ -1,8 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { BaseItemsComponent } from '@app/_helpers/base-items.component';
-import { City, ItemSchema } from '@app/_models';
+import { City, DetailEvent, ItemSchema } from '@app/_models';
 import { CityService, AuthService } from '@app/_services';
 
 @Component({
@@ -59,22 +59,22 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
     return this.viewSource.data.find((item: { id: number }) => item.id == id)?.name ?? '';
   }
 
-  onDetailClick(event: any) {
-    console.log(`CitiesComponent:  onDetailClick(${event.key}, ${event.row.id})`);
-    switch (event.key) {
+  onDetailClick(detail: DetailEvent) {
+    console.log(`CitiesComponent:  onDetailClick(${detail.key}, ${detail.row.id})`);
+    switch (detail.key) {
       case 'delete':
-        this.deleteItem(event.row.id);
+        this.deleteItem(detail.row.id);
         break;
       case 'edit':
-        this.router.navigate(['edit', event.row.id], { relativeTo: this.activatedRoute });
+        this.router.navigate(['edit', detail.row.id], { relativeTo: this.activatedRoute });
         break;
       case 'countryName':
-        this.router.navigate(['countries', event.row.countryId], {
+        this.router.navigate(['countries', detail.row.countryId], {
           queryParams: { returnUrl: this.router.routerState.snapshot.url }
         });
         break;
       default:
-        console.error(`Invalid button click event: ${event.key} ${event.row.id}.`);
+        console.error(`Invalid button click event: ${detail.key} ${detail.row.id}.`);
         break;
     }
   }

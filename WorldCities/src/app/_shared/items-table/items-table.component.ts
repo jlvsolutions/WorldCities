@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
-import { IItemsViewSource, IQueryFilter, FilterEvent } from '@app/_models';
+import { IItemsViewSource, IQueryFilter, FilterEvent, DetailEvent, RowMouseOverEvent } from '@app/_models';
 import { Sort } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
@@ -31,15 +31,16 @@ export class ItemsTableComponent implements AfterViewInit  {
   @Output() filterChange: EventEmitter<FilterEvent> = new EventEmitter<FilterEvent>();
 
   /** An event that fires when the user clicks a dynamically created button or hyperlink */
-  @Output() detailClick: EventEmitter<{ key: string, row: any }> = new EventEmitter<{ key: string, row: any }>();
+  @Output() detailClick: EventEmitter<DetailEvent> = new EventEmitter<DetailEvent>();
 
   /** An event that fires when the user clicks anywhere on a row */
   @Output() rowClick: EventEmitter<any> = new EventEmitter<any>();
 
   /** An event that fires when the mouse pointer moves over a row in the table. */
-  @Output() rowMouseOver: EventEmitter<{ event: any, row: any }> = new EventEmitter<{ event: any, row: any }>();
+  @Output() rowMouseOver: EventEmitter<RowMouseOverEvent> = new EventEmitter<RowMouseOverEvent>();
 
   ngAfterViewInit(): void {
+    console.log('ItemsTableComponent AfterViewInit.');
     this.filter = this.source.filter;
   }
 

@@ -13,7 +13,7 @@ import { IQueryFilter, FilterEvent, FilterColumn } from '@app/_models';
   styleUrls: ['./query-filter.component.scss']
 
 })
-export class QueryFilterComponent implements OnInit, IQueryFilter {
+export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit {
   form!: FormGroup;
 
   @Input() query: string = '';
@@ -33,6 +33,10 @@ export class QueryFilterComponent implements OnInit, IQueryFilter {
       columns: [this.column]
     });
     this.setPlaceholder();
+  }
+
+  ngAfterViewInit(): void {
+    console.log('QueryFilterComponent AfterViewInit.');
   }
 
   /** Debounce filter text changes */

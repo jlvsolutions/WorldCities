@@ -1,10 +1,10 @@
 import { AfterViewInit, EventEmitter, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute, NavigationStart, NavigationEnd } from '@angular/router';
+import { Router, ActivatedRoute, NavigationStart, NavigationEnd, Params } from '@angular/router';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
 import { Subject, takeUntil } from 'rxjs';
 
-import { IQueryFilter, IShowMessage, IItemsViewSource, ItemsViewSource, FilterColumn, FilterEvent } from '@app/_models';
+import { IQueryFilter, IShowMessage, IItemsViewSource, ItemsViewSource, FilterColumn, FilterEvent, RowMouseOverEvent } from '@app/_models';
 import { BaseService, AuthService } from '@app/_services';
 
 /** Base class for displaying a collection of items. */
@@ -46,7 +46,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
  }
 
   ngAfterViewInit() {
-    console.log('BaseItemsComponent:  AfterViewInit().');
+    console.log('BaseItemsComponent:  AfterViewInit.');
  }
 
   ngOnDestroy() {
@@ -57,7 +57,6 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   /** Returns the schema/metadata for the derived class' model. */
   abstract getItemSchema(): any[];
-
   private setItemSchema(): void {
     this.viewSource.schema = this.getItemSchema()
       .filter(s => !s.hidden);
@@ -68,7 +67,6 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   /** Returns the default column for sorting and filtering. */
   abstract getDefaultColumn(): string;
-
   private setDefaults(): void {
     this.titleSuffix = ''; 
 
@@ -92,13 +90,12 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   /** Not really used.  Placeholder logic is in the IQueryFilter it'self. */
   private getFilterPlacehoder(columnName: string): string {
     return `Filter by ${this.viewSource.displayColumns[
-      this.viewSource.modelColumns.indexOf(columnName)]} (or PART of it)...`;
+      this.viewSource.modelColumns.indexOf(columnName)]} (or part of it)...`;
   }
   
   /** Used to provide custom row tooltips for each data items. */
   abstract getRowToolTip(row: any): string;
-
-  onRowMouseOver(event: any) {
+  onRowMouseOver(event: RowMouseOverEvent) {
     this.rowTooltip = this.getRowToolTip(event.row);
   }
 
@@ -127,6 +124,23 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   onPageChange(pageEvent: PageEvent) {
     this.viewSource.paginator.pageIndex = pageEvent.pageIndex;
     this.viewSource.paginator.pageSize = pageEvent.pageSize;
+    this.getData();
+  }
+
+  onParamsChange(params: Params) {
+    console.log('BaseItemsComponent:  onParamsChange.');
+    this.viewSource.sort.active = params['sortColumn'] ?? '';
+    this.viewSource.filter.column = params['filterColumn'] ?? '';
+    this.viewSource.filter.query = params['filterQuery'] ?? '';
+
+    console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.viewSource.filter.column}, filterQuery=${this.viewSource.filter.query}`);
+    if (this.viewSource.filter.column === '' && this.viewSource.filter.query === '') {
+      this.setDefaults();
+      console.log(`BaseItemsComponent:  Resetting to defaults: filterColumn=${this.viewSource.filter.column}, filterQuery=${this.viewSource.filter.query}`);
+    }
+    else
+      this.titleSuffix = ' - ' + this.viewSource.filter.query;
+
     this.getData();
   }
 
@@ -202,22 +216,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   private subscribeToQueryParams(): void {
     this.activatedRoute.queryParams
       .pipe(takeUntil(this.destroySubject))
-      .subscribe(params => {
-        console.log('BaseItemsComponent:  New query parms');
-        this.viewSource.sort.active = params['sortColumn'] ?? '';
-        this.viewSource.filter.column = params['filterColumn'] ?? '';
-        this.viewSource.filter.query = params['filterQuery'] ?? '';
-
-        console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.viewSource.filter.column}, filterQuery=${this.viewSource.filter.query}`);
-        if (this.viewSource.filter.column === '' && this.viewSource.filter.query === '') {
-          this.setDefaults();
-          console.log(`BaseItemsComponent:  Resetting to defaults: filterColumn=${this.viewSource.filter.column}, filterQuery=${this.viewSource.filter.query}`);
-        }
-        else
-          this.titleSuffix = ' - ' + this.viewSource.filter.query;
-
-        this.getData();  // gets called immediatly when first subscribes.  like a behaviorsubject.
-      });
+      .subscribe(params => this.onParamsChange(params));
   }
 
   private subscribeToAuthorizationChanges(): void {
