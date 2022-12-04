@@ -26,7 +26,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   public viewSource: IItemsViewSource<TDto> = new ItemsViewSource<TDto>();
 
-  @ViewChild('showMessage') showMsg!: IShowMessage;
+  @ViewChild('iShowMessage') showMsg!: IShowMessage;
 
   constructor(
     protected router: Router,

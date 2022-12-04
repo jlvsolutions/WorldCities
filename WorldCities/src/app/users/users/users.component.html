@@ -9,15 +9,16 @@
 
 <p *ngIf="!viewSource"><em>Loading...</em></p>
 
-<show-message #showMessage></show-message>
+<show-message #iShowMessage></show-message>
 
-<items-table [source]="viewSource"
-                 [rowToolTip]="rowTooltip"
-                 (sortChange)="onSortChange($event)"
-                 (pageChange)="onPageChange($event)"
-                 (filterChange)="onFilterChange($event)"
-                 (detailClick)="onDetailClick($event)"
-                 (rowClick)="onRowClick($event)"
-                 (rowMouseOver)="onRowMouseOver($event)"
-                 [hidden]="!viewSource.data">
+<items-table #iCollectionView
+             [source]="viewSource"
+             [rowToolTip]="rowTooltip"
+             (sortChange)="onSortChange($event)"
+             (pageChange)="onPageChange($event)"
+             (filterChange)="onFilterChange($event)"
+             (detailClick)="onDetailClick($event)"
+             (rowClick)="onRowClick($event)"
+             (rowMouseOver)="onRowMouseOver($event)"
+             [hidden]="!viewSource.data">
 </items-table>

@@ -28,6 +28,7 @@ export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit
   }
 
   ngOnInit(): void {
+    console.log('QueryFilterComponent OnInit');
     this.form = this.formBuilder.group({
       query: [this.query, Validators.pattern(/^[a-zA-Z0-9.-\s~`']+$/)],
       columns: [this.column]

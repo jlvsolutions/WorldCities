@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { IItemsViewSource, IQueryFilter, FilterEvent, DetailEvent, RowMouseOverEvent } from '@app/_models';
 import { Sort } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -9,7 +9,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
   templateUrl: './items-table.component.html',
   styleUrls: ['./items-table.component.scss']
 })
-export class ItemsTableComponent implements AfterViewInit  {
+export class ItemsTableComponent implements OnDestroy  {
 
   @ViewChild('queryFilter') filter!: IQueryFilter;
 
@@ -39,20 +39,12 @@ export class ItemsTableComponent implements AfterViewInit  {
   /** An event that fires when the mouse pointer moves over a row in the table. */
   @Output() rowMouseOver: EventEmitter<RowMouseOverEvent> = new EventEmitter<RowMouseOverEvent>();
 
-  ngAfterViewInit(): void {
-    console.log('ItemsTableComponent AfterViewInit.');
-    this.filter = this.source.filter;
-  }
-
-  onDetailClick(key: string, row: any) {
-    this.detailClick.emit({ key: key, row: row });
-  }
-
-  onRowClick(row: any) {
-    this.rowClick.emit(row);
-  }
-
-  onRowMouseOver(event: any, row: any) {
-    this.rowMouseOver.emit({ event: event, row: row });
+  ngOnDestroy(): void {
+    this.sortChange.complete();
+    this.pageChange.complete();
+    this.filterChange.complete();
+    this.detailClick.complete();
+    this.rowClick.complete();
+    this.rowMouseOver.complete();
   }
 }
