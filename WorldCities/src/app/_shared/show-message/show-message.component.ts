@@ -46,20 +46,24 @@ export class ShowMessageComponent implements IShowMessage, OnDestroy {
     message
       .pipe(takeUntil(this.destroySubject))
       .subscribe(m => {
-      switch (m.type) {
-        case 'none':
+        if (m.message === '')
           this.clear();
-          break;
-        case 'info':
-          this.message = m.message;
-          break;
-        case 'error':
-          this.errMessage = m.message;
-          break;
-        case 'spinner':
-          this.spinner = m.message;
-          break;
-      }
+        else {
+          switch (m.type) {
+            case 'none':
+              this.clear();
+              break;
+            case 'info':
+              this.message = m.message;
+              break;
+            case 'error':
+              this.errMessage = m.message;
+              break;
+            case 'spinner':
+              this.spinner = m.message;
+              break;
+          }
+        }
     });
   }
 
