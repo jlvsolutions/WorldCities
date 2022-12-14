@@ -469,7 +469,7 @@ namespace WorldCitiesAPI.Tests.Services
             
             //
             // Act
-            var response = await _userService.Update(updatedUserDTO.Id, updatedUserDTO);
+            var response = await _userService.Update(updatedUserDTO.Id!, updatedUserDTO);
 
             //
             // Assert response

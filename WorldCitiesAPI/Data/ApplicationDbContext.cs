@@ -17,7 +17,9 @@ namespace WorldCitiesAPI.Data
         }
 
         public DbSet<City> Cities => Set<City>();
+        public DbSet<AdminRegion> AdminRegions => Set<AdminRegion>();
         public DbSet<Country> Countries => Set<Country>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
     }
 }

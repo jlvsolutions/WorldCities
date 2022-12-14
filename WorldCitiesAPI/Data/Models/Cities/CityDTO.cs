@@ -12,9 +12,15 @@
 
         public double Population { get; set; }
 
+        public string? Capital { get; set; }
+
+        public int? AdminRegionId { get; set; }
+
+        public string? AdminRegionName { get; set; } = null!;
+
         public int CountryId { get; set; }
 
-        public string CountryName { get; set; } = null!;
+        public string? CountryName { get; set; } = null;
 
     }
 }

@@ -14,7 +14,7 @@ namespace WorldCitiesAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "Administrator")]
+    //[Authorize(Roles = "Administrator")]
     public class SeedController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -48,6 +48,7 @@ namespace WorldCitiesAPI.Controllers
         /// <returns></returns>
         /// <exception cref="SecurityException"></exception>
         [HttpGet]
+        [Authorize(Roles = "Admin")] // prevent unauthorized use
         public async Task<ActionResult> Import()
         {
             _logger.LogInformation("SeedController: Import()");
@@ -156,6 +157,7 @@ namespace WorldCitiesAPI.Controllers
         /// <returns></returns>
         /// <exception cref="SecurityException"></exception>
         [HttpGet]
+        [Authorize(Roles = "Admin")] // prevent unauthorized use
         public async Task<ActionResult> ImportPopulations()
         {
             _logger.LogInformation("SeedController:  ImportPopulations()");
@@ -209,6 +211,7 @@ namespace WorldCitiesAPI.Controllers
         /// <returns></returns>
         /// <exception cref="SecurityException"></exception>
         [HttpGet]
+        [Authorize(Roles = "Admin")] // prevent unauthorized use
         public async Task<ActionResult> CreateDefaultUsers()
         {
             _logger.LogInformation("SeedController: CreateDefaultUsers()");
@@ -304,6 +307,132 @@ namespace WorldCitiesAPI.Controllers
                 Users = addedUserList 
             });
 
+        }
+
+        /// <summary>
+        /// This is for AddAdminRegions migration.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        //[Authorize(Roles = "Admin")] // prevent unauthorized use
+        public async Task<ActionResult> ImportAdminRegions()
+        {
+            _logger.LogInformation("SeedController:  ImportAdminRegions()");
+
+            // Prevents non-development environments from running this method
+            if (!_env.IsDevelopment())
+                throw new SecurityException("Not Allowed");
+
+            var path = System.IO.Path.Combine(_env.ContentRootPath, "Data/Source/WorldCities.xlsx");
+            using var stream = System.IO.File.OpenRead(path);
+            using var excelPackage = new ExcelPackage(stream);
+
+            // Get the first worksheet
+            var worksheet = excelPackage.Workbook.Worksheets[0];
+
+            // Define how many rows we want to process
+            var nEndRow = worksheet.Dimension.End.Row;
+
+            // Initialize the record counters
+            var numberOfCitiesUpdated = 0;
+            var numberOfAdminRegionsCreated = 0;
+
+            // Create a lookup dictionary containing all the countries already existing
+            // into the Database (it will be empty on first run).
+            var countriesByName = _context.Countries
+                .AsNoTracking()
+                .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+
+            // Lookup for admin regions
+            var adminRegionsByName = _context.AdminRegions
+                .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+
+            // Iterate through all rows, skipping the first one
+            for (int nRow = 2; nRow <= nEndRow; nRow++)
+            {
+                var row = worksheet.Cells[nRow, 1, nRow, worksheet.Dimension.End.Column];
+
+                var countryName = row[nRow, 5].GetValue<string>();
+                var adminName = row[nRow, 8].GetValue<string>();
+
+                // Skip this admin region if it already exists in the database
+                // Or there is no adminName
+                if (adminName == null || adminRegionsByName.ContainsKey(adminName))
+                    continue;
+
+                // Get the country Id
+                var dbCountryId = countriesByName[countryName].Id;
+
+                AdminRegion adminRegion = new() { Name = adminName, CountryId = dbCountryId };
+                
+                // Add the AdminRegion to the DB context
+                await _context.AdminRegions.AddAsync(adminRegion);
+
+                // Store the country in our Lookup to retrieve its Id later on
+                adminRegionsByName.Add(adminName, adminRegion);
+
+                numberOfAdminRegionsCreated++;
+            }
+
+            // Save all the AdminRegions into the database
+            if (numberOfAdminRegionsCreated > 0)
+            {
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("AdminRegions added to database: {num}", numberOfAdminRegionsCreated);
+            }
+
+            // Create a Lookup dictionary containing all the cities already existing
+            // into the Database (it will be empty on first run).
+            var cities = _context.Cities
+                .ToDictionary(x => (
+                    Name: x.Name,
+                    Lat: x.Lat,
+                    Lon: x.Lon,
+                    CountryId: x.CountryId));
+
+            for (int nRow = 2; nRow <= nEndRow; nRow++)
+            {
+                var row = worksheet.Cells[nRow, 1, nRow, worksheet.Dimension.End.Column];
+
+                var name = row[nRow, 1].GetValue<string>();
+                var lat = row[nRow, 3].GetValue<decimal>();
+                var lon = row[nRow, 4].GetValue<decimal>();
+                var countryName = row[nRow, 5].GetValue<string>();
+                var capital = row[nRow, 9].GetValue<string>();
+                var adminName = row[nRow, 8].GetValue<string>();
+                var smId = row[nRow, 11].GetValue<long>();
+
+                // Get the country Id
+                var dbCountryId = countriesByName[countryName].Id;
+                City city = cities[(Name: name, Lat: lat, Lon: lon, CountryId: dbCountryId)];
+
+                if (city == null)
+                {
+                    _logger.LogError("City in xlsx spreadsheet but not in database: {name}", name);
+                    continue;
+                }
+
+                city.Capital = capital;
+                city.SimpleMapsId = smId;
+                if (adminName != null)
+                    city.AdminRegionId = adminRegionsByName[adminName].Id;
+
+                _context.Entry(city).State = EntityState.Modified;
+                numberOfCitiesUpdated++;
+            }
+
+            // Save all the updated cities into the Database
+            if (numberOfCitiesUpdated > 0)
+            {
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Cities updated: {num}", numberOfCitiesUpdated);
+            }
+
+            return new JsonResult(new 
+            { 
+                Cities = numberOfCitiesUpdated, 
+                AdminRegions = numberOfAdminRegionsCreated 
+            });
         }
     }
 }

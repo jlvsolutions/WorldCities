@@ -5,52 +5,48 @@ using System.Text.Json.Serialization;
 
 namespace WorldCitiesAPI.Data.Entities
 {
-    [Table("Countries")]
+    [Table("AdminRegions")]
     [Index(nameof(Name))]
-    [Index(nameof(ISO2))]
-    [Index(nameof(ISO3))]
-    public class Country
+    [Index(nameof(Code))]
+    public class AdminRegion
     {
         #region Properties
         /// <summary>
-        /// The unique id and primary key for this Country
+        /// The unique id and primary key for this Administration Region
         /// </summary>
         [Key]
         [Required]
         public int Id { get; set; }
 
         /// <summary>
-        /// Country name (in UTF8 format)
+        /// Administration region name
         /// </summary>
         public string Name { get; set; } = null!;
 
         /// <summary>
-        /// Country code (in ISO 3166-1 ALPHA-2 format)
+        /// Standardized code to identify this region, state, province, etc.
         /// </summary>
-        [JsonPropertyName("iso2")]
-        [GraphQLName("iso2")]
-        public string ISO2 { get; set; } = null!;
+        public string? Code { get; set; } = null!;
 
         /// <summary>
-        /// Country code (in ISO 3166-1 ALPHA-3 format)
+        /// Country Id (forein key)
         /// </summary>
-        [JsonPropertyName("iso3")]
-        [GraphQLName("iso3")]
-        public string ISO3 { get; set; } = null!;
+        [ForeignKey(nameof(Country))]
+        public int CountryId { get; set; }
         #endregion
 
         #region Navigation Properties
         /// <summary>
-        /// A list containing all the cities related to this country.
+        /// A list containing all the cities related to this administration region.
         /// </summary>
         [JsonIgnore]
         public ICollection<City>? Cities { get; set; } = null;
 
         /// <summary>
-        /// A list containing all the administration regions in this country.
+        /// The country related to this administration region.
         /// </summary>
-        [JsonIgnore]
-        public ICollection<AdminRegion>? AdminRegions { get; set; } = null;
+        public Country? Country { get; set; } = null!;
         #endregion
+
     }
 }

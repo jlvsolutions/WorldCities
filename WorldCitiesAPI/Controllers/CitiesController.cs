@@ -30,7 +30,7 @@ namespace WorldCitiesAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResult<CityDTO>>> GetCities(
+        public async Task<ActionResult<ApiResult<CityDTO>>> GetAll(
             int pageIndex = 0, 
             int pageSize = 10,
             string? sortColumn = null,
@@ -46,6 +46,8 @@ namespace WorldCitiesAPI.Controllers
             {
                 return await ApiResult<CityDTO>.CreateAsync(
                             _context.Cities.AsNoTracking()
+                            .Select(c => _mapper.Map<CityDTO>(c)),
+                            /*
                             .Select(c => new CityDTO()
                             {
                                 Id = c.Id,
@@ -53,9 +55,13 @@ namespace WorldCitiesAPI.Controllers
                                 Lat = c.Lat,
                                 Lon = c.Lon,
                                 Population = c.Population,
-                                CountryId = c.Country!.Id,
+                                Capital = c.Capital,
+                                AdminRegionId = c.AdminRegionId,
+                                AdminRegionName = c.AdminRegion!.Name,
+                                CountryId = c.CountryId,
                                 CountryName = c.Country!.Name
                             }),
+                            */
                             pageIndex,
                             pageSize,
                             sortColumn,
@@ -89,25 +95,20 @@ namespace WorldCitiesAPI.Controllers
             if (city == null)
                 return NotFound();
 
-            var cityDTO = _mapper.Map<CityDTO>(city);
-
-            var country = await _context.Countries.FindAsync(city.CountryId);
-            cityDTO.CountryName = country?.Name ?? "";
-
-            return Ok(cityDTO);
+            return(_mapper.Map<CityDTO>(city));
         }
 
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize(Roles = "RegisteredUser")]
-        public async Task<IActionResult> PutCity(int id, City city)
+        public async Task<IActionResult> PutCity(int id, CityDTO model)
         {
-            if (id != city.Id)
+            if (id != model.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(city).State = EntityState.Modified;
+            _context.Entry(_mapper.Map<City>(model)).State = EntityState.Modified;
 
             try
             {
@@ -132,28 +133,21 @@ namespace WorldCitiesAPI.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize(Roles = "RegisteredUser")]
-        public async Task<ActionResult<City>> PostCity(City city)  // TODO:  Change to CityDTO, add saftey checks
+        public async Task<ActionResult> PostCity(CityDTO model)
         {
-          if (_context.Cities == null)
-          {
-              return Problem("Entity set 'ApplicationDbContext.Cities' is null.");
-          }
+            City city = _mapper.Map<City>(model);
             _context.Cities.Add(city);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = city.Id }, city);
+            return CreatedAtAction(nameof(GetById), new { id = city.Id });
         }
 
         // DELETE: api/Cities/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> DeleteCity(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (_context.Cities == null)
-            {
-                return NotFound();
-            }
-            var city = await _context.Cities.FindAsync(id);
+            City? city = await _context.Cities.FindAsync(id);
             if (city == null)
             {
                 return NotFound();
@@ -172,7 +166,7 @@ namespace WorldCitiesAPI.Controllers
 
         [HttpPost]
         [Route("IsDupeCity")]
-        public bool IsDupeCity(City city)  // TODO:  Change to CityDTO...
+        public bool IsDupeCity(CityDTO city)
         {
             // Safety checks
             if ((city.Id < int.MinValue) || (city.Id > int.MaxValue)) return false;

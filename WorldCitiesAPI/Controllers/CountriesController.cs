@@ -32,7 +32,7 @@ namespace WorldCitiesAPI.Controllers
 
         // GET: api/Countries
         [HttpGet]
-        public async Task<ActionResult<ApiResult<CountryDTO>>> GetCountries(
+        public async Task<ActionResult<ApiResult<CountryDTO>>> GetAll(
             int pageIndex = 0,
             int pageSize = 10,
             string? sortColumn = null,
@@ -45,22 +45,15 @@ namespace WorldCitiesAPI.Controllers
                 pageIndex, filterQuery, filterColumn, sortColumn, sortOrder);
             try
             {
-            return await ApiResult<CountryDTO>.CreateAsync(
-                    _context.Countries.AsNoTracking()
-                    .Select(c => new CountryDTO()
-                    {
-                        Id = c.Id,
-                        Name = c.Name,
-                        ISO2 = c.ISO2,
-                        ISO3 = c.ISO3,
-                        TotCities = c.Cities!.Count
-                    }),
-                    pageIndex,
-                    pageSize,
-                    sortColumn,
-                    sortOrder,
-                    filterColumn,
-                    filterQuery);
+                return await ApiResult<CountryDTO>.CreateAsync(
+                        _context.Countries.AsNoTracking()
+                        .Select(c => _mapper.Map<CountryDTO>(c)),
+                        pageIndex,
+                        pageSize,
+                        sortColumn,
+                        sortOrder,
+                        filterColumn,
+                        filterQuery);
             }
             catch (NotSupportedException ex)
             {
@@ -77,37 +70,31 @@ namespace WorldCitiesAPI.Controllers
 
         // GET: api/Countries/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CountryDTO>> GetById(int id) // TODO: Change to CountryDTO...
+        public async Task<ActionResult<CountryDTO>> GetById(int id)
         {
           if (_context.Countries == null)
-          {
               return NotFound();
-          }
+           
             var country = await _context.Countries.FindAsync(id);
 
             if (country == null)
-            {
                 return NotFound();
-            }
-
-            var countryDTO = _mapper.Map<CountryDTO>(country);
-            countryDTO.TotCities = await _context.Cities.Where(c => c.CountryId == country.Id).CountAsync();
             
-            return countryDTO;
+            return Ok(_mapper.Map<CountryDTO>(country));
         }
 
         // PUT: api/Countries/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize(Roles = "RegisteredUser")]
-        public async Task<IActionResult> PutCountry(int id, Country country) // TODO: Change to CountryDTO...
+        public async Task<IActionResult> PutCountry(int id, CountryDTO model)
         {
-            if (id != country.Id)
+            if (id != model.Id)
             {
                 return BadRequest();
             }
-
-            _context.Entry(country).State = EntityState.Modified;
+            
+            _context.Entry(_mapper.Map<Country>(model)).State = EntityState.Modified;
 
             try
             {
@@ -132,12 +119,13 @@ namespace WorldCitiesAPI.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize(Roles = "RegisteredUser")]
-        public async Task<ActionResult<Country>> PostCountry(Country country)// TODO: Change to CountryDTO...
+        public async Task<ActionResult> PostCountry(CountryDTO model)
         {
+            Country country = _mapper.Map<Country>(model);
             _context.Countries.Add(country);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = country.Id }, country);
+            return CreatedAtAction(nameof(GetById), new { id = country.Id });
         }
 
         // DELETE: api/Countries/5
@@ -145,11 +133,7 @@ namespace WorldCitiesAPI.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int id)
         {
-            if (_context.Countries == null)
-            {
-                return NotFound();
-            }
-            var country = await _context.Countries.FindAsync(id);
+            Country? country = await _context.Countries.FindAsync(id);
             if (country == null)
             {
                 return NotFound();
