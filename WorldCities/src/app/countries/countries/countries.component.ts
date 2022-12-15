@@ -38,6 +38,9 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
       { key: 'name', label: 'Name', description: 'The name of the country.' },
       { key: 'iso2', label: 'ISO2', description: 'The alpha-2 iso code of the country.'},
       { key: 'iso3', label: 'ISO3', description: 'The alpha-3 iso code of the country.' },
+      { key: 'capitalId', label: 'Capital ID', description: 'The database ID for the capital city/town of the country.' },
+      { key: 'capitalName', label: 'Capital Name', description: 'The name of the capital city/town' },
+      { key: 'totAdminRegions', label: 'Total Administration Regions', description: 'The total number of administration regions in the country.'},
       {
         key: 'totCities', label: 'Total Cities', description: 'The total number of cities in the country.',
         type: 'link', toolTip: 'View list of cities in ', itemName: 'name',

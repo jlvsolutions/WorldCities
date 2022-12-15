@@ -115,6 +115,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   onFilterChange(query: FilterEvent) {
     console.log(`BaseItemsComponent onFilterChange query=${query.query}, column=${query.column}`);
     this.titleSuffix = '';
+    console.log(`BaseItemsComponent onFilterChange: setting vs.f.q ${this.viewSource.filter.query} to: ${query.query}`);
     this.viewSource.filter.query = query.query;
     this.viewSource.filter.column = query.column;
     this.viewSource.paginator.pageIndex = 0;

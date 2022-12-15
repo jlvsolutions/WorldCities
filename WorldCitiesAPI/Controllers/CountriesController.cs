@@ -46,8 +46,7 @@ namespace WorldCitiesAPI.Controllers
             try
             {
                 return await ApiResult<CountryDTO>.CreateAsync(
-                        _context.Countries.AsNoTracking()
-                        .Select(c => _mapper.Map<CountryDTO>(c)),
+                        _mapper.ProjectTo<CountryDTO>(_context.Countries.AsNoTracking(), null),
                         pageIndex,
                         pageSize,
                         sortColumn,
