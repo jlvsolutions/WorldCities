@@ -30,7 +30,7 @@ namespace WorldCitiesAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResult<CityDTO>>> GetAll(
+        public async Task<ActionResult<ApiResult<CityDTO>>> GetCities(
             int pageIndex = 0, 
             int pageSize = 10,
             string? sortColumn = null,
@@ -45,23 +45,7 @@ namespace WorldCitiesAPI.Controllers
             try
             {
                 return await ApiResult<CityDTO>.CreateAsync(
-                            _context.Cities.AsNoTracking()
-                            .Select(c => _mapper.Map<CityDTO>(c)),
-                            /*
-                            .Select(c => new CityDTO()
-                            {
-                                Id = c.Id,
-                                Name = c.Name,
-                                Lat = c.Lat,
-                                Lon = c.Lon,
-                                Population = c.Population,
-                                Capital = c.Capital,
-                                AdminRegionId = c.AdminRegionId,
-                                AdminRegionName = c.AdminRegion!.Name,
-                                CountryId = c.CountryId,
-                                CountryName = c.Country!.Name
-                            }),
-                            */
+                            _mapper.ProjectTo<CityDTO>(_context.Cities.AsNoTracking(), null),
                             pageIndex,
                             pageSize,
                             sortColumn,
@@ -90,7 +74,10 @@ namespace WorldCitiesAPI.Controllers
             if (_context.Cities == null)
                 return NotFound();
             
-            var city = await _context.Cities.FindAsync(id);
+            var city = _context.Cities.Where(c => c.Id == id)
+                                      .Include(c => c.AdminRegion)
+                                      .Include(c => c.Country)
+                                      .FirstOrDefault();  
             
             if (city == null)
                 return NotFound();

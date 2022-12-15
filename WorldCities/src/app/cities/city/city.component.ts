@@ -20,7 +20,8 @@ export class CityComponent implements OnInit, OnDestroy {
 
   // the city object id, as fetched from the active route.
   id?: number;
-  public routeParam = 0;
+  /** Id parameter provided by the route */
+  public routeParamId = 0;
 
   @ViewChild(WCMapComponent) wcMap!: WCMapComponent;
 
@@ -35,10 +36,10 @@ export class CityComponent implements OnInit, OnDestroy {
 
     //this.activatedRoute.queryParams.subscribe(params => { idParam = params['id']; }); // shared by all routes
 
-    this.activatedRoute.params.subscribe(p => this.routeParam = +p['id']);
+    this.activatedRoute.params.subscribe(p => this.routeParamId = +p['id']);
 
     this.id = +idParam;
-    console.log(`CityComponent:  OnInit() routeParam = ${this.routeParam}`);
+    console.log(`CityComponent:  OnInit() routeParamId = ${this.routeParamId}`);
     if (this.id === 0 || Number.isNaN(this.id)) {
       console.error('CityComponent:  City Id is not a valid number.');
       this.router.navigate(['/cities']);
@@ -55,10 +56,10 @@ export class CityComponent implements OnInit, OnDestroy {
     this.cityService.get(id).subscribe(city => {
       this.city = city;
       this.title = city.name;
-      this.wcMap.showPlace(city.name + "," + city.countryName);
+      this.wcMap.showPlace(city.name + "," + (city.adminRegionName ?? city.countryName));
     }, error => console.error(error));
   }
   ngOnDestroy() {
-    console.log(`CityComponent: OnDestroy() Id = ${this.id} routeParam = ${this.routeParam}`);
+    console.log(`CityComponent: OnDestroy() Id = ${this.id} routeParam = ${this.routeParamId}`);
   }
 }

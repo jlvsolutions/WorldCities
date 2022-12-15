@@ -40,6 +40,8 @@
 
             // City Entity -> CityDTO
             CreateMap<City, CityDTO>();
+                //.ForMember(dest => dest.AdminRegionName,
+                //    opt => opt.MapFrom(src => src.AdminRegion!.Name));  // tried to trigger EF explicit loading
 
             // CityDTO -> City Entity
             CreateMap<CityDTO, City>();

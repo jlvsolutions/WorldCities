@@ -31,7 +31,7 @@ namespace WorldCitiesAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResult<AdminRegionDTO>>> GetAll(
+        public async Task<ActionResult<ApiResult<AdminRegionDTO>>> GetAdminRegions(
             int pageIndex = 0,
             int pageSize = 10,
             string? sortColumn = null,

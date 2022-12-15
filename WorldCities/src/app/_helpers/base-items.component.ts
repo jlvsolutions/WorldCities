@@ -174,6 +174,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
         console.error(error);
       });
   }
+
   /** Returns 'x - y of z' */
   itemsRetrievedText(totalCount: number, pageIndex: number, pageSize: number): string {
     const from = (pageIndex * pageSize) + 1;

@@ -32,7 +32,7 @@ namespace WorldCitiesAPI.Controllers
 
         // GET: api/Countries
         [HttpGet]
-        public async Task<ActionResult<ApiResult<CountryDTO>>> GetAll(
+        public async Task<ActionResult<ApiResult<CountryDTO>>> GetCountries(
             int pageIndex = 0,
             int pageSize = 10,
             string? sortColumn = null,

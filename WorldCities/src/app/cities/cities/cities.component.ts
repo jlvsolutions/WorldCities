@@ -42,7 +42,10 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
         key: 'population', label: 'Population', pipeToNumber: true,
         description: 'Estimate of the city\'s urban population.  If unavailable, the municiple population.'
       },
-      { key: 'countryId', label: 'Country ID', description: 'Database ID if the country.', hidden: true },
+      { key: 'capital', label: 'Capital', description: 'Primary if national capital\nAdmin if regional capital.' },
+      { key: 'adminRegionId', label: 'Administration Region ID', description: 'Database ID of the administration region.' },
+      { key: 'adminRegionName', label: 'Administration Region Name', description: 'Name of the administrtration region.'},
+      { key: 'countryId', label: 'Country ID', description: 'Database ID of the country.', hidden: true },
       {
         key: 'countryName', label: 'Country', description: 'The name of the city/town\'s country.',
         type: 'link', toolTip: 'View details and map of ', itemName: 'countryName',

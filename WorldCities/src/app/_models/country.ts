@@ -3,5 +3,8 @@ export interface Country {
   name: string;
   iso2: string;
   iso3: string;
-  totCities: number;
+  capitalId?: number;
+  capitalName?: string;
+  totAdminRegions?: number;
+  totCities?: number;
 }

@@ -352,6 +352,7 @@ namespace WorldCitiesAPI.Tests.Helpers
             // Arrange
             _cityEntity.Capital = null;
             _cityEntity.AdminRegionId = null;
+            _cityEntity.AdminRegion = null;
 
             // Act
             var city = _mapper.Map<CityDTO>(_cityEntity);
@@ -364,7 +365,7 @@ namespace WorldCitiesAPI.Tests.Helpers
             Assert.Equal(10D, city.Population);
             Assert.Null(city.Capital);
             Assert.Null(city.AdminRegionId);
-            Assert.Equal("Big State", city.AdminRegionName);
+            Assert.Null(city.AdminRegionName);
             Assert.Equal(2, city.CountryId);
             Assert.Equal("CountryName", city.CountryName);
         }

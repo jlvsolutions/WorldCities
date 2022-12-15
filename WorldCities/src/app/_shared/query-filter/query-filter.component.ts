@@ -20,8 +20,9 @@ export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit
   @Input() column: string = '';
   @Input() columns: FilterColumn[] = [];
   @Input() placeholder: string = '';
+  /** EventEmitter that fires when the filter query text changes. */
   @Output() filterChange: EventEmitter<FilterEvent> = new EventEmitter<FilterEvent>();
-
+  /** Private Subject used for debouncing */
   private filterTextChanged: Subject<string> = new Subject<string>();
 
   constructor(private formBuilder: FormBuilder) {
@@ -44,15 +45,14 @@ export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit
   onKeyUp(searchText: string) {
     this.form.markAllAsTouched();
 
-    if (!this.form.valid)
+    if (!this.form.valid) {
       return;
-
+    }
     if (this.filterTextChanged.observers.length === 0) {
       this.filterTextChanged
         .pipe(debounceTime(200), distinctUntilChanged())
         .subscribe(query => {
-          this.query = query;
-          this.filterChange.emit({column: this.column, query: this.query});
+          this.filterChange.emit({column: this.column, query: query});
         })
     }
     this.filterTextChanged.next(searchText);
