@@ -25,6 +25,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   private destroySubject = new Subject();
 
   public viewSource: IItemsViewSource<TDto> = new ItemsViewSource<TDto>();
+  filter!: FilterEvent;
 
   @ViewChild('iShowMessage') showMsg!: IShowMessage;
 
@@ -83,16 +84,11 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       columns: this.viewSource.schema
         .filter(c => c.type !== 'button' && !c.noSort)
         .map(col => { return { col: col.key, label: col.label } }),
-      placeholder: '',//this.getFilterPlacehoder(this.getDefaultColumn()), // Not really used anymore.
+      placeholder: ''
     }
+    this.filter = { column: this.getDefaultColumn(), query: '' };
   }
 
-  /** Not really used.  Placeholder logic is in the IQueryFilter it'self. */
-  private getFilterPlacehoder(columnName: string): string {
-    return `Filter by ${this.viewSource.displayColumns[
-      this.viewSource.modelColumns.indexOf(columnName)]} (or part of it)...`;
-  }
-  
   /** Used to provide custom row tooltips for each data items. */
   abstract getRowToolTip(row: any): string;
   onRowMouseOver(event: RowMouseOverEvent) {
@@ -116,8 +112,10 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
     console.log(`BaseItemsComponent onFilterChange query=${query.query}, column=${query.column}`);
     this.titleSuffix = '';
     console.log(`BaseItemsComponent onFilterChange: setting vs.f.q ${this.viewSource.filter.query} to: ${query.query}`);
-    this.viewSource.filter.query = query.query;
-    this.viewSource.filter.column = query.column;
+    //this.viewSource.filter.query = query.query;
+    //this.viewSource.filter.column = query.column;
+    this.filter.column = query.column;
+    this.filter.query = query.query;
     this.viewSource.paginator.pageIndex = 0;
     this.getData();
   }
@@ -155,8 +153,8 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       this.viewSource.paginator.pageSize,
       this.viewSource.sort.active,
       this.viewSource.sort.direction,
-      this.viewSource.filter.column,
-      this.viewSource.filter.query)
+      this.filter.column,
+      this.filter.query)
       .subscribe(result => {
         console.log(`BaseItemsComponent getData Result: ${result.data.length} items returned.`);
         this.viewSource.data = result.data;
