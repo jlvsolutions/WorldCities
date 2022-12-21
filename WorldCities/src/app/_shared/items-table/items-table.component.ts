@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitte
 import { IItemsViewSource, IQueryFilter, FilterEvent, DetailEvent, RowMouseOverEvent } from '@app/_models';
 import { Sort } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { QueryFilterComponent } from '../query-filter/query-filter.component';
 
 /**  Displays a mat-table using the provided IItemsView interface */
 @Component({
@@ -9,11 +10,9 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
   templateUrl: './items-table.component.html',
   styleUrls: ['./items-table.component.scss']
 })
-export class ItemsTableComponent implements OnDestroy  {
+export class ItemsTableComponent implements OnDestroy, OnInit, AfterViewInit  {
 
-  @ViewChild('queryFilter') filter!: IQueryFilter;
-
-  constructor() { }
+  @ViewChild(QueryFilterComponent) filter!: QueryFilterComponent;
 
   /** The data used to dynamically create and populate the table. */
   @Input() source!: IItemsViewSource<any>;
@@ -39,6 +38,13 @@ export class ItemsTableComponent implements OnDestroy  {
   /** An event that fires when the mouse pointer moves over a row in the table. */
   @Output() rowMouseOver: EventEmitter<RowMouseOverEvent> = new EventEmitter<RowMouseOverEvent>();
 
+  filterOut: FilterEvent = new FilterEvent();
+  constructor() { }
+
+  ngOnInit() {
+    this.filterChange.subscribe(event => this.filterOut = event);
+  }
+
   ngOnDestroy(): void {
     this.sortChange.complete();
     this.pageChange.complete();
@@ -46,5 +52,10 @@ export class ItemsTableComponent implements OnDestroy  {
     this.detailClick.complete();
     this.rowClick.complete();
     this.rowMouseOver.complete();
+  }
+
+  ngAfterViewInit(): void {
+    console.log('ItemsTableComponent:  AfterViewInit');
+    this.source.filter = this.filter;
   }
 }

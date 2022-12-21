@@ -1,20 +1,21 @@
-import { AfterViewInit, EventEmitter, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, EventEmitter, Component, OnDestroy, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute, NavigationStart, NavigationEnd, Params } from '@angular/router';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
 import { Subject, takeUntil } from 'rxjs';
 
 import { IQueryFilter, IShowMessage, IItemsViewSource, ItemsViewSource, FilterColumn, FilterEvent, RowMouseOverEvent } from '@app/_models';
-import { BaseService, AuthService } from '@app/_services';
+import { BaseService, SubQuery, AuthService } from '@app/_services';
 
 /** Base class for displaying a collection of items. */
 @Component({
   template: ``
 })
-export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterViewInit, OnDestroy {
+export abstract class BaseItemsComponent<TDto, TId> implements OnInit, AfterViewInit, OnDestroy {
 
   title: string = '';
   titleSuffix: string = '';
+  subQuery?: SubQuery<TId>;
 
   // row
   rowTooltip: string = '';
@@ -25,18 +26,19 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   private destroySubject = new Subject();
 
   public viewSource: IItemsViewSource<TDto> = new ItemsViewSource<TDto>();
-  filter!: FilterEvent;
+  filterOut: FilterEvent = new FilterEvent();
 
   @ViewChild('iShowMessage') showMsg!: IShowMessage;
 
   constructor(
+    protected changeDetector: ChangeDetectorRef,
     protected router: Router,
     protected activatedRoute: ActivatedRoute,
     protected authService: AuthService,
-    protected service: BaseService<TDto, Tid>) {
+    protected service: BaseService<TDto, TId>) {
 
     console.log('BaseItemsComponent derived instance created.');
-    this.setItemSchema();
+    this.setViewSourceSchema();
     this.setDefaults();
   }
 
@@ -48,7 +50,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   ngAfterViewInit() {
     console.log('BaseItemsComponent:  AfterViewInit.');
- }
+  }
 
   ngOnDestroy() {
     console.log('BaseItemsComponent derived class instance destroyed.');
@@ -58,17 +60,18 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   /** Returns the schema/metadata for the derived class' model. */
   abstract getItemSchema(): any[];
-  private setItemSchema(): void {
-    this.viewSource.schema = this.getItemSchema()
-      .filter(s => !s.hidden);
+  private setViewSourceSchema(): void {
+    this.viewSource.schema = this.getItemSchema().filter(s => !s.hidden);
   }
 
   /** Used to provide a descriptive name for the data item from the model with given id.  */
-  abstract getNameOfItem(id: Tid): string;
+  abstract getNameOfItem(id: TId): string;
 
   /** Returns the default column for sorting and filtering. */
   abstract getDefaultColumn(): string;
+
   private setDefaults(): void {
+    console.log('BaseItemsComponent:  setDefaults()');
     this.titleSuffix = ''; 
 
     this.viewSource.sort = { active: this.getDefaultColumn(), direction: 'asc' };
@@ -78,15 +81,21 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       pageSizeOptions: [10, 15, 25, 50, 100, 250, 500, 1000, 5000],
       totalCount: 0
     }
-    this.viewSource.filter = { 
-      query: '',
-      column: this.getDefaultColumn(),
-      columns: this.viewSource.schema
-        .filter(c => c.type !== 'button' && !c.noSort)
-        .map(col => { return { col: col.key, label: col.label } }),
-      placeholder: ''
+
+    if (this.viewSource.filter == undefined)
+      this.viewSource.filter = {
+        query: '',
+        column: this.getDefaultColumn(),
+        columns: this.viewSource.filterColumns,
+        placeholder: ''
+      }
+    else {
+      this.viewSource.filter.columns = this.viewSource.filterColumns;
+      this.viewSource.filter.column = this.getDefaultColumn();
+      this.viewSource.filter.query = '';
+      this.filterOut = { column: this.getDefaultColumn(), query: '' };
     }
-    this.filter = { column: this.getDefaultColumn(), query: '' };
+    console.log(`BaseItemsComponent setDefaults: viewsource.filter.column=${this.viewSource.filter.column}, viewsource.filter.query=${this.viewSource.filter.query}`);
   }
 
   /** Used to provide custom row tooltips for each data items. */
@@ -111,11 +120,9 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
   onFilterChange(query: FilterEvent) {
     console.log(`BaseItemsComponent onFilterChange query=${query.query}, column=${query.column}`);
     this.titleSuffix = '';
-    console.log(`BaseItemsComponent onFilterChange: setting vs.f.q ${this.viewSource.filter.query} to: ${query.query}`);
-    //this.viewSource.filter.query = query.query;
-    //this.viewSource.filter.column = query.column;
-    this.filter.column = query.column;
-    this.filter.query = query.query;
+    this.viewSource.filter.column = query.column;
+    this.filterOut.column = query.column;
+    this.filterOut.query = query.query;
     this.viewSource.paginator.pageIndex = 0;
     this.getData();
   }
@@ -128,23 +135,26 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
   onParamsChange(params: Params) {
     console.log('BaseItemsComponent:  onParamsChange.');
-    this.viewSource.sort.active = params['sortColumn'] ?? '';
-    this.viewSource.filter.column = params['filterColumn'] ?? '';
+    this.viewSource.sort.active = params['sortColumn'] ?? this.getDefaultColumn();
+    this.viewSource.filter.column = params['filterColumn'] ?? this.getDefaultColumn();
     this.viewSource.filter.query = params['filterQuery'] ?? '';
+    this.filterOut.column = params['filterColumn'] ?? '';
+    this.filterOut.query = params['filterQuery'] ?? '';
 
-    console.log(`BaseItemsComponent:  urlParams changed filterColumn=${this.viewSource.filter.column}, filterQuery=${this.viewSource.filter.query}`);
-    if (this.viewSource.filter.column === '' && this.viewSource.filter.query === '') {
+    console.log(`BaseItemsComponent:  BaseItemsComponent: OnParamsChange filterColumn=${this.filterOut.column}, filterQuery=${this.filterOut.query}, sortColomn=${this.viewSource.sort.active}`);
+    if (this.viewSource.filter.column === '' && this.viewSource.filter.query === '')
       this.setDefaults();
-      console.log(`BaseItemsComponent:  Resetting to defaults: filterColumn=${this.viewSource.filter.column}, filterQuery=${this.viewSource.filter.query}`);
-    }
     else
       this.titleSuffix = ' - ' + this.viewSource.filter.query;
 
+    //this.changeDetector.detectChanges();
+    //this.changeDetector.markForCheck();
     this.getData();
   }
 
   getData() {
-    console.log(`BaseItemsComponent getData: filterQuery=${this.viewSource.filter.query}, filterColumn=${this.viewSource.filter.column}, sortColumn=${this.viewSource.sort.active}, pageIndex=${this.viewSource.paginator.pageIndex}`);
+    console.log(`BaseItemsComponent getData: filterQuery=${this.filterOut.query}, filterColumn=${this.filterOut.column}, ` +
+      `sortColumn=${this.viewSource.sort.active}, pageIndex=${this.viewSource.paginator.pageIndex}, subQuery=${this.subQuery?.name}=${this.subQuery?.id}`);
     if (this.showMsg)
       this.showMsg.spinner = "Retrieving...";
 
@@ -153,14 +163,16 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       this.viewSource.paginator.pageSize,
       this.viewSource.sort.active,
       this.viewSource.sort.direction,
-      this.filter.column,
-      this.filter.query)
+      this.filterOut.column,
+      this.filterOut.query,
+      this.subQuery)
       .subscribe(result => {
         console.log(`BaseItemsComponent getData Result: ${result.data.length} items returned.`);
         this.viewSource.data = result.data;
         this.viewSource.paginator.pageIndex = result.pageIndex;
         this.viewSource.paginator.pageSize = result.pageSize;
         this.viewSource.paginator.totalCount = result.totalCount;
+        this.titleSuffix = result.title === null ? '' : ' - ' + result.title;
         this.showMsg.message = `Showing results ${this.itemsRetrievedText(result.totalCount, result.pageIndex, result.pageSize)}`;
       }, error => {
         switch (error.status) {
@@ -185,7 +197,7 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
    * Invoked when the user clicks on a delete button.  Shows a delete confirmation dialog.
    * @param id The id of the item to delete.
    */
-  deleteItem(id: Tid): void {   // TODO: Change to protected after implementing new items-table component  !!!!
+  protected deleteItem(id: TId): void {
     this.showMsg.clear();
 
     if (!confirm(`Are you sure you want to delete ${this.getNameOfItem(id)}?`))
@@ -193,7 +205,6 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
 
     this.service.delete(id)
       .subscribe(result => {
-
         this.showMsg.message = 'Item deleted.';
 
         // Reload the users data.
@@ -213,10 +224,14 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       });
   }
 
+  abstract onParamsChanged(params: Params): void;
   private subscribeToQueryParams(): void {
     this.activatedRoute.queryParams
       .pipe(takeUntil(this.destroySubject))
-      .subscribe(params => this.onParamsChange(params));
+      .subscribe(params => {
+        this.onParamsChanged(params);
+        this.onParamsChange(params);
+      });
   }
 
   private subscribeToAuthorizationChanges(): void {
@@ -225,8 +240,9 @@ export abstract class BaseItemsComponent<TDto, Tid> implements OnInit, AfterView
       .subscribe(user => {
         this.isLoggedIn = this.authService.isAuthenticated();
         this.isAdministrator = this.authService.isAdministrator();
-        this.setItemSchema();
+        this.setViewSourceSchema();
       });
 
   }
+
 }

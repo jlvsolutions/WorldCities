@@ -1,5 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { BaseItemsComponent } from '@app/_helpers/base-items.component';
 import { User, ItemSchema, DetailEvent } from '@app/_models';
@@ -13,11 +13,12 @@ import { UserService, AuthService } from '@app/_services';
 export class UsersComponent extends BaseItemsComponent<User, string> {
 
   constructor(
+    cd: ChangeDetectorRef,
     router: Router,
     activatedRoute: ActivatedRoute,
     authService: AuthService,
     userService: UserService) {
-    super(router, activatedRoute, authService, userService);
+    super(cd, router, activatedRoute, authService, userService);
     console.log('UsersComponent instance created.');
 
     this.title = 'Users';
@@ -82,4 +83,6 @@ export class UsersComponent extends BaseItemsComponent<User, string> {
   getRowToolTip(row: User) {
     return `View additional user details for ${row.name}`;
   }
+
+  onParamsChanged(params: Params): void { }
 }

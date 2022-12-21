@@ -1,9 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BaseService, ApiResult } from './base.service';
+import { BaseService, SubQuery, ApiResult } from './base.service';
 import { Observable, map, combineLatest } from 'rxjs';
 
-import { City, Country } from '@app/_models';
+import { City, Country, AdminRegion } from '@app/_models';
 //import { Apollo, gql } from 'apollo-angular'; // GraphQL
 
 @Injectable()
@@ -32,9 +32,10 @@ export class CityService extends BaseService<City, number> implements OnDestroy 
     sortColumn: string,
     sortOrder: string,
     filterColumn: string | null,
-    filterQuery: string | null): Observable<ApiResult<City>> {
+    filterQuery: string | null,
+    subQuery?: SubQuery<number>): Observable<ApiResult<City>> {
 
-    var url = this.getUrl("api/Cities");
+    var url = this.getUrl("api/Cities", subQuery);
     var params = new HttpParams()
       .set("pageIndex", pageIndex.toString())
       .set("pageSize", pageSize.toString())

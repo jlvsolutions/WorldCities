@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BaseService, ApiResult } from './base.service';
+import { BaseService, SubQuery, ApiResult } from './base.service';
 import { Observable } from 'rxjs';
 
 import { Country } from '@app/_models';
@@ -21,9 +21,10 @@ export class CountryService extends BaseService<Country, number> implements OnDe
     sortColumn: string,
     sortOrder: string,
     filterColumn: string | null,
-    filterQuery: string | null): Observable<ApiResult<Country>> {
+    filterQuery: string | null,
+    subQuery?: SubQuery<number>): Observable<ApiResult<Country>> {
 
-    var url = this.getUrl("api/Countries");
+    var url = this.getUrl("api/Countries", subQuery);
     var params = new HttpParams()
       .set("pageIndex", pageIndex.toString())
       .set("pageSize", pageSize.toString())

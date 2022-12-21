@@ -35,7 +35,7 @@ namespace WorldCitiesAPI.Controllers
         public async Task<ActionResult<ApiResult<CountryDTO>>> GetCountries(
             int pageIndex = 0,
             int pageSize = 10,
-            string? sortColumn = null,
+            string? sortColumn = "name",
             string? sortOrder = null,
             string? filterColumn = null,
             string? filterQuery = null)
@@ -69,11 +69,9 @@ namespace WorldCitiesAPI.Controllers
 
         // GET: api/Countries/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CountryDTO>> GetById(int id)
+        public async Task<ActionResult<CountryDTO>> GetCountry(int id)
         {
-          if (_context.Countries == null)
-              return NotFound();
-           
+            _logger.LogDebug("Entering GetCountry. Id: {id}", id);
             var country = await _context.Countries.FindAsync(id);
 
             if (country == null)
@@ -124,7 +122,7 @@ namespace WorldCitiesAPI.Controllers
             _context.Countries.Add(country);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = country.Id });
+            return CreatedAtAction(nameof(GetCountry), new { id = country.Id });
         }
 
         // DELETE: api/Countries/5

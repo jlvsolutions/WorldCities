@@ -1,5 +1,6 @@
 import { Sort } from '@angular/material/sort';
 import { IQueryFilter } from '@app/_models';
+import { FilterColumn } from './iquery-filter';
 
 /** Interface for components that provide pagination functionality */
 export interface IPaginator {
@@ -20,6 +21,8 @@ export interface IItemsViewSource<TDto> {
   get modelColumns(): string[];
   /** Gets a string array of column labels from the schema */
   get displayColumns(): string[];
+  /** Gets array of FilterColumns used to populate the filter column select */
+  get filterColumns(): FilterColumn[];
 }
 
 export class ItemsViewSource<TDto> implements IItemsViewSource<TDto> {
@@ -31,6 +34,11 @@ export class ItemsViewSource<TDto> implements IItemsViewSource<TDto> {
 
   get modelColumns(): string[] { return this.schema.map((col) => col.key); }
   get displayColumns(): string[] { return this.schema.map((col) => col.label); }
+  get filterColumns(): FilterColumn[] {
+    return this.schema
+      .filter(c => c.type !== 'button' && !c.noSort && !c.hidden)
+      .map(col => { return { col: col.key, label: col.label } });
+  }
 }
 
 /**

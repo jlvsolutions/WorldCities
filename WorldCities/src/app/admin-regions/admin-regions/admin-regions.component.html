@@ -1,0 +1,24 @@
+<h1>{{title}}{{titleSuffix}}</h1>
+
+<p>
+  Here's a list of administration regions (e.g., states, provinces) in the world.
+  <button mat-flat-button color="primary" class="btn-right" *ngIf="viewSource.data && isLoggedIn" [routerLink]="['edit']">
+    Add a new Administration Region
+  </button>
+</p>
+
+<p *ngIf="!viewSource.data"><em>Loading...</em></p>
+
+<show-message #iShowMessage></show-message>
+
+<items-table #iCollectionView
+             [source]="viewSource"
+             [rowToolTip]="rowTooltip"
+             (sortChange)="onSortChange($event)"
+             (pageChange)="onPageChange($event)"
+             (filterChange)="onFilterChange($event)"
+             (detailClick)="onDetailClick($event)"
+             (rowClick)="onRowClick($event)"
+             (rowMouseOver)="onRowMouseOver($event)"
+             [hidden]="!viewSource.data">
+</items-table>

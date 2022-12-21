@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { BaseItemsComponent } from '@app/_helpers/base-items.component';
 import { City, DetailEvent, ItemSchema } from '@app/_models';
@@ -13,18 +13,19 @@ import { CityService, AuthService } from '@app/_services';
 export class CitiesComponent extends BaseItemsComponent<City, number> {
 
   constructor(
+    cd: ChangeDetectorRef,
     router: Router,
     activatedRoute: ActivatedRoute,
     authService: AuthService,
     cityService: CityService) {
-    super(router, activatedRoute, authService, cityService);
+    super(cd, router, activatedRoute, authService, cityService);
     console.log('CitiesComponent instance created.');
 
     this.title = 'Cities';
   }
 
   getItemSchema(): ItemSchema[] {
-    console.log(`CitiesComponent:  Setting schema. isLoggedIn:  ${this.isLoggedIn}, isAdministrator:  ${this.isAdministrator}`);
+    console.log(`CitiesComponent:  getItemSchema. isLoggedIn:  ${this.isLoggedIn}, isAdministrator:  ${this.isAdministrator}`);
     return [
       { key: 'id', label: 'ID', description: 'The database ID of the city/town.' },
       {
@@ -44,13 +45,17 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
       },
       { key: 'capital', label: 'Capital', description: 'Primary if national capital\nAdmin if regional capital.' },
       { key: 'adminRegionId', label: 'Administration Region ID', description: 'Database ID of the administration region.' },
-      { key: 'adminRegionName', label: 'Administration Region Name', description: 'Name of the administrtration region.'},
+      {
+        key: 'adminRegionName', label: 'Administration Region Name', description: 'Name of the administrtration region.',
+        type: 'link', toolTip: 'View details and map of ', itemName: 'adminRegionName',
+        authorized: true
+      },
       { key: 'countryId', label: 'Country ID', description: 'Database ID of the country.', hidden: true },
       {
         key: 'countryName', label: 'Country', description: 'The name of the city/town\'s country.',
         type: 'link', toolTip: 'View details and map of ', itemName: 'countryName',
         authorized: true
-      },
+      }
     ];
   }
 
@@ -76,6 +81,11 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
           queryParams: { returnUrl: this.router.routerState.snapshot.url }
         });
         break;
+      case 'adminRegionName':
+        this.router.navigate(['adminregions', detail.row.adminRegionId], {
+          queryParams: { returnUrl: this.router.routerState.snapshot.url }
+        });
+        break;
       default:
         console.error(`Invalid button click event: ${detail.key} ${detail.row.id}.`);
         break;
@@ -91,5 +101,21 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
 
   getRowToolTip(row: City) {
     return `View details and map of ${row.name}`;
+  }
+
+  onParamsChanged(params: Params): void {
+    this.subQuery = undefined;
+    this.titleSuffix = '';
+    if (params['AdminRegion']) {
+      this.subQuery = { name: 'AdminRegion', id: +params['AdminRegion'] };
+      console.log(`onParamsChanbed: subQuery AdminRegion=${this.subQuery.id}`);
+    }
+    else if (params['Country']) {
+      this.subQuery = { name: 'Country', id: +params['Country'] };
+      console.log(`onParamsChanbed: subQuery Country=${this.subQuery.id}`);
+    }
+
+    //if (this.subQuery)
+    //  this.titleSuffix = ` - ${this.subQuery.name}`;
   }
 }

@@ -29,7 +29,7 @@ export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit
   }
 
   ngOnInit(): void {
-    console.log('QueryFilterComponent OnInit');
+    console.log(`QueryFilterComponent OnInit: query=${this.query}, column=${this.column}`);
     this.form = this.formBuilder.group({
       query: [this.query, Validators.pattern(/^[a-zA-Z0-9.-\s~`']+$/)],
       columns: [this.column]
@@ -38,11 +38,13 @@ export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit
   }
 
   ngAfterViewInit(): void {
-    console.log('QueryFilterComponent AfterViewInit.');
+    console.log(`QueryFilterComponent AfterViewInit. query=${this.query}, column=${this.column}`);
   }
 
   /** Debounce filter text changes */
   onKeyUp(searchText: string) {
+    console.log(`QueryFilter: onKeyUp: ${searchText}`);
+
     this.form.markAllAsTouched();
 
     if (!this.form.valid) {
@@ -52,17 +54,21 @@ export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit
       this.filterTextChanged
         .pipe(debounceTime(200), distinctUntilChanged())
         .subscribe(query => {
-          this.filterChange.emit({column: this.column, query: query});
+          console.log(`QueryFilter: onKeyUp Emitting: ${this.column}, ${query}`);
+          this.filterChange.emit({ column: this.column, query: query});
         })
     }
+    this.query = searchText;
     this.filterTextChanged.next(searchText);
   }
 
   onSelectionChange(event: MatSelectChange) {
+    console.log(`QueryFilter: onSelectionChange: ${event.value}`);
     this.column = event.value;
+    this.form.controls['query'].setValue('');
     this.setPlaceholder();
     if (this.form.valid)
-      this.filterChange.emit({ column: this.column, query: this.query });
+      this.filterChange.emit({ column: event.value, query: this.query });
   }
 
   private setPlaceholder() {

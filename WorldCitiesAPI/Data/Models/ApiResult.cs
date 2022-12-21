@@ -19,7 +19,8 @@ namespace WorldCitiesAPI.Data.Models
             string? sortColumn,
             string? sortOrder,
             string? filterColumn,
-            string? filterQuery)
+            string? filterQuery,
+            string? title)
         {
             Data = data;
             TotalCount = count;
@@ -30,6 +31,7 @@ namespace WorldCitiesAPI.Data.Models
             SortOrder = sortOrder;
             FilterColumn = filterColumn;
             FilterQuery = filterQuery;
+            Title = title;
         }
 
         #region Methods
@@ -43,6 +45,7 @@ namespace WorldCitiesAPI.Data.Models
         /// <param name="SortOrder">The sorting order ("ASC" or "DESC")</param>
         /// <param name="filterColumn">The filtering column name</param>
         /// <param name="fileterQuery">The filtering query (value to lookup)</param>
+        /// <param name="title">A title given to describe the data</param>
         /// <returns>An object containing the IQueryable paged/sorted result
         /// and all the relevant paging/sorting navigation info.</returns>
         public static async Task<ApiResult<T>> CreateAsync(
@@ -52,7 +55,8 @@ namespace WorldCitiesAPI.Data.Models
             string? sortColumn = null,
             string? sortOrder = null,
             string? filterColumn = null,
-            string? filterQuery = null)
+            string? filterQuery = null,
+            string? title = null)
         {
             if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterQuery) && IsValidProperty(filterColumn))
             {
@@ -84,7 +88,8 @@ namespace WorldCitiesAPI.Data.Models
 
             var data = await source.ToListAsync(); // Note: this executes the SQL query
 
-            return new ApiResult<T>(data, count, pageIndex, pageSize, sortColumn, sortOrder, filterColumn, filterQuery);
+            return new ApiResult<T>(data, count, pageIndex, pageSize, 
+                sortColumn, sortOrder, filterColumn, filterQuery, title);
         }
 
         /// <summary>
@@ -127,6 +132,11 @@ namespace WorldCitiesAPI.Data.Models
         /// The data result.
         /// </summary>
         public List<T> Data { get; private set; }
+
+        /// <summary>
+        /// A description about the data.
+        /// </summary>
+        public string? Title { get; private set; }
 
         /// <summary>
         /// Zero-based index of current page.

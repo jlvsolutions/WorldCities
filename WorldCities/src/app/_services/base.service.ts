@@ -22,15 +22,22 @@ export abstract class BaseService<TDto, TId> {
     sortColumn: string,
     sortOrder: string,
     filterColumn: string | null,
-    filterQuery: string | null): Observable<ApiResult<TDto>>;
+    filterQuery: string | null,
+    subQuery?: SubQuery<TId>): Observable<ApiResult<TDto>>;
 
   abstract get(id: TId): Observable<TDto>;
   abstract put(item: TDto): Observable<TDto>;
   abstract post(item: TDto): Observable<TDto>;
   abstract delete(id: TId): Observable<any>;
 
-  protected getUrl(url: string) {
-    return environment.baseUrl + url;
+  protected getUrl(url: string, subQuery?: SubQuery<TId>) {
+    var url = environment.baseUrl + url;
+    if (subQuery) {
+      url = url + '/' + subQuery.name;
+      if (subQuery.id)
+        url = url + '/' + subQuery.id;
+    }
+    return url;
   }
 }
 
@@ -44,6 +51,15 @@ export interface ApiResult<T> {
   sortOrder: string;
   filterColumn: string;
   filterQuery: string;
+  title: string;
 }
+
+export class SubQuery<TId> {
+  /** Property of the sub query's navigation property */
+  name: string = '';
+  /** Id of the sub query's navigation property */
+  id?: TId;
+}
+
 
 

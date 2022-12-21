@@ -31,7 +31,6 @@ export class NavMenuComponent implements OnInit, OnDestroy {
   onLogout(): void {
     console.log("NavMenu:  Logging out...");
     this.authService.logout();
-    //this.router.navigate(["/"]);
   }
 
   onLogin(): void {

@@ -31,15 +31,15 @@ namespace WorldCitiesAPI.Controllers
 
         [HttpGet]
         public async Task<ActionResult<ApiResult<CityDTO>>> GetCities(
-            int pageIndex = 0, 
+            int pageIndex = 0,
             int pageSize = 10,
-            string? sortColumn = null,
+            string? sortColumn = "name",
             string? sortOrder = null,
             string? filterColumn = null,
             string? filterQuery = null)
         {
             _logger.LogInformation(
-                "Entering GetCities. PageIndex: {pageIndex}, FilterQuery: {filterQuery}, FilterColumn: {filterColumn}, SortColumn: {sortColumn}, SortOrder: {sortOrder}", 
+                "Entering GetCities. PageIndex: {pageIndex}, FilterQuery: {filterQuery}, FilterColumn: {filterColumn}, SortColumn: {sortColumn}, SortOrder: {sortOrder}",
                 pageIndex, filterQuery, filterColumn, sortColumn, sortOrder);
 
             try
@@ -66,14 +66,91 @@ namespace WorldCitiesAPI.Controllers
             // Middleware to handle other exception types.
         }
 
+        [HttpGet("AdminRegion/{id}")]
+        public async Task<ActionResult<ApiResult<CityDTO>>> GetByAdminRegion(
+            int id,
+            int pageIndex = 0,
+            int pageSize = 10,
+            string? sortColumn = "name",
+            string? sortOrder = null,
+            string? filterColumn = null,
+            string? filterQuery = null)
+        {
+            _logger.LogInformation(
+                "Entering GetByAdminRegion. AdminRegionId: {id}, PageIndex: {pageIndex}, FilterQuery: {filterQuery}, FilterColumn: {filterColumn}, SortColumn: {sortColumn}, SortOrder: {sortOrder}",
+                id, pageIndex, filterQuery, filterColumn, sortColumn, sortOrder);
+
+            try
+            {
+                return await ApiResult<CityDTO>.CreateAsync(
+                            _mapper.ProjectTo<CityDTO>(_context.Cities.AsNoTracking()
+                            .Where(c => c.AdminRegionId == id), null),
+                            pageIndex,
+                            pageSize,
+                            sortColumn,
+                            sortOrder,
+                            filterColumn,
+                            filterQuery,
+                            _context.AdminRegions.Find(id)?.Name);
+            }
+            catch (NotSupportedException ex)
+            {
+                _logger.LogError(ex, "GetByAdminRegion:  " + ex.Message + ex.StackTrace);
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "GetByAdminRegion:  " + ex.Message + ex.StackTrace);
+                return BadRequest("An invalid operation was attempted.");
+            }
+            // Middleware to handle other exception types.
+        }
+
+        [HttpGet("Country/{id}")]
+        public async Task<ActionResult<ApiResult<CityDTO>>> GetByCountry(
+            int id,
+            int pageIndex = 0,
+            int pageSize = 10,
+            string? sortColumn = "name",
+            string? sortOrder = null,
+            string? filterColumn = null,
+            string? filterQuery = null)
+        {
+            _logger.LogInformation(
+                "Entering GetByCountry. CountryId: {id}, PageIndex: {pageIndex}, FilterQuery: {filterQuery}, FilterColumn: {filterColumn}, SortColumn: {sortColumn}, SortOrder: {sortOrder}",
+                id, pageIndex, filterQuery, filterColumn, sortColumn, sortOrder);
+
+            try
+            {
+                return await ApiResult<CityDTO>.CreateAsync(
+                            _mapper.ProjectTo<CityDTO>(_context.Cities.AsNoTracking()
+                            .Where(c => c.CountryId == id), null),
+                            pageIndex,
+                            pageSize,
+                            sortColumn,
+                            sortOrder,
+                            filterColumn,
+                            filterQuery,
+                            _context.Countries.Find(id)?.Name);
+            }
+            catch (NotSupportedException ex)
+            {
+                _logger.LogError(ex, "GetByCountry:  " + ex.Message + ex.StackTrace);
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "GetByCountry:  " + ex.Message + ex.StackTrace);
+                return BadRequest("An invalid operation was attempted.");
+            }
+            // Middleware to handle other exception types.
+        }
+
         // GET: api/Cities/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CityDTO>> GetById(int id)
+        public ActionResult<CityDTO> GetCity(int id)
         {
             _logger.LogDebug("Entering GetCity. Id: {id}", id);
-            if (_context.Cities == null)
-                return NotFound();
-            
             var city = _context.Cities.Where(c => c.Id == id)
                                       .Include(c => c.AdminRegion)
                                       .Include(c => c.Country)
@@ -126,7 +203,7 @@ namespace WorldCitiesAPI.Controllers
             _context.Cities.Add(city);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = city.Id });
+            return CreatedAtAction(nameof(GetCity), new { id = city.Id });
         }
 
         // DELETE: api/Cities/5

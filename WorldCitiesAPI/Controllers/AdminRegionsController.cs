@@ -34,7 +34,7 @@ namespace WorldCitiesAPI.Controllers
         public async Task<ActionResult<ApiResult<AdminRegionDTO>>> GetAdminRegions(
             int pageIndex = 0,
             int pageSize = 10,
-            string? sortColumn = null,
+            string? sortColumn = "name",
             string? sortOrder = null,
             string? filterColumn = null,
             string? filterQuery = null)
@@ -45,8 +45,7 @@ namespace WorldCitiesAPI.Controllers
             try
             {
                 return await ApiResult<AdminRegionDTO>.CreateAsync(
-                        _context.AdminRegions.AsNoTracking()
-                        .Select(c => _mapper.Map<AdminRegionDTO>(c)),
+                        _mapper.ProjectTo<AdminRegionDTO>(_context.AdminRegions.AsNoTracking(), null),
                         pageIndex,
                         pageSize,
                         sortColumn,
@@ -67,12 +66,48 @@ namespace WorldCitiesAPI.Controllers
             // Middleware to handle other exception types.
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AdminRegionDTO>> GetById(int id)
+        [HttpGet("Country/{id}")]
+        public async Task<ActionResult<ApiResult<AdminRegionDTO>>> GetByCountry(
+            int id,
+            int pageIndex = 0,
+            int pageSize = 10,
+            string? sortColumn = "name",
+            string? sortOrder = null,
+            string? filterColumn = null,
+            string? filterQuery = null)
         {
-            if (_context.AdminRegions == null)
-                return NotFound();
+            _logger.LogInformation(
+                "Entering GetByCountry. CountryId: {id}, PageIndex: {pageIndex}, FilterQuery: {filterQuery}, FilterColumn: {filterColumn}, SortColumn: {sortColumn}, SortOrder: {sortOrder}",
+                id, pageIndex, filterQuery, filterColumn, sortColumn, sortOrder);
+            try
+            {
+                return await ApiResult<AdminRegionDTO>.CreateAsync(
+                        _mapper.ProjectTo<AdminRegionDTO>(_context.AdminRegions.AsNoTracking(), null),
+                        pageIndex,
+                        pageSize,
+                        sortColumn,
+                        sortOrder,
+                        filterColumn,
+                        filterQuery,
+                        _context.Countries.Find(id)?.Name);
+            }
+            catch (NotSupportedException ex)
+            {
+                _logger.LogError(ex, "GetByCountry:  " + ex.Message + ex.StackTrace);
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "GetByCountry:  " + ex.Message + ex.StackTrace);
+                return BadRequest("An invalid operation was attempted.");
+            }
+            // Middleware to handle other exception types.
+        }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<AdminRegionDTO>> GetAdminRegion(int id)
+        {
+            _logger.LogDebug("Entering GetAdminRegion. Id: {id}", id);
             var adminRegion = await _context.AdminRegions.FindAsync(id);
 
             if (adminRegion == null)
@@ -119,7 +154,7 @@ namespace WorldCitiesAPI.Controllers
             _context.AdminRegions.Add(ar);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = ar.Id });
+            return CreatedAtAction(nameof(GetAdminRegion), new { id = ar.Id });
         }
 
         [HttpDelete("{id}")]
@@ -145,14 +180,15 @@ namespace WorldCitiesAPI.Controllers
 
         [HttpPost]
         [Route("IsDupeAdminRegion")]
-        public bool IsDupeCity(AdminRegionDTO model)
+        public bool IsDupAdminRegion(AdminRegionDTO model)
         {
             // Safety checks
             if ((model.Id < int.MinValue) || (model.Id > int.MaxValue)) return false;
             if ((model.CountryId < int.MinValue) || (model.CountryId > int.MaxValue)) return false;
 
-            return _context.Cities.Any(
+            return _context.AdminRegions.Any(
                  e => e.Name == model.Name
+                 && e.Code == model.Code
                  && e.CountryId == model.CountryId
                  && e.Id != model.Id
              );

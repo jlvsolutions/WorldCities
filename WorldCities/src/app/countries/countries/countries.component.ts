@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ChangeDetectorRef, Component } from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { BaseItemsComponent } from '@app/_helpers/base-items.component';
 import { Country, DetailEvent, ItemSchema } from '@app/_models';
@@ -13,11 +13,12 @@ import { CountryService, AuthService } from '@app/_services';
 export class CountriesComponent extends BaseItemsComponent<Country, number> {
 
   constructor(
+    cd: ChangeDetectorRef,
     router: Router,
     activatedRoute: ActivatedRoute,
     authService: AuthService,
     countryService: CountryService) {
-    super(router, activatedRoute, authService, countryService);
+    super(cd, router, activatedRoute, authService, countryService);
     console.log('CountriesComponent instance created.');
 
     this.title = 'Countries';
@@ -40,12 +41,15 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
       { key: 'iso3', label: 'ISO3', description: 'The alpha-3 iso code of the country.' },
       { key: 'capitalId', label: 'Capital ID', description: 'The database ID for the capital city/town of the country.' },
       { key: 'capitalName', label: 'Capital Name', description: 'The name of the capital city/town' },
-      { key: 'totAdminRegions', label: 'Total Administration Regions', description: 'The total number of administration regions in the country.'},
+      {
+        key: 'totAdminRegions', label: 'Total Administration Regions',
+        description: 'The total number of administration regions in the country.'
+      },
       {
         key: 'totCities', label: 'Total Cities', description: 'The total number of cities in the country.',
         type: 'link', toolTip: 'View list of cities in ', itemName: 'name',
         authorized: true
-     }
+      }
     ];
   }
 
@@ -68,7 +72,7 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
         break;
       case 'totCities':
         this.router.navigate(['cities'], {
-          queryParams: { filterColumn: 'countryName', filterQuery: detail.row.name, sortColumn: 'name' }
+          queryParams: { Country: detail.row.id, sortColumn: 'name' }
         });
         break;
       default:
@@ -88,4 +92,6 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
   getRowToolTip(row: Country) {
     return `View details and map of ${row.name}`;
   }
+
+  onParamsChanged(params: Params): void { }
 }

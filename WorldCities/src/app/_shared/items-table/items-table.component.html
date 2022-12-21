@@ -1,8 +1,10 @@
 <div [hidden]="!source">
+  <!--
+                [placeholder]="source.filter.placeholder"
+  -->
   <query-filter #iQueryFilter
                 [query]="source.filter.query"
                 [column]="source.filter.column"
-                [placeholder]="source.filter.placeholder"
                 [columns]="source.filter.columns"
                 (filterChange)="filterChange.emit($event)">
   </query-filter>
@@ -27,14 +29,14 @@
       <ng-template #sortedHeaderTemplate>
         <mat-header-cell *matHeaderCellDef
                          mat-sort-header
-                         [class.filter-active]="source.filter.query !== '' &&
-                                                source.filter.column === 'RemoveMeIfYouWantHeaderAlsoTinted' + col.key"
+                         [class.filter-active]="filterOut.query !== '' &&
+                                                filterOut.column === 'RemoveMeIfYouWantHeaderAlsoTinted' + col.key"
                          [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
       </ng-template>
 
       <mat-cell *matCellDef="let item"
-                [class.filter-active]="source.filter.query !== '' &&
-                                       source.filter.column === col.key">
+                [class.filter-active]="filterOut.query !== '' &&
+                                       filterOut.column === col.key">
 
         <div [ngSwitch]="col.type">
 
