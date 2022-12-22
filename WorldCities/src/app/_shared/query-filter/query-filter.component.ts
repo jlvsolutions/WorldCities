@@ -13,7 +13,7 @@ import { IQueryFilter, FilterEvent, FilterColumn } from '@app/_models';
   styleUrls: ['./query-filter.component.scss']
 
 })
-export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit {
+export class QueryFilterComponent implements IQueryFilter, OnInit, IQueryFilter, AfterViewInit {
   form!: FormGroup;
 
   @Input() query: string = '';
@@ -22,14 +22,16 @@ export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit
   @Input() placeholder: string = '';
   /** EventEmitter that fires when the filter query text changes. */
   @Output() filterChange: EventEmitter<FilterEvent> = new EventEmitter<FilterEvent>();
+
   /** Private Subject used for debouncing */
   private filterTextChanged: Subject<string> = new Subject<string>();
+  private loggingEnabled: boolean = true;
 
   constructor(private formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {
-    console.log(`QueryFilterComponent OnInit: query=${this.query}, column=${this.column}`);
+    this.log(`OnInit: query=${this.query}, column=${this.column}`);
     this.form = this.formBuilder.group({
       query: [this.query, Validators.pattern(/^[a-zA-Z0-9.-\s~`']+$/)],
       columns: [this.column]
@@ -38,23 +40,22 @@ export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit
   }
 
   ngAfterViewInit(): void {
-    console.log(`QueryFilterComponent AfterViewInit. query=${this.query}, column=${this.column}`);
+    this.log(`AfterViewInit. query=${this.query}, column=${this.column}`);
   }
 
   /** Debounce filter text changes */
   onKeyUp(searchText: string) {
-    console.log(`QueryFilter: onKeyUp: ${searchText}`);
+    this.log(`onKeyUp: ${searchText}`);
 
-    this.form.markAllAsTouched();
-
-    if (!this.form.valid) {
+    this.form.markAllAsTouched(); // Triggers validation.
+    if (!this.form.valid)
       return;
-    }
-    if (this.filterTextChanged.observers.length === 0) {
+
+      if (this.filterTextChanged.observers.length === 0) {
       this.filterTextChanged
         .pipe(debounceTime(200), distinctUntilChanged())
         .subscribe(query => {
-          console.log(`QueryFilter: onKeyUp Emitting: ${this.column}, ${query}`);
+          this.log(`onKeyUp Emitting: ${this.column}, ${query}`);
           this.filterChange.emit({ column: this.column, query: query});
         })
     }
@@ -63,9 +64,9 @@ export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit
   }
 
   onSelectionChange(event: MatSelectChange) {
-    console.log(`QueryFilter: onSelectionChange: ${event.value}`);
+    this.log(`onSelectionChange: ${event.value}`);
     this.column = event.value;
-    this.form.controls['query'].setValue('');
+    this.query = '';
     this.setPlaceholder();
     if (this.form.valid)
       this.filterChange.emit({ column: event.value, query: this.query });
@@ -78,5 +79,10 @@ export class QueryFilterComponent implements OnInit, IQueryFilter, AfterViewInit
     }
     else
       this.placeholder = 'Enter filter text...';
+  }
+
+  private log(msg: string): void {
+    if (this.loggingEnabled)
+      console.log(`queryFilterComponent:  ${msg}`);
   }
 }

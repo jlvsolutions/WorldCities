@@ -45,7 +45,7 @@ export class AdminRegionsComponent extends BaseItemsComponent<AdminRegion, numbe
         authorized: true
       },
       { key: 'capitalId', label: 'Capital ID', description: 'The database ID for the capital city/town of the administration region.' },
-      { key: 'capitalName', label: 'Capital Name', description: 'The name of the capital city/town' },
+      { key: 'capitalName', label: 'Capital Name', description: 'The name of the administration region\'s capital.' },
       { key: 'countryId', label: 'Country ID', description: 'Database ID of the country.', hidden: true },
       {
         key: 'countryName', label: 'Country', description: 'The name of the administration region\'s country.',
@@ -95,5 +95,12 @@ export class AdminRegionsComponent extends BaseItemsComponent<AdminRegion, numbe
     }
   }
 
-  onParamsChanged(params: Params): void { }
+  onParamsChanged(params: Params): void {
+    this.subQuery = undefined;
+    this.titleSuffix = '';
+    if (params['Country']) {
+      this.subQuery = { name: 'Country', id: +params['Country'] };
+      console.log(`AdminRegionsComponent:  onParamsChanged: subQuery Country=${this.subQuery.id}`);
+    }
+  }
 }

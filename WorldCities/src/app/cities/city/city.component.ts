@@ -25,6 +25,8 @@ export class CityComponent implements OnInit, OnDestroy {
 
   @ViewChild(WCMapComponent) wcMap!: WCMapComponent;
 
+  private loggingEnabled: boolean = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -50,16 +52,21 @@ export class CityComponent implements OnInit, OnDestroy {
   loadData(id: number) {
     if (id === 0 || Number.isNaN(id))
       return;
-    console.log('loadData retrieving city id = ', id);
+    this.log(`loadData retrieving city id = ${id}`);
 
     // get the city from server
     this.cityService.get(id).subscribe(city => {
       this.city = city;
-      this.title = city.name;
+      this.title = city.name + ', ' + (city.adminRegionName ?? city.countryName);
       this.wcMap.showPlace(city.name + "," + (city.adminRegionName ?? city.countryName));
     }, error => console.error(error));
   }
   ngOnDestroy() {
-    console.log(`CityComponent: OnDestroy() Id = ${this.id} routeParam = ${this.routeParamId}`);
+    this.log(`CityComponent: OnDestroy() Id = ${this.id} routeParam = ${this.routeParamId}`);
+  }
+
+  private log(msg: string): void {
+    if (this.loggingEnabled)
+      console.log(`CityComponent:  ${msg}`);
   }
 }

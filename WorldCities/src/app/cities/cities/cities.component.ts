@@ -112,10 +112,7 @@ export class CitiesComponent extends BaseItemsComponent<City, number> {
     }
     else if (params['Country']) {
       this.subQuery = { name: 'Country', id: +params['Country'] };
-      console.log(`onParamsChanbed: subQuery Country=${this.subQuery.id}`);
+      console.log(`onParamsChanged: subQuery Country=${this.subQuery.id}`);
     }
-
-    //if (this.subQuery)
-    //  this.titleSuffix = ` - ${this.subQuery.name}`;
   }
 }

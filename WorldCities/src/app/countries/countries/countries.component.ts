@@ -43,7 +43,9 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
       { key: 'capitalName', label: 'Capital Name', description: 'The name of the capital city/town' },
       {
         key: 'totAdminRegions', label: 'Total Administration Regions',
-        description: 'The total number of administration regions in the country.'
+        description: 'The total number of administration regions in the country.',
+        type: 'link', toolTip: 'View list of Admin Regions in ', itemName: 'name',
+        authorized: true
       },
       {
         key: 'totCities', label: 'Total Cities', description: 'The total number of cities in the country.',
@@ -72,6 +74,11 @@ export class CountriesComponent extends BaseItemsComponent<Country, number> {
         break;
       case 'totCities':
         this.router.navigate(['cities'], {
+          queryParams: { Country: detail.row.id, sortColumn: 'name' }
+        });
+        break;
+      case 'totAdminRegions':
+        this.router.navigate(['adminregions'], {
           queryParams: { Country: detail.row.id, sortColumn: 'name' }
         });
         break;

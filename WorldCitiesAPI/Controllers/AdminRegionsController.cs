@@ -82,7 +82,8 @@ namespace WorldCitiesAPI.Controllers
             try
             {
                 return await ApiResult<AdminRegionDTO>.CreateAsync(
-                        _mapper.ProjectTo<AdminRegionDTO>(_context.AdminRegions.AsNoTracking(), null),
+                        _mapper.ProjectTo<AdminRegionDTO>(_context.AdminRegions.AsNoTracking()
+                        .Where(c => c.CountryId == id), null),
                         pageIndex,
                         pageSize,
                         sortColumn,

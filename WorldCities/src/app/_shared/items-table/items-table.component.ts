@@ -12,7 +12,7 @@ import { QueryFilterComponent } from '../query-filter/query-filter.component';
 })
 export class ItemsTableComponent implements OnDestroy, OnInit, AfterViewInit  {
 
-  @ViewChild(QueryFilterComponent) filter!: QueryFilterComponent;
+  @ViewChild(QueryFilterComponent) filter!: IQueryFilter;
 
   /** The data used to dynamically create and populate the table. */
   @Input() source!: IItemsViewSource<any>;
@@ -38,11 +38,19 @@ export class ItemsTableComponent implements OnDestroy, OnInit, AfterViewInit  {
   /** An event that fires when the mouse pointer moves over a row in the table. */
   @Output() rowMouseOver: EventEmitter<RowMouseOverEvent> = new EventEmitter<RowMouseOverEvent>();
 
-  filterOut: FilterEvent = new FilterEvent();
+  private loggingEnabled: boolean = true;
+
+  //filterOut: FilterEvent = new FilterEvent();
   constructor() { }
 
   ngOnInit() {
-    this.filterChange.subscribe(event => this.filterOut = event);
+    //this.filterChange.subscribe(event => this.filterOut = event);
+    this.log(`OnInit: filter=${this.filter}`);
+  }
+
+  ngAfterViewInit(): void {
+    this.log(`AfterViewInit: Setting source.filter to filter=${this.filter}`);
+    this.source.filter = this.filter;
   }
 
   ngOnDestroy(): void {
@@ -54,8 +62,8 @@ export class ItemsTableComponent implements OnDestroy, OnInit, AfterViewInit  {
     this.rowMouseOver.complete();
   }
 
-  ngAfterViewInit(): void {
-    console.log('ItemsTableComponent:  AfterViewInit');
-    this.source.filter = this.filter;
+  private log(msg: string): void {
+    if (this.loggingEnabled)
+      console.log(`ItemsTableComponent:  ${msg}`);
   }
 }

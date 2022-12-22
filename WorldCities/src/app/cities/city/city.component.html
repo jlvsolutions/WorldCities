@@ -7,10 +7,13 @@
       <div mat-card-avatar class="city-header-image"></div>
       <mat-card-title>{{city?.name}}</mat-card-title>
       <mat-card-subtitle>
-        {{city?.countryName }}, 
+        {{city?.countryName }},
         Population {{city?.population | number:'1.0-0' }},
         Lat {{city?.lat}},
         Lon {{city?.lon}}
+        <ng-container *ngIf="city?.capital === 'primary'">, Capital of {{city?.countryName}}</ng-container>
+        <ng-container *ngIf="city?.capital === 'admin'">, Capital of {{city?.adminRegionName}}</ng-container>
+        <ng-container *ngIf="city?.capital === 'minor'">, Local Capital</ng-container>
       </mat-card-subtitle>
     </mat-card-header>
     <wcmap></wcmap>
