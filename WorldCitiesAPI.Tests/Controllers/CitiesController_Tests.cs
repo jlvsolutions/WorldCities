@@ -48,8 +48,8 @@ namespace WorldCitiesAPI.Tests.Controllers
 
 
             // Act
-            city_existing = (await controller.GetCity(1)).Value;
-            city_notExisting = (await controller.GetCity(2)).Value;
+            city_existing = controller.GetCity(1).Value;
+            city_notExisting = controller.GetCity(2).Value;
 
             // Assert
             Assert.NotNull(city_existing);
