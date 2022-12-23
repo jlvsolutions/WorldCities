@@ -1,1 +1,19 @@
-<p>admin-region works!</p>
+<div class="admin-region  mat-elevation-z15 rounded-padding">
+  <h1>Details - {{title}}</h1>
+  <p *ngIf="this.id && !adminRegion"><em>Loading...</em></p>
+
+  <mat-card class="admin-region-card">
+    <mat-card-header>
+      <div mat-card-avatar class="admin-region-header-image"></div>
+      <mat-card-title>{{adminRegion?.name}}</mat-card-title>
+      <mat-card-subtitle>
+        Capital {{adminRegion?.capitalName}},
+        <ng-container *ngIf="adminRegion?.code">{{adminRegion?.code}},  </ng-container>
+        Total Cities {{adminRegion?.totCities}},
+        {{adminRegion?.countryName }}
+      </mat-card-subtitle>
+    </mat-card-header>
+    <wcmap></wcmap>
+  </mat-card>>
+
+</div>

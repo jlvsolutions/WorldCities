@@ -23,7 +23,7 @@ namespace WorldCitiesAPI.Tests.Controllers
         }
 
         [Fact(Skip ="The tested controller method now returns HTTP OK response")]
-        public async Task GetCity()
+        public void GetCity()
         {
             // Arrange
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()

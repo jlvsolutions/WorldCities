@@ -15,12 +15,11 @@ export class CountryComponent implements OnInit {
   // the view title
   title?: string;
 
-  // the city object to edit
+  // the country object
   country?: Country;
 
-  // the city object id, as fetched from the active route.
+  // the country object id, as fetched from the active route.
   id?: number;
-  public routeParam = 0;
 
   @ViewChild(WCMapComponent) wcMap!: WCMapComponent;
 
@@ -34,14 +33,14 @@ export class CountryComponent implements OnInit {
     this.id = +(this.activatedRoute.snapshot.paramMap.get('id') ?? '0');
 
     if (this.id === 0 || Number.isNaN(this.id)) {
-      console.error('CountryComponent:  City Id is not a valid number.');
+      console.error('CountryComponent:  Country Id is not a valid number.');
       this.router.navigate(['/countries']);
     }
     this.loadData(this.id);
   }
 
-  loadData(id: number) {
-    console.log('loadData retrieving city id = ', id);
+  private loadData(id: number) {
+    console.log(`CountryComponent:  Retrieving country id = ${id}`);
 
     this.countryService.get(id).subscribe(country => {
       this.country = country;

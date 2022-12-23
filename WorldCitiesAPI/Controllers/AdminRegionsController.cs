@@ -106,10 +106,12 @@ namespace WorldCitiesAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AdminRegionDTO>> GetAdminRegion(int id)
+        public ActionResult<AdminRegionDTO> GetAdminRegion(int id)
         {
             _logger.LogDebug("Entering GetAdminRegion. Id: {id}", id);
-            var adminRegion = await _context.AdminRegions.FindAsync(id);
+            var adminRegion = _context.AdminRegions.Include(ar => ar.Country)
+                                                   .Include(ar => ar.Cities)
+                                                   .SingleOrDefault(ar => ar.Id == id);
 
             if (adminRegion == null)
                 return NotFound();

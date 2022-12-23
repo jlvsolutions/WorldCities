@@ -40,11 +40,9 @@ export class ItemsTableComponent implements OnDestroy, OnInit, AfterViewInit  {
 
   private loggingEnabled: boolean = true;
 
-  //filterOut: FilterEvent = new FilterEvent();
   constructor() { }
 
   ngOnInit() {
-    //this.filterChange.subscribe(event => this.filterOut = event);
     this.log(`OnInit: filter=${this.filter}`);
   }
 

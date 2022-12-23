@@ -69,15 +69,18 @@ namespace WorldCitiesAPI.Controllers
 
         // GET: api/Countries/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CountryDTO>> GetCountry(int id)
+        public ActionResult<CountryDTO> GetCountry(int id)
         {
             _logger.LogDebug("Entering GetCountry. Id: {id}", id);
-            var country = await _context.Countries.FindAsync(id);
+            var country = _context.Countries.Include(c => c.AdminRegions)
+                                            .Include(c => c.Cities)
+                                            .SingleOrDefault(c => c.Id == id);
+
 
             if (country == null)
                 return NotFound();
-            
-            return Ok(_mapper.Map<CountryDTO>(country));
+            var v = _mapper.Map<CountryDTO>(country);
+            return Ok(v);
         }
 
         // PUT: api/Countries/5

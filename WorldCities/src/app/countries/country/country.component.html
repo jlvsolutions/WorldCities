@@ -7,9 +7,11 @@
       <div mat-card-avatar class="country-header-image"></div>
       <mat-card-title>{{country?.name}}</mat-card-title>
       <mat-card-subtitle>
-        ISO2 {{country?.iso2}},
-        ISO3 {{country?.iso3}},
-        Total Cities {{country?.totCities | number:'1.0-0'}}
+        ISO2 {{country?.iso2}},  
+        ISO3 {{country?.iso3}},  
+        Total Cities {{country?.totCities | number:'1.0-0'}},
+        Total Admin Regions {{country?.totAdminRegions | number: '1.0-0'}},  
+        Capital {{country?.capitalName}}
       </mat-card-subtitle>
     </mat-card-header>
     <wcmap></wcmap>
