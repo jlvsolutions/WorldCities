@@ -71,7 +71,7 @@ namespace WorldCitiesAPI.Controllers
             int id,
             int pageIndex = 0,
             int pageSize = 10,
-            string? sortColumn = "name",
+            string? sortColumn = "name", // Guarantees an 'order by' clause
             string? sortOrder = null,
             string? filterColumn = null,
             string? filterQuery = null)

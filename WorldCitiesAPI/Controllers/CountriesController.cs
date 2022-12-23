@@ -35,7 +35,7 @@ namespace WorldCitiesAPI.Controllers
         public async Task<ActionResult<ApiResult<CountryDTO>>> GetCountries(
             int pageIndex = 0,
             int pageSize = 10,
-            string? sortColumn = "name",
+            string? sortColumn = "name",  // Guarantees 'order by' clause.
             string? sortOrder = null,
             string? filterColumn = null,
             string? filterQuery = null)
@@ -74,6 +74,7 @@ namespace WorldCitiesAPI.Controllers
             _logger.LogDebug("Entering GetCountry. Id: {id}", id);
             var country = _context.Countries.Include(c => c.AdminRegions)
                                             .Include(c => c.Cities)
+                                            .AsSingleQuery()
                                             .SingleOrDefault(c => c.Id == id);
 
 
