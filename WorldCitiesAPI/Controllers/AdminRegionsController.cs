@@ -151,7 +151,7 @@ namespace WorldCitiesAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "RegisteredUser")]
-        public async Task<ActionResult> PostCountry(AdminRegionDTO model)
+        public async Task<ActionResult> PostAdminRegion(AdminRegionDTO model)
         {
             AdminRegion ar = _mapper.Map<AdminRegion>(model);
             _context.AdminRegions.Add(ar);
