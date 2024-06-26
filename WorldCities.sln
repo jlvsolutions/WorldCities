@@ -7,7 +7,12 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "WorldCities", "WorldCities\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorldCitiesAPI", "WorldCitiesAPI\WorldCitiesAPI.csproj", "{7A91AC4C-2AF7-4F4E-AC37-AA76A240B864}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldCitiesAPI.Tests", "WorldCitiesAPI.Tests\WorldCitiesAPI.Tests.csproj", "{52B2D9FC-4A9D-4485-BAA8-D25D628151A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorldCitiesAPI.Tests", "WorldCitiesAPI.Tests\WorldCitiesAPI.Tests.csproj", "{52B2D9FC-4A9D-4485-BAA8-D25D628151A6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B5099788-4E53-42F7-91FB-8F0E7B3FF3A1}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
