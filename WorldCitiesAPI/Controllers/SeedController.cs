@@ -14,7 +14,7 @@ namespace WorldCitiesAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Admin")]
     public class SeedController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
