@@ -84,8 +84,7 @@ builder.Services.AddAuthentication(opt =>
     opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    // this is me trying to get it to work...
-    options.SaveToken = true;
+    options.SaveToken = true; // TODO:  May be able to remove this.
 
     options.TokenValidationParameters = new TokenValidationParameters
     {
