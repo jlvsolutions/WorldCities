@@ -36,7 +36,7 @@ namespace WorldCitiesAPI.Tests.Services
 
             // Create a IConfiguratoin mock instance
             var mockConfiguration = new Mock<IConfiguration>();
-            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:SecurityKey")]).Returns("MyVeryOwnTestSecurityKey");
+            mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:SecurityKey")]).Returns("MyVeryOwnTestSecurityKeyAdd8more");
             mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:Issuer")]).Returns("MyVeryOwnTestIssuer");
             mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:Audience")]).Returns("https://localhost:4200");
             mockConfiguration.SetupGet(x => x[It.Is<string>(s => s == "JwtSettings:ExpirationTimeoutInMinutes")]).Returns("15");
@@ -199,7 +199,7 @@ namespace WorldCitiesAPI.Tests.Services
             //
             // Arrange
             await IdentityHelper.Seed(_context, _roleManager, _userManager, "exists@email.com", "existsPassword", new string[1] { "RegisteredUser" });
-            var user = await _userManager.FindByEmailAsync("exists@email.com");
+            ApplicationUser? user = await _userManager.FindByEmailAsync("exists@email.com");
 
             // Add an expired refresh token.
             user.RefreshTokens = new List<RefreshToken>() 
@@ -215,8 +215,8 @@ namespace WorldCitiesAPI.Tests.Services
 
             //
             // Act
-            var request = new AuthenticateRequest() { Email = "exists@email.com", Password = "existsPassword" };
-            var response = await _userService.Login(request, "127.0.0.1");
+            AuthenticateRequest request = new AuthenticateRequest() { Email = "exists@email.com", Password = "existsPassword" };
+            AuthenticateResponse response = await _userService.Login(request, "127.0.0.1");
 
             //
             // Assert the response

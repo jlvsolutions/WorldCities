@@ -1,4 +1,5 @@
 ﻿using HotChocolate.AspNetCore.Authorization;
+using HotChocolate.Authorization;
 using Microsoft.EntityFrameworkCore;
 using WorldCitiesAPI.Data.Entities;
 using WorldCitiesAPI.Data.Models.Cities;
