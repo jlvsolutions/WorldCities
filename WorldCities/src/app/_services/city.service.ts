@@ -36,6 +36,7 @@ export class CityService extends BaseService<City, number> implements OnDestroy 
     subQuery?: SubQuery<number>): Observable<ApiResult<City>> {
 
     var url = this.getUrl("api/Cities", subQuery);
+    console.log(`city.service: getData(): url = ${url}, subQuery = ${subQuery}`);
     var params = new HttpParams()
       .set("pageIndex", pageIndex.toString())
       .set("pageSize", pageSize.toString())
