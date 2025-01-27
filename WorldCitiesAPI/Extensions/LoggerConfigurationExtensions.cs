@@ -1,9 +1,11 @@
-﻿using Amazon.CloudWatchLogs;
+﻿using System.Configuration;
+using Amazon.CloudWatchLogs;
 using Amazon.Runtime;
-using Serilog.Formatting;
 using Serilog;
+using Serilog.Formatting;
+using Serilog.Formatting.Display;
 using Serilog.Sinks.AwsCloudWatch;
-using System.Configuration;
+using Serilog.Sinks.MSSqlServer;
 
 namespace WorldCitiesAPI.Extensions;
 
@@ -22,6 +24,7 @@ internal static class LoggerConfigurationExtensions
     internal static LoggerConfiguration WriteToAwsCloudWatch(this LoggerConfiguration loggerConfiguration, WebApplicationBuilder builder, string? hostEnvironment)
     {
         ArgumentNullException.ThrowIfNull(builder, nameof(loggerConfiguration));
+        ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
         if (builder.Configuration["LogToCloudWatch"]?.ToUpper().Equals("TRUE") ?? false)
         {
@@ -32,7 +35,9 @@ internal static class LoggerConfigurationExtensions
             string? cloudWatchSecretKey = builder.Configuration["AWSCredentials:DevelopmentCloudWatchSecretKey"];
             string cloudWatchGroupName = $"{machineName}/{envAppName}/{envName}";
             string cloudWatchLogStreamPrefix = $"{envAppName} - {DateTime.Now:yyyy-MM-dd HH-mm-ss} - "; // Must not contain colons.
-            ITextFormatter cloudWatchTextFormatter = new Serilog.Formatting.Json.JsonFormatter();
+            ITextFormatter cloudWatchTextFormatter = new MessageTemplateTextFormatter(
+                                                            "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+                                                            );
 
             // Set up AWS CloudWatch client credentials
             var cloudWatchClient = hostEnvironment?.Equals("AWS_EC2") ?? false
@@ -46,7 +51,7 @@ internal static class LoggerConfigurationExtensions
                         logGroup: cloudWatchGroupName,
                         createLogGroup: true,
                         logStreamPrefix: cloudWatchLogStreamPrefix,
-                        // textFormatter: cloudWatchTextFormatter,
+                        textFormatter: cloudWatchTextFormatter,
                         batchSizeLimit: 100,
                         queueSizeLimit: 10_000,
                         batchUploadPeriodInSeconds: 15,
@@ -68,17 +73,25 @@ internal static class LoggerConfigurationExtensions
     internal static LoggerConfiguration WriteToMSSqlServer(this LoggerConfiguration loggerConfiguration, WebApplicationBuilder builder, string? hostEnvironment)
     {
         ArgumentNullException.ThrowIfNull(builder, nameof(loggerConfiguration));
-      
+        ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
         if (builder.Configuration["LogToMSSqlServer"]?.ToUpper().Equals("TRUE") ?? false)
         {
+            var columnOptions = new ColumnOptions();
+            columnOptions.Store.Remove(StandardColumn.Properties);
+            columnOptions.Store.Remove(StandardColumn.MessageTemplate);
+
             loggerConfiguration.WriteTo.MSSqlServer(
                 connectionString: builder.Configuration.GetConnectionString("DefaultConnection")
                                   ?? throw new ConfigurationErrorsException("Configuration error.  Did not find DefaultConnection in appsettings."),
                 sinkOptions: new Serilog.Sinks.MSSqlServer.MSSqlServerSinkOptions
                 {
                     TableName = "LogEvents",
-                    AutoCreateSqlTable = true
-                });
+                    AutoCreateSqlTable = true,
+                    
+                },
+                columnOptions: columnOptions
+                );
         }
 
         return loggerConfiguration;

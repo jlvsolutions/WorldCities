@@ -12,8 +12,9 @@ using WorldCitiesAPI.Helpers;
 using WorldCitiesAPI.Extensions;
 using System.Configuration;
 using System.Globalization;
+using OfficeOpenXml;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.ConfigureLogging();
 
@@ -23,6 +24,9 @@ string envName = builder.Environment.EnvironmentName;
 try
 {
     Log.Information("{EnvAppName}: Starting in {EnvName} environment...", envAppName, envName);
+
+    // Since version EPPlus version 5, this is required:
+    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
     // Add services to the container.
     builder.Services.AddAutoMapper(typeof(Program));
@@ -45,14 +49,19 @@ try
                 cfg.AllowAnyHeader();
                 cfg.AllowAnyMethod();
                 cfg.WithOrigins(builder.Configuration["AllowedCORS"]
-                                ?? throw new ConfigurationErrorsException("Configuration error.  AllowedCORS not found in appsettings."));
+                                ?? throw new ConfigurationErrorsException("AllowedCORS not found in appsettings."));
             }));
 
-    // Add ApplicationDbContext and SQL Server support
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
-                             ?? throw new ConfigurationErrorsException("Configuration error.  DefaultConnection not found in appsettings."))
-    );
+    // Add ApplicationDbContext
+    Log.Information("{EnvAppName}: DATASTORE set to: {Datastore}", envAppName, Environment.GetEnvironmentVariable("DATASTORE"));
+    builder.Services.AddDbContext<ApplicationDbContext>(options => 
+        options.UseDatastoreFactory(builder)
+        );
+
+    //builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
+    //                         ?? throw new ConfigurationErrorsException("DefaultConnection not found in appsettings."))
+    //);
 
     // Add ASP.NET Core Identity support
     builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -94,8 +103,7 @@ try
             IssuerSigningKey = new SymmetricSecurityKey(
                                     System.Text.Encoding.UTF8.GetBytes(
                                         builder.Configuration["JwtSettings:SecurityKey"]
-                                        ?? throw new ConfigurationErrorsException(
-                                            "Configuration error.  JwtSettings:SecurityKey not found in appsettings")))
+                                        ?? throw new ConfigurationErrorsException("JwtSettings:SecurityKey not found in appsettings")))
         };
     });
 

@@ -14,7 +14,7 @@ namespace WorldCitiesAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Administrator")]
     public class SeedController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -48,7 +48,7 @@ namespace WorldCitiesAPI.Controllers
         /// <returns></returns>
         /// <exception cref="SecurityException"></exception>
         [HttpGet]
-        [Authorize(Roles = "Admin")] // prevent unauthorized use
+        //[Authorize(Roles = "Administrator")] // prevent unauthorized use
         public async Task<ActionResult> Import()
         {
             _logger.LogInformation("SeedController: Import()");
@@ -104,7 +104,10 @@ namespace WorldCitiesAPI.Controllers
 
             // Save all the countries into the database
             if (numberOfCountriesAdded > 0)
+            {
+                _logger.LogInformation("SeedController: Import():  Saving {Count} countries to database.", numberOfCountriesAdded);
                 await _context.SaveChangesAsync();
+            }
 
             // Create a Lookup dictionary containing all the cities already existing
             // into the Database (it will be empty on first run).
@@ -157,7 +160,7 @@ namespace WorldCitiesAPI.Controllers
         /// <returns></returns>
         /// <exception cref="SecurityException"></exception>
         [HttpGet]
-        [Authorize(Roles = "Admin")] // prevent unauthorized use
+        //[Authorize(Roles = "Administrator")] // prevent unauthorized use
         public async Task<ActionResult> ImportPopulations()
         {
             _logger.LogInformation("SeedController:  ImportPopulations()");
@@ -211,7 +214,7 @@ namespace WorldCitiesAPI.Controllers
         /// <returns></returns>
         /// <exception cref="SecurityException"></exception>
         [HttpGet]
-        [Authorize(Roles = "Admin")] // prevent unauthorized use
+        //[Authorize(Roles = "Administrator")] // prevent unauthorized use
         public async Task<ActionResult> CreateDefaultUsers()
         {
             _logger.LogInformation("SeedController: CreateDefaultUsers()");
@@ -314,7 +317,7 @@ namespace WorldCitiesAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        //[Authorize(Roles = "Admin")] // prevent unauthorized use
+        //[Authorize(Roles = "Administrator")] // prevent unauthorized use
         public async Task<ActionResult> ImportAdminRegions()
         {
             _logger.LogInformation("SeedController:  ImportAdminRegions()");
