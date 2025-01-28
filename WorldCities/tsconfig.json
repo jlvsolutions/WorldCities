@@ -15,7 +15,7 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2020",
+    "target": "ES2021",
     "module": "es2020",
     "lib": [
       "es2020",
@@ -23,10 +23,15 @@
       "esnext.asynciterable"
     ],
     "paths": {
-      "@app/*": [ "src/app/*" ],
-      "@environments/*": [ "src/environments/*" ]
+      "@app/*": [
+        "src/app/*"
+      ],
+      "@environments/*": [
+        "src/environments/*"
+      ]
     },
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
