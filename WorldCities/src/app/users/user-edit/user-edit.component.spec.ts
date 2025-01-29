@@ -1,12 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from '@app/_shared';
 
 import { UserService } from '@app/_services';
 import { UserEditComponent } from './user-edit.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('UserEditComponent', () => {
   let component: UserEditComponent;
@@ -14,18 +15,17 @@ describe('UserEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule,
-        HttpClientTestingModule,
+    declarations: [UserEditComponent],
+    imports: [RouterTestingModule,
         NoopAnimationsModule,
-        SharedModule
-      ],
-      declarations: [ UserEditComponent ],
-      providers: [
+        SharedModule],
+    providers: [
         FormBuilder,
-        UserService
-      ]
-    })
+        UserService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+})
     .compileComponents();
   });
 

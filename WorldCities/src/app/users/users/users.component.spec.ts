@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from '@app/_shared';
 
 import { UserService } from '@app/_services';
 import { UsersComponent } from './users.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('UsersComponent', () => {
   let component: UsersComponent;
@@ -13,15 +14,12 @@ describe('UsersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        RouterTestingModule,
+    declarations: [UsersComponent],
+    imports: [RouterTestingModule,
         NoopAnimationsModule,
-        SharedModule
-      ],
-      declarations: [ UsersComponent ],
-      providers: [ UserService ]
-    })
+        SharedModule],
+    providers: [UserService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+})
     .compileComponents();
   });
 
