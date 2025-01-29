@@ -11,4 +11,4 @@ depending on configuration settings.  Use of either MSSQL or PostgreSQL datastor
 ###
 Planned features include creating graphical overlays on maps for any added entities as well as access management to those entities.
 ### A Note
-This solution is incomplete and in it's infancy and should be considered a true sandbox at this point.  
+![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) This solution is incomplete and in it's infancy and should be considered a true sandbox at this point.  
