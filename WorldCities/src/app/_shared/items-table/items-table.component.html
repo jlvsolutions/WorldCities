@@ -29,14 +29,14 @@
       <ng-template #sortedHeaderTemplate>
         <mat-header-cell *matHeaderCellDef
                          mat-sort-header
-                         [class.filter-active]="filter.query !== '' &&
-                                                filter.column === 'RemoveMeIfYouWantHeaderAlsoTinted' + col.key"
+                         [class.filter-active]="filter?.query !== '' &&
+                                                filter?.column === 'RemoveMeIfYouWantHeaderAlsoTinted' + col.key"
                          [title]="col.description ?? ''">{{col.label}}</mat-header-cell>
       </ng-template>
 
       <mat-cell *matCellDef="let item"
-                [class.filter-active]="filter.query !== '' &&
-                                       filter.column === col.key">
+                [class.filter-active]="filter?.query !== '' &&
+                                       filter?.column === col.key">
 
         <div [ngSwitch]="col.type">
 

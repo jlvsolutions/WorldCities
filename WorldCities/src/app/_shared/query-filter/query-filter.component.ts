@@ -28,6 +28,7 @@ export class QueryFilterComponent implements IQueryFilter, OnInit, IQueryFilter,
   private loggingEnabled: boolean = true;
 
   constructor(private formBuilder: FormBuilder) {
+    this.log('Constructor().')
   }
 
   ngOnInit(): void {
@@ -83,6 +84,6 @@ export class QueryFilterComponent implements IQueryFilter, OnInit, IQueryFilter,
 
   private log(msg: string): void {
     if (this.loggingEnabled)
-      console.log(`queryFilterComponent:  ${msg}`);
+      console.log(`QueryFilterComponent:  ${msg}`);
   }
 }

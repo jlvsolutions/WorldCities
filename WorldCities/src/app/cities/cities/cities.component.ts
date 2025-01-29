@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { BaseItemsComponent } from '@app/_helpers/base-items.component';
