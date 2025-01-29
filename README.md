@@ -6,7 +6,7 @@ This solution hosts and serves data built from simplemaps.com and presents it to
 The presentation includes maps using Google's embedded maps API.  For those who register, adding and editing features are also provided.  Delete and user management is provided to users assigned the administrator role.
 
 This solution can be hosted locally, on your standard web hosting service, or on Amazon Web Services, 
-depending on coniguration settings.  MSSQL or PostgreSQL datastore is also configurable.
+depending on configuration settings.  Use of either MSSQL or PostgreSQL datastores are also configurable.
 
 ###
 Planned features include creating graphical overlays on maps for any added entities as well as access management to those entities.
