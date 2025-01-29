@@ -1,14 +1,14 @@
-table.mat-table {
+table.mat-mdc-table {
   width: 100%;
 }
 
-.mat-form-field {
+.mat-mdc-form-field {
   font-size: 14px;
   width: 100%;
 }
 
-td.mat-cell {
-    button.mat-flat-button {
+td.mat-mdc-cell {
+    button.mat-mdc-unelevated-button {
         line-height: 20px;
         min-width: 20px;
         padding: 0px 10px;

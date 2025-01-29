@@ -1,11 +1,11 @@
-table.mat-table {
+table.mat-mdc-table {
     width: 100%;
 }
-tr.mat-row:hover {
+tr.mat-mdc-row:hover {
     background-color: skyblue;
     cursor: pointer;
 }
-.mat-form-field {
+.mat-mdc-form-field {
     font-size: 14px;
     width: 100%;
 }

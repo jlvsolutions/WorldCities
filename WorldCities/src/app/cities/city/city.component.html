@@ -2,7 +2,7 @@
   <h1>Details - {{title}}</h1>
   <p *ngIf="this.id && !city"><em>Loading...</em></p>
 
-  <mat-card class="city-card">
+  <mat-card appearance="outlined" class="city-card">
     <mat-card-header>
       <div mat-card-avatar class="city-header-image"></div>
       <mat-card-title>{{city?.name}}</mat-card-title>

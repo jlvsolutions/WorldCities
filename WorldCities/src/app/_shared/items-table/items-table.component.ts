@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { IItemsViewSource, IQueryFilter, FilterEvent, DetailEvent, RowMouseOverEvent } from '@app/_models';
 import { Sort } from '@angular/material/sort';
-import { MatLegacyPaginator as MatPaginator, LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { QueryFilterComponent } from '../query-filter/query-filter.component';
 
 /**  Displays a mat-table using the provided IItemsView interface */
