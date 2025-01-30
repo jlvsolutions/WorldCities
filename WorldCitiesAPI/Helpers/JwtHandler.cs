@@ -46,7 +46,8 @@ namespace WorldCitiesAPI.Helpers
 
         private SigningCredentials GetSigningCredentials()
         {
-            var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecurityKey"]);
+            var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecurityKey"]
+                                                ?? Environment.GetEnvironmentVariable("JWT_SECURITYKEY"));
             var secret = new SymmetricSecurityKey(key);
 
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
