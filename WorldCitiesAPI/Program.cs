@@ -30,13 +30,7 @@ try
 
     // Add services to the container.
     builder.Services.AddAutoMapper(typeof(Program));
-    builder.Services.AddControllers(); //;
-                                       // This kept here commented out for reference sake.
-                                       //    .AddJsonOptions(options =>
-                                       //    {
-                                       //        options.JsonSerializerOptions.WriteIndented = true;
-                                       //        //options.JsonSerializerOptions.PropertyNamingPolicy = null;
-                                       //    });
+    builder.Services.AddControllers();
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
@@ -56,11 +50,6 @@ try
     builder.Services.AddDbContext<ApplicationDbContext>(options => 
         options.UseDatastoreFactory(builder)
         );
-
-    //builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
-    //                         ?? throw new ConfigurationErrorsException("DefaultConnection not found in appsettings."))
-    //);
 
     // Add ASP.NET Core Identity support
     builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

@@ -14,7 +14,7 @@ namespace WorldCitiesAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator")]
     public class SeedController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -48,7 +48,7 @@ namespace WorldCitiesAPI.Controllers
         /// <returns></returns>
         /// <exception cref="SecurityException"></exception>
         [HttpGet]
-        //[Authorize(Roles = "Administrator")] // prevent unauthorized use
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult> Import()
         {
             _logger.LogInformation("SeedController: Import()");
@@ -214,7 +214,7 @@ namespace WorldCitiesAPI.Controllers
         /// <returns></returns>
         /// <exception cref="SecurityException"></exception>
         [HttpGet]
-        //[Authorize(Roles = "Administrator")] // prevent unauthorized use
+        [Authorize(Roles = "Administrator")] // prevent unauthorized use
         public async Task<ActionResult> CreateDefaultUsers()
         {
             _logger.LogInformation("SeedController: CreateDefaultUsers()");
@@ -317,7 +317,7 @@ namespace WorldCitiesAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        //[Authorize(Roles = "Administrator")] // prevent unauthorized use
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult> ImportAdminRegions()
         {
             _logger.LogInformation("SeedController:  ImportAdminRegions()");

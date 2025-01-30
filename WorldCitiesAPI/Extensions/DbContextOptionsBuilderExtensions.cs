@@ -8,7 +8,7 @@ namespace WorldCitiesAPI.Extensions;
 internal static class DbContextOptionsBuilderExtensions
 {
     /// <summary>
-    /// Configures the context to use the datastore indicated by the DATASTORE environment variable.
+    /// Configures the context to use the datastore indicated by the Datastore appsettings configuration.
     /// </summary>
     /// <returns>The same DbContextOptionsBuilder, useful for chaining.</returns>
     internal static DbContextOptionsBuilder UseDatastoreFactory(this DbContextOptionsBuilder options, WebApplicationBuilder builder)

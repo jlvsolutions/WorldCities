@@ -4,7 +4,6 @@ using WorldCitiesAPI.Data.Entities;
 
 namespace WorldCitiesAPI.Data
 {
-    //public class ApplicationDbContext : DbContext
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
 
