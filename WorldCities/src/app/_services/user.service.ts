@@ -45,7 +45,6 @@ export class UserService extends BaseService<User, string> implements OnDestroy 
 
   put(user: User): Observable<User> {
     var url = this.getUrl("api/Users/" + user.id);
-    user.id = "differentid";
     return this.http.put<User>(url, user);
   }
 
