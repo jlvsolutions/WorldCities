@@ -53,7 +53,6 @@ try
             }));
 
     // Add ApplicationDbContext
-    Log.Information("{EnvAppName}: DATASTORE set to: {Datastore}", envAppName, Environment.GetEnvironmentVariable("DATASTORE"));
     builder.Services.AddDbContext<ApplicationDbContext>(options => 
         options.UseDatastoreFactory(builder)
         );
@@ -153,8 +152,10 @@ try
     // Important  to place this BEFORE middlewares that handle various endpoints.
     // so that our CORS plicy will be applied to all of them.
     app.UseCors("AngularPolicy");
-    app.UseAuthentication(); // add authentication middleware
+
+    app.UseAuthentication();
     app.UseAuthorization();
+    
     app.MapControllers();
 
     // Add GraphQL middleware.

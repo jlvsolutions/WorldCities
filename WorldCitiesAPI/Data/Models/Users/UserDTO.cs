@@ -14,7 +14,7 @@ namespace WorldCitiesAPI.Data.Models.Users
         public bool EmailConfirmed { get; set; }
         public bool LockoutEnabled { get; set; }
 
-        [JsonIgnore] // one way field
+        //TODO:  remove this:  [JsonIgnore] // one way field
         public string? NewPassword { get; set; }
         public string[] Roles { get; set; } = null!;
         public string? JwtToken { get; set; }

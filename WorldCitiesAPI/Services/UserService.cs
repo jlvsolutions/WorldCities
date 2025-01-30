@@ -137,6 +137,7 @@ namespace WorldCitiesAPI.Services
         {
             // Setup the default role name
             string role_RegisteredUser = "RegisteredUser";
+            
             if (model.Roles == null || model.Roles.Length == 0)
                 model.Roles = new string[] { role_RegisteredUser };
 

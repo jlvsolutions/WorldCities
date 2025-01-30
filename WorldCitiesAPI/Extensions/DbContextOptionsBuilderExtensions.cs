@@ -16,21 +16,26 @@ internal static class DbContextOptionsBuilderExtensions
         ArgumentNullException.ThrowIfNull(options, nameof(options));
         ArgumentNullException.ThrowIfNull(builder, nameof(builder));
 
-        string? datastore = Environment.GetEnvironmentVariable("DATASTORE") ?? "MSSQL";
+        string? datastore = builder.Configuration["Datastore"];
+        datastore ??= Environment.GetEnvironmentVariable("DATASTORE") ?? "MSSQL";
+        
         Log.Information("Datastore: {Datastore}", datastore);
 
         if (datastore.Equals("Postgres"))
         {
+            // PostgreSQL
             string? connectionString = builder.Configuration.GetConnectionString("PostgresConnection")
                                         ?? Environment.GetEnvironmentVariable("POSTGRES_CONNECTION")
-                                        ?? throw new ConfigurationErrorsException("PostgresConnection not found in appsettings or HOST_ENVIRONMENT.");
+                                        ?? throw new ConfigurationErrorsException("PostgresConnection not found in appsettings or POSTGRES_CONNECTION environment variable.");
 
             options.UseNpgsql(connectionString);
         }
-        else
+        else 
         {
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
-                                 ?? throw new ConfigurationErrorsException("DefaultConnection not found in appsettings."));
+            // MSSQL
+            options.UseSqlServer(builder.Configuration.GetConnectionString("MSSQLConnection")
+                                        ?? Environment.GetEnvironmentVariable("MSSQL_CONNECTION")
+                                        ?? throw new ConfigurationErrorsException("MSSQLConnection not found in appsettings or MSSQL_CONNECTION environment variable."));
         }
 
         return options;

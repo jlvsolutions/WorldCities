@@ -30,7 +30,6 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "HOST_ENVIRONMENT": "Local", // "Local" or "AWS_EC2"
-        "DATASTORE": "Postgres" // "MSSQL" or "Postgres"
       }
     },
     "IIS Express": {
@@ -40,7 +39,6 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "HOST_ENVIRONMENT": "Local", // "Local" or "AWS_EC2"
-        "DATASTORE": "MSSQL" // "MSSQL" or "Postgres"
       }
     }
   }
