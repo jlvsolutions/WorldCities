@@ -109,8 +109,10 @@ try
 
     var app = builder.Build();
 
-    // Add HTTP request logging middleware
+    // Add Serilog HTTP request logging middleware
     app.UseSerilogRequestLogging();
+    //app.UseSerilogRequestLogging(options =>
+    //    options.EnrichDiagnosticContext = RequestEnricher.LogAdditionalInfo);
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())

@@ -2,6 +2,7 @@
 using Amazon.CloudWatchLogs;
 using Amazon.Runtime;
 using Serilog;
+using Serilog.Enrichers;
 using Serilog.Formatting;
 using Serilog.Formatting.Display;
 using Serilog.Sinks.AwsCloudWatch;
@@ -36,7 +37,7 @@ internal static class LoggerConfigurationExtensions
             string cloudWatchGroupName = $"{machineName}/{envAppName}/{envName}";
             string cloudWatchLogStreamPrefix = $"{envAppName} - {DateTime.Now:yyyy-MM-dd HH-mm-ss} - "; // Must not contain colons.
             ITextFormatter cloudWatchTextFormatter = new MessageTemplateTextFormatter(
-                                                            "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+                                                            "{Timestamp:HH:mm:ss} [{ClientIp}] [{Level:u3}] {Message:lj}{NewLine}{Exception}"
                                                             );
 
             // Set up AWS CloudWatch client credentials
@@ -56,7 +57,8 @@ internal static class LoggerConfigurationExtensions
                         queueSizeLimit: 10_000,
                         batchUploadPeriodInSeconds: 15,
                         maxRetryAttempts: 3,
-                        cloudWatchClient: cloudWatchClient);
+                        cloudWatchClient: cloudWatchClient)
+                .Enrich.WithClientIp();
         }
 
         return loggerConfiguration;
