@@ -88,6 +88,8 @@ namespace WorldCitiesAPI.Data.GraphQL
         /// <param name="context"></param>
         /// <param name="countryDTO"></param>
         /// <returns></returns>
+        [Serial]
+        [Authorize(Roles = new[] { "RegisteredUser" })]
         public async Task<Country> AddCountry([Service] ApplicationDbContext context, CountryDTO countryDTO)
         {
             var country = new Country()

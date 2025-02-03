@@ -14,8 +14,8 @@ using System.Configuration;
 using System.Globalization;
 using OfficeOpenXml;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.ConfigureLogging();
 
 string envAppName = builder.Environment.ApplicationName;
@@ -47,7 +47,7 @@ try
             }));
 
     // Add ApplicationDbContext
-    builder.Services.AddDbContext<ApplicationDbContext>(options => 
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseDatastoreFactory(builder)
         );
 
@@ -100,12 +100,12 @@ try
     builder.Services.AddScoped<IUserService, UserService>();
 
     // Add GraphQL services.
-    builder.Services.AddGraphQLServer()
-        .AddAuthorization()
-        .AddQueryType<Query>()
-        .AddMutationType<Mutation>()
-        .AddFiltering()
-        .AddSorting();
+    //builder.Services.AddGraphQLServer()
+    //    .AddAuthorization()
+    //    .AddQueryType<Query>()
+    //    .AddMutationType<Mutation>()
+    //    .AddFiltering()
+    //    .AddSorting();
 
     var app = builder.Build();
 
@@ -146,13 +146,13 @@ try
 
     app.UseAuthentication();
     app.UseAuthorization();
-    
+
     app.MapControllers();
 
     // Add GraphQL middleware.
-    app.MapGraphQL("/api/graphql");
+    // app.MapGraphQL("/api/graphql");
 
-    app.MapMethods("/api/heartbeat", new[] { "HEAD" }, () => Results.Ok());
+    app.MapMethods("/api/heartbeat", ["HEAD"], () => Results.Ok());
 
     app.Logger.LogInformation("Starting the API.");
     app.Run();
