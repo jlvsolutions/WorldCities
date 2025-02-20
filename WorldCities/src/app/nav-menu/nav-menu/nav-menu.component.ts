@@ -4,9 +4,10 @@ import { Subject, take, takeUntil } from 'rxjs';
 import { AuthService } from '@app/_services';
 
 @Component({
-  selector: 'app-nav-menu',
-  templateUrl: './nav-menu.component.html',
-  styleUrls: ['./nav-menu.component.scss']
+    selector: 'app-nav-menu',
+    templateUrl: './nav-menu.component.html',
+    styleUrls: ['./nav-menu.component.scss'],
+    standalone: false
 })
 export class NavMenuComponent implements OnInit, OnDestroy {
 

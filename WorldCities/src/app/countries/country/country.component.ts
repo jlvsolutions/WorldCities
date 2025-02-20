@@ -6,9 +6,10 @@ import { WCMapComponent } from '@app/_shared';
 import { CountryService } from '@app/_services';
 
 @Component({
-  selector: 'app-country',
-  templateUrl: './country.component.html',
-  styleUrls: ['./country.component.scss']
+    selector: 'app-country',
+    templateUrl: './country.component.html',
+    styleUrls: ['./country.component.scss'],
+    standalone: false
 })
 export class CountryComponent implements OnInit {
 

@@ -6,9 +6,10 @@ import { Country, DetailEvent, ItemSchema } from '@app/_models';
 import { CountryService, AuthService } from '@app/_services';
 
 @Component({
-  selector: 'app-countries',
-  templateUrl: './countries.component.html',
-  styleUrls: ['./countries.component.scss']
+    selector: 'app-countries',
+    templateUrl: './countries.component.html',
+    styleUrls: ['./countries.component.scss'],
+    standalone: false
 })
 export class CountriesComponent extends BaseItemsComponent<Country, number> {
 

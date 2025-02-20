@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'spaceAfterComma'
+    name: 'spaceAfterComma',
+    standalone: false
 })
 export class SpaceAfterCommaPipe implements PipeTransform {
 

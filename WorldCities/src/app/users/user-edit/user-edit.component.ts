@@ -10,9 +10,10 @@ import { User, IShowMessage } from '@app/_models';
 import { UserService, AuthService } from '@app/_services';
 
 @Component({
-  selector: 'app-user-edit',
-  templateUrl: './user-edit.component.html',
-  styleUrls: ['./user-edit.component.scss']
+    selector: 'app-user-edit',
+    templateUrl: './user-edit.component.html',
+    styleUrls: ['./user-edit.component.scss'],
+    standalone: false
 })
 export class UserEditComponent
   extends BaseFormComponent implements OnInit, AfterViewInit {

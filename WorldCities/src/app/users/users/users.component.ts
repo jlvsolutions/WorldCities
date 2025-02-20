@@ -6,9 +6,10 @@ import { User, ItemSchema, DetailEvent } from '@app/_models';
 import { UserService, AuthService } from '@app/_services';
 
 @Component({
-  selector: 'app-users',
-  templateUrl: './users.component.html',
-  styleUrls: ['./users.component.scss']
+    selector: 'app-users',
+    templateUrl: './users.component.html',
+    styleUrls: ['./users.component.scss'],
+    standalone: false
 })
 export class UsersComponent extends BaseItemsComponent<User, string> {
 

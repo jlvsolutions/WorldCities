@@ -9,9 +9,10 @@ import { City, Country } from '@app/_models';
 import { CityService } from '@app/_services';
 
 @Component({
-  selector: 'app-city-edit',
-  templateUrl: './city-edit.component.html',
-  styleUrls: ['./city-edit.component.scss']
+    selector: 'app-city-edit',
+    templateUrl: './city-edit.component.html',
+    styleUrls: ['./city-edit.component.scss'],
+    standalone: false
 })
 export class CityEditComponent
   extends BaseFormComponent implements OnInit, OnDestroy {

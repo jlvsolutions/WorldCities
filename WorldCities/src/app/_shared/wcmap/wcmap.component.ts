@@ -5,9 +5,10 @@ import { FormGroup, FormControl, Validators, AbstractControl, AsyncValidatorFn }
 import { wcMapConfig } from './wcmap.config';
 
 @Component({
-  selector: 'wcmap',
-  templateUrl: './wcmap.component.html',
-  styleUrls: ['./wcmap.component.scss']
+    selector: 'wcmap',
+    templateUrl: './wcmap.component.html',
+    styleUrls: ['./wcmap.component.scss'],
+    standalone: false
 })
 export class WCMapComponent implements OnInit {
 

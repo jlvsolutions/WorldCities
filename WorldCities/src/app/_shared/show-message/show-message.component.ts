@@ -4,9 +4,10 @@ import { Observable, takeUntil, Subject, BehaviorSubject, tap, map } from 'rxjs'
 
 /** Shows messages to users as informative or as an error. */
 @Component({
-  selector: 'show-message',
-  templateUrl: './show-message.component.html',
-  styleUrls: ['./show-message.component.scss']
+    selector: 'show-message',
+    templateUrl: './show-message.component.html',
+    styleUrls: ['./show-message.component.scss'],
+    standalone: false
 })
 export class ShowMessageComponent implements IShowMessage, OnDestroy {
   

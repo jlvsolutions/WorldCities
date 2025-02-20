@@ -9,9 +9,10 @@ import { Country } from '@app/_models';
 import { CountryService } from '@app/_services';
 
 @Component({
-  selector: 'app-country-edit',
-  templateUrl: './country-edit.component.html',
-  styleUrls: ['./country-edit.component.scss']
+    selector: 'app-country-edit',
+    templateUrl: './country-edit.component.html',
+    styleUrls: ['./country-edit.component.scss'],
+    standalone: false
 })
 export class CountryEditComponent extends BaseFormComponent implements OnInit {
 

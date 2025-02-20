@@ -9,7 +9,8 @@ import { BaseService, SubQuery, AuthService } from '@app/_services';
 
 /** Base class for displaying a collection of items. */
 @Component({
-  template: ``
+    template: ``,
+    standalone: false
 })
 export abstract class BaseItemsComponent<TDto, TId> implements OnInit, AfterViewInit, OnDestroy {
 

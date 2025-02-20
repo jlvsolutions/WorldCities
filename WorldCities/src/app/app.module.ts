@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, inject, provideAppInitializer } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -78,7 +78,10 @@ import { WCReuseStrategy } from '@app/_helpers/wc-reuse-strategy';
                 requestMethod: "head"
             }
         },
-        { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [AuthService] },
+        provideAppInitializer(() => {
+        const initializerFn = (appInitializer)(inject(AuthService));
+        return initializerFn();
+      }),
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         //{ provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
         { provide: RouteReuseStrategy, useClass: WCReuseStrategy },

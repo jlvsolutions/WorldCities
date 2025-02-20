@@ -8,10 +8,10 @@ import { IQueryFilter, FilterEvent, FilterColumn } from '@app/_models';
 
 /** Provides a debounced query filter */
 @Component({
-  selector: 'query-filter',
-  templateUrl: './query-filter.component.html',
-  styleUrls: ['./query-filter.component.scss']
-
+    selector: 'query-filter',
+    templateUrl: './query-filter.component.html',
+    styleUrls: ['./query-filter.component.scss'],
+    standalone: false
 })
 export class QueryFilterComponent implements IQueryFilter, OnInit, IQueryFilter, AfterViewInit {
   form!: FormGroup;

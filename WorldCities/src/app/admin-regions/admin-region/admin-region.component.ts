@@ -6,9 +6,10 @@ import { WCMapComponent } from '@app/_shared';
 import { AdminRegionService } from '@app/_services';
 
 @Component({
-  selector: 'app-admin-region',
-  templateUrl: './admin-region.component.html',
-  styleUrls: ['./admin-region.component.scss']
+    selector: 'app-admin-region',
+    templateUrl: './admin-region.component.html',
+    styleUrls: ['./admin-region.component.scss'],
+    standalone: false
 })
 export class AdminRegionComponent implements OnInit {
 

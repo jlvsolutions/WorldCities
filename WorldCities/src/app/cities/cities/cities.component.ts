@@ -6,9 +6,10 @@ import { City, DetailEvent, ItemSchema } from '@app/_models';
 import { CityService, AuthService } from '@app/_services';
 
 @Component({
-  selector: 'app-cities',
-  templateUrl: './cities.component.html',
-  styleUrls: ['./cities.component.scss']
+    selector: 'app-cities',
+    templateUrl: './cities.component.html',
+    styleUrls: ['./cities.component.scss'],
+    standalone: false
 })
 export class CitiesComponent extends BaseItemsComponent<City, number> {
 

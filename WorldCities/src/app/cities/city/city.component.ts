@@ -6,9 +6,10 @@ import { WCMapComponent } from '@app/_shared';
 import { CityService } from '@app/_services';
 
 @Component({
-  selector: 'app-city',
-  templateUrl: './city.component.html',
-  styleUrls: ['./city.component.scss']
+    selector: 'app-city',
+    templateUrl: './city.component.html',
+    styleUrls: ['./city.component.scss'],
+    standalone: false
 })
 export class CityComponent implements OnInit {
 

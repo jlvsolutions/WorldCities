@@ -6,9 +6,10 @@ import { AdminRegion, DetailEvent, ItemSchema } from '@app/_models';
 import { AdminRegionService, AuthService } from '@app/_services';
 
 @Component({
-  selector: 'app-admin-regions',
-  templateUrl: './admin-regions.component.html',
-  styleUrls: ['./admin-regions.component.scss']
+    selector: 'app-admin-regions',
+    templateUrl: './admin-regions.component.html',
+    styleUrls: ['./admin-regions.component.scss'],
+    standalone: false
 })
 export class AdminRegionsComponent extends BaseItemsComponent<AdminRegion, number> {
 

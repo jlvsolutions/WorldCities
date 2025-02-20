@@ -6,9 +6,10 @@ import { QueryFilterComponent } from '../query-filter/query-filter.component';
 
 /**  Displays a mat-table using the provided IItemsView interface */
 @Component({
-  selector: 'items-table',
-  templateUrl: './items-table.component.html',
-  styleUrls: ['./items-table.component.scss']
+    selector: 'items-table',
+    templateUrl: './items-table.component.html',
+    styleUrls: ['./items-table.component.scss'],
+    standalone: false
 })
 export class ItemsTableComponent implements OnDestroy, OnInit, AfterViewInit  {
 
