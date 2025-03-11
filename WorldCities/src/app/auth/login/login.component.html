@@ -19,7 +19,7 @@
       <mat-form-field>
         <mat-label>Password:</mat-label>
         <input matInput [type]=" showPassword ? 'text' : 'password' " formControlName="password" required placeholder="Enter your password">
-        <mat-icon matSuffix class ="pointer" (click)="showHidePassword()">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        <mat-icon matSuffix class="pointer" (click)="showHidePassword()">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         <mat-error *ngFor="let error of getErrors(form.get('password')!, 'Password')">
           {{error}}
         </mat-error>
@@ -39,5 +39,5 @@
         </div>
       </div>
     </form>
-    </div>
   </div>
+</div>
