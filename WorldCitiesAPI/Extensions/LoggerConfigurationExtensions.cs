@@ -70,7 +70,7 @@ internal static class LoggerConfigurationExtensions
     /// <param name="loggerConfiguration">The <see cref="LoggerConfiguration"/> to configure.</param>
     /// <param name="builder">The <see cref="WebApplicationBuilder"/> being used to build the application.</param>
     /// <param name="hostEnvironment">The value, if any, of the HOST_ENVIRONMENT environment variable.  Used to describe the hosting
-    /// environment such as Local on development machine, AWS_EC2 when depoloyed t internal static LoggerConfiguration WriteToMSSqlServer(this LoggerConfiguration loggerConfiguration, WebApplicationBuilder builder, string? hostEnvironment)
+    /// environment such as Local on development machine, AWS_EC2 when depoloyed </param>
 
     internal static LoggerConfiguration WriteToMSSqlServer(this LoggerConfiguration loggerConfiguration, WebApplicationBuilder builder, string? hostEnvironment)
     {
