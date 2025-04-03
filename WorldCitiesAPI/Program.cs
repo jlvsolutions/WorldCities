@@ -74,7 +74,7 @@ try
     })
         .AddJwtBearer(options =>
     {
-        options.SaveToken = true; // TODO:  May be able to remove this.
+        options.SaveToken = true;
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
